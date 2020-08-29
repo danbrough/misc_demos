@@ -4,7 +4,6 @@ plugins {
   kotlin("kapt")
   kotlin("android.extensions")
   id("androidx.navigation.safeargs.kotlin")
-
 }
 
 
@@ -15,21 +14,17 @@ android {
   compileSdkVersion(ProjectVersions.SDK_VERSION)
 
   defaultConfig {
-    //buildToolsVersion("30.0.2")
 
     minSdkVersion(ProjectVersions.MIN_SDK_VERSION)
     targetSdkVersion(ProjectVersions.SDK_VERSION)
     versionCode = ProjectVersions.BUILD_VERSION
     versionName = ProjectVersions.VERSION_NAME
-    // multiDexEnabled = true
+    multiDexEnabled = true
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
 
   }
 
-  lintOptions {
-    isAbortOnError = false
-  }
 
 
   compileOptions {
@@ -40,9 +35,17 @@ android {
 
   kotlinOptions {
     jvmTarget = "1.8"
+    useIR = true
   }
 
+  buildFeatures {
+    compose = true
+  }
 
+  composeOptions {
+    kotlinCompilerExtensionVersion = "1.0.0-alpha01"
+    kotlinCompilerVersion = "1.4.0"
+  }
 }
 
 tasks.withType<Test> {
@@ -57,11 +60,29 @@ tasks.withType<Test> {
   }
 }
 
+
 dependencies {
+  val compose_version = "1.0.0-alpha01"
+
+  implementation("androidx.compose.ui:ui:$compose_version")
+  implementation("androidx.compose.material:material:$compose_version")
+  implementation("androidx.ui:ui-tooling:$compose_version")
+
+
+  //implementation(project(":domain"))
   implementation(AndroidX.lifecycle.runtimeKtx)
   implementation(AndroidX.lifecycle.liveDataKtx)
   implementation(AndroidX.coreKtx)
   implementation(Kotlin.stdlib.jdk8)
+
+  implementation(AndroidX.navigation.fragmentKtx)
+  implementation(AndroidX.navigation.uiKtx)
+  implementation(AndroidX.constraintLayout)
+  implementation(AndroidX.preferenceKtx)
+
+  implementation(Google.android.material)
+
+  //compose libraries
 
 
   //implementation(Libs.slf4j_android)
@@ -88,15 +109,6 @@ dependencies {
 
   testImplementation("ch.qos.logback:logback-classic:_")
   testImplementation("ch.qos.logback:logback-core:_")
-
-
-
-  implementation(AndroidX.navigation.fragmentKtx)
-  implementation(AndroidX.navigation.uiKtx)
-  implementation(AndroidX.constraintLayout)
-  implementation(AndroidX.preferenceKtx)
-
-  implementation(Google.android.material)
 
 
 }

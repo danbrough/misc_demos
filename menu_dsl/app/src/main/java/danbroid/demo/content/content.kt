@@ -9,10 +9,11 @@ import danbroid.util.menu.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import java.util.*
 
 const val URI_CONTENT_ROOT = "demo://content"
 
-val rootContent: MenuItemBuilder by lazy {
+val rootContent: MenuItemBuilder  =
   rootMenu<MenuItemBuilder> {
     id = URI_CONTENT_ROOT
     titleID = R.string.app_name
@@ -48,12 +49,12 @@ val rootContent: MenuItemBuilder by lazy {
 
 private val liveChildrenProducer: LiveChildrenProducer = { ctx, id, item ->
   withContext(Dispatchers.Main) {
-    Toast.makeText(ctx, "Loading the live menu", Toast.LENGTH_SHORT).show()
+    Toast.makeText(ctx, "Loading the live menu in 1 second", Toast.LENGTH_SHORT).show()
   }
   delay(1000)
   listOf(
-      MenuItem(item!!.id + "/1", "Sub Menu1", "menu1"),
-      MenuItem(item.id + "/2", "Sub Menu2", "menu2")
+      MenuItem(item!!.id + "/1", "Sub Menu 1", "created ${Date()}"),
+      MenuItem(item.id + "/2", "Sub Menu 2", "menu2")
   )
 }
 
@@ -62,9 +63,11 @@ private val promptToContinue: MenuItemClickHandler = { callback ->
     setTitle(android.R.string.dialog_alert_title)
     setMessage("Do you want to continue?")
     setPositiveButton(android.R.string.ok) { dialog, which ->
+      //Return true to continue
       callback(true)
     }
     setNegativeButton(android.R.string.cancel) { dialog, which ->
+      //Return false to cancel navigation
       callback(false)
     }
     show()
