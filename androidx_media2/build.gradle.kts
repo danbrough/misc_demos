@@ -1,17 +1,19 @@
 buildscript {
 
-  dependencies {
+
+    dependencies {
     //classpath("com.android.tools.build:gradle:4.2.0-alpha08")
-    classpath("com.android.tools.build:gradle:4.1.0-rc01")
+    classpath("com.android.tools.build:gradle:4.1.0-rc02")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
     classpath(AndroidX.navigation.safeArgsGradlePlugin)
+
+
   }
 
   repositories {
-    mavenLocal()
-
     google()
     mavenCentral()
+    mavenLocal()
 
     // gradlePluginPortal()
     jcenter()
@@ -19,30 +21,29 @@ buildscript {
       setUrl("https://dl.bintray.com/kotlin/kotlin-eap")
     }*/
 
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+    // maven { setUrl( "https://dl.bintray.com/kotlin/kotlin-eap" )}
 
   }
 
 }
 
 
-apply from: "project.gradle.kts"
+apply("project.gradle.kts")
 
 allprojects {
 
   repositories {
-    mavenLocal()
-
     google()
     jcenter()
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+    maven { setUrl( "https://dl.bintray.com/kotlin/kotlin-eap" )}
 /*    maven {
       setUrl("https://maven.google.com/")
     }*/
     mavenCentral()
+    mavenLocal()
 
     maven {
-      url "https://jitpack.io"
+      setUrl("https://jitpack.io")
     }
 
 
@@ -50,8 +51,13 @@ allprojects {
          setUrl("https://dl.bintray.com/kotlin/kotlin-eap")
        }*/
   }
-
-
+  /*configurations.all {
+    if (name.toLowerCase().contains("test")) {
+      resolutionStrategy.dependencySubstitution {
+        substitute(module(Libs.slf4j)).with(module(Libs.logback_classic))
+      }
+    }
+  }*/
 }
 
 /*

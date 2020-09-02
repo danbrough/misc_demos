@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="danbroid.demo.media2.media">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        <service android:name=".AudioService">
+            <intent-filter>
+                <action android:name="androidx.media2.session.MediaLibraryService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

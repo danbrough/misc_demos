@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Exo Demo</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_queue">Playback Queue</string>
+    <string name="action_empty_queue">Empty playback queue</string>
+    <string name="lbl_undo">Undo</string>
+</resources>

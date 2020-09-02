@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?listPreferredItemHeight"
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingStart="2dp"
+    android:orientation="vertical"
+    app:backgroundTint="?colorAccent">
+
+
+    <!--android:background="@drawable/abc_item_background_holo_light"-->
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="?listPreferredItemHeight"
+        android:layout_height="?listPreferredItemHeight"
+        android:padding="4dp"
+
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_folder"
+        android:tint="@color/colorPrimaryLight"
+        app:backgroundTint="?colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:gravity="bottom"
+        android:text="The Title 123 123 123 123 123 123 123 123 123 123 123 123 234 2342 234 "
+        android:textColor="?android:textColorPrimary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/state_in_playlist"
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toTopOf="@id/icon" />
+
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="0dp"
+        android:gravity="top"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="false"
+        android:maxLines="2"
+        android:text="The Sub Title"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@id/title"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <ImageView
+        android:id="@+id/state_in_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_playlist"
+        android:tint="@color/colorAccent"
+        android:paddingEnd="4dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/icon" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<integer name="menuAnimationDuration">@android:integer/config_longAnimTime</integer>-->
+    <integer name="menuAnimationDuration">@android:integer/config_shortAnimTime</integer>
+
+
+</resources>

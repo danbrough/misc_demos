@@ -1,0 +1,6 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="media_item_icon_size">52dp</dimen>
+    <dimen name="bottom_controls_height">64dp</dimen>
+
+</resources>
