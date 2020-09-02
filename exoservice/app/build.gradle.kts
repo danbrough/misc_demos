@@ -117,7 +117,6 @@ dependencies {
   implementation(Libs.constraintlayout)
   implementation(Libs.preference_ktx)
   implementation(Libs.material)
-  implementation(Libs.resource)
   kapt(Libs.com_github_bumptech_glide_compiler)
   implementation(Libs.glide)
 

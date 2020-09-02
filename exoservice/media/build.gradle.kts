@@ -83,17 +83,17 @@ dependencies {
   api(Libs.slf4j_api)
   api(Libs.kotlin_stdlib_jdk8)
   api(Libs.kotlinx_coroutines_android)
-  api("org.jetbrains.kotlin:kotlin-reflect:1.3.61")
+  api("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
 
 
   api(Libs.gson)
   api(Libs.core_ktx)
   api(Libs.okhttp)
 
-  api(Libs.resource)
   kapt(Libs.room_compiler)
   api(Libs.room_runtime)
   api(Libs.glide)
+  api("com.github.danbrough.androidutils:misc:1.1.0-beta06")
 
   val exo_vanilla = false
   val exo_version = if (exo_vanilla) "2.11.0" else Versions.com_github_danbrough_exoplayer

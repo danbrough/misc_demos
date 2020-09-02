@@ -96,9 +96,9 @@ class FadeSwitchFragment : Fragment() {
   override fun onActivityCreated(savedInstanceState: Bundle?) {
     super.onActivityCreated(savedInstanceState)
 
-    behaviour = BottomSheetBehavior.from(view)
+    behaviour = BottomSheetBehavior.from(requireView())
 
-    behaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+    behaviour.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
       override fun onSlide(view: View, amount: Float) {
         this@FadeSwitchFragment.onSlide(amount)
@@ -109,7 +109,7 @@ class FadeSwitchFragment : Fragment() {
       }
     })
 
-    context!!.player.playbackQueue.map { it.queue.isNullOrEmpty() }
+    requireContext().player.playbackQueue.map { it.queue.isNullOrEmpty() }
       .observe(viewLifecycleOwner) { empty ->
         log.warn("PLAYLIST EMPTY: $empty current state: ${behaviour.state}")
         behaviour.state =

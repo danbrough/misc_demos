@@ -1,3 +1,3 @@
 include(":app", ":media")
 
-rootProject.name = "exoservice"
+rootProject.name = "exoservice_demo"
