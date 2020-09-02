@@ -39,11 +39,11 @@ class AudioClient(val context: Context) {
     }
 
     override fun onConnected(controller: MediaController, allowedCommands: SessionCommandGroup) {
-      log.debug("onConnected() allowedCommands: $allowedCommands")
+      log.warn("onConnected() allowedCommands: $allowedCommands")
 
       getMainExecutor(context).execute {
-        val id = "https://h1.danbrough.org/guitar/improv/improv1.mp3"
-        //val id = "http://ice4.somafm.com/u80s-256-mp3"
+        //val id = "https://h1.danbrough.org/guitar/improv/improv2.mp3"
+        val id = "http://ice4.somafm.com/u80s-256-mp3"
         mediaController.setMediaItem(id)
       }
 
@@ -79,6 +79,11 @@ class AudioClient(val context: Context) {
 
   fun play() = mediaController.play()
 
+  fun playUri(uri: String) {
+    log.trace("playUri() $uri")
+    mediaController.setMediaUri(uri.toUri(),null)
+  }
+
   fun prepare() {
     mediaController.prepare().addListener({
       log.debug("prepared")
@@ -93,7 +98,7 @@ class AudioClient(val context: Context) {
 
   fun state() {
     log.info("buf: ${mediaController.bufferingState.buffState} state: ${mediaController.playerState.playerState}")
-    mediaController.adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_PLAY_SOUND)
+    //mediaController.adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_PLAY_SOUND)
   }
 
 

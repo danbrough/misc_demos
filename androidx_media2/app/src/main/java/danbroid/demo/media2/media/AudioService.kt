@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.media.AudioAttributesCompat
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
@@ -33,7 +34,12 @@ class AudioService : MediaLibraryService() {
     super.onCreate()
 
     player = MediaPlayer(applicationContext)
-
+    player.setAudioAttributes(
+      AudioAttributesCompat.Builder()
+        .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+        .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
+        .build()
+    )
     session =
       MediaLibrarySession.Builder(this, player, executor, sessionCallback)
         .setId("session")

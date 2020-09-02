@@ -4,27 +4,6 @@ import androidx.media2.common.SessionPlayer
 import androidx.media2.common.SessionPlayer.*
 
 
-/*
-    /**
-     * State when the player is idle, and needs configuration to start playback.
-     */
-    public static final int PLAYER_STATE_IDLE = 0;
-
-    /**
-     * State when the player's playback is paused
-     */
-    public static final int PLAYER_STATE_PAUSED = 1;
-
-    /**
-     * State when the player's playback is ongoing
-     */
-    public static final int PLAYER_STATE_PLAYING = 2;
-
-    /**
-     * State when the player is in error state and cannot be recovered self.
-     */
-    public static final int PLAYER_STATE_ERROR = 3;
- */
 @SessionPlayer.PlayerState
 val Int.playerState: String
   get() = when (this) {
@@ -32,7 +11,7 @@ val Int.playerState: String
     PLAYER_STATE_PAUSED -> "PLAYER_STATE_PAUSED"
     PLAYER_STATE_PLAYING -> "PLAYER_STATE_PLAYING"
     PLAYER_STATE_ERROR -> "PLAYER_STATE_ERROR"
-    else -> ""
+    else -> "ERROR_INVALID_PLAYER_STATE: $this"
   }
 
 
@@ -43,5 +22,5 @@ val Int.buffState: String
     BUFFERING_STATE_BUFFERING_AND_PLAYABLE -> "BUFFERING_STATE_BUFFERING_AND_PLAYABLE"
     BUFFERING_STATE_BUFFERING_AND_STARVED -> "BUFFERING_STATE_BUFFERING_AND_STARVED"
     BUFFERING_STATE_COMPLETE -> "BUFFERING_STATE_COMPLETE"
-    else -> ""
+    else -> "ERROR_INVALID_BUFF_STATE: $this"
   }

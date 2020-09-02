@@ -1,16 +1,14 @@
 package danbroid.demo.media2.media.client
 
 import android.content.Context
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getMainExecutor
+import android.media.AudioAttributes
 import androidx.core.net.toUri
+import androidx.media.AudioAttributesCompat
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
 import androidx.media2.common.UriMediaItem
 import androidx.media2.player.MediaPlayer
-import androidx.media2.session.MediaController
-import androidx.media2.session.MediaSession
 import danbroid.demo.media2.media.buffState
 import danbroid.demo.media2.media.playerState
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +21,12 @@ class AudioTest(val context: Context) {
 
 
   val player = MediaPlayer(context).also {
+    it.setAudioAttributes(
+      AudioAttributesCompat.Builder()
+        .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+        .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
+        .build()
+    )
     it.registerPlayerCallback(
       executor,
       object : SessionPlayer.PlayerCallback() {
@@ -67,7 +71,7 @@ class AudioTest(val context: Context) {
 
 
       //val id = "http://192.168.1.2/music/test.mp3"
-      val id = "https://h1.danbrough.org/guitar/improv/improv1.mp3"
+      val id = "https://h1.danbrough.org/guitar/improv/improv2.mp3"
 
 
       player.setMediaItem(
