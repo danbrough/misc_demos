@@ -2,7 +2,6 @@ package danbroid.demo.media2.content
 
 
 import androidx.fragment.app.viewModels
-import androidx.media2.exoplayer.external.metadata.MetadataDecoderFactory
 import danbroid.demo.media2.R
 import danbroid.demo.media2.media.client.AudioClient
 import danbroid.demo.media2.model.AudioClientModel

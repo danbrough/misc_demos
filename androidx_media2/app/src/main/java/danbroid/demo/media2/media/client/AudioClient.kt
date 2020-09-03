@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.content.ContextCompat.getMainExecutor
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
-import androidx.media2.player.MediaPlayer
+import androidx.media2.customplayer.MediaPlayer
 import androidx.media2.session.MediaBrowser
 import androidx.media2.session.MediaController
 import androidx.media2.session.MediaSessionManager

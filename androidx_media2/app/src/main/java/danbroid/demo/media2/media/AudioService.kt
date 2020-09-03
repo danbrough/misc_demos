@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
 import androidx.media2.common.*
-import androidx.media2.player.MediaPlayer
+import androidx.media2.customplayer.MediaPlayer
 import androidx.media2.session.LibraryResult
 import androidx.media2.session.MediaLibraryService
 import androidx.media2.session.MediaSession

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;

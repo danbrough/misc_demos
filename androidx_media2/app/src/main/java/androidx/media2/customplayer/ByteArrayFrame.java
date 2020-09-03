@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 
 import androidx.annotation.Nullable;
-import androidx.media2.exoplayer.external.Format;
-import androidx.media2.exoplayer.external.metadata.Metadata;
-import androidx.media2.exoplayer.external.util.Util;
+import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.util.Util;
 
 import java.util.Arrays;
 

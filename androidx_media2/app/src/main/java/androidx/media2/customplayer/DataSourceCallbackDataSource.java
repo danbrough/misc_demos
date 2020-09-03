@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
@@ -22,10 +22,10 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import androidx.media2.common.DataSourceCallback;
-import androidx.media2.exoplayer.external.C;
-import androidx.media2.exoplayer.external.upstream.BaseDataSource;
-import androidx.media2.exoplayer.external.upstream.DataSource;
-import androidx.media2.exoplayer.external.upstream.DataSpec;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.upstream.BaseDataSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 
 import java.io.EOFException;
 import java.io.IOException;

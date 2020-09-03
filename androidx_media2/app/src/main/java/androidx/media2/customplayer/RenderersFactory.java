@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 
 import androidx.annotation.Nullable;
-import androidx.media2.exoplayer.external.Renderer;
-import androidx.media2.exoplayer.external.audio.AudioRendererEventListener;
-import androidx.media2.exoplayer.external.audio.AudioSink;
-import androidx.media2.exoplayer.external.audio.MediaCodecAudioRenderer;
-import androidx.media2.exoplayer.external.drm.DrmSessionManager;
-import androidx.media2.exoplayer.external.drm.FrameworkMediaCrypto;
-import androidx.media2.exoplayer.external.mediacodec.MediaCodecSelector;
-import androidx.media2.exoplayer.external.metadata.MetadataOutput;
-import androidx.media2.exoplayer.external.metadata.MetadataRenderer;
-import androidx.media2.exoplayer.external.text.TextOutput;
-import androidx.media2.exoplayer.external.video.MediaCodecVideoRenderer;
-import androidx.media2.exoplayer.external.video.VideoRendererEventListener;
+
+import com.google.android.exoplayer2.Renderer;
+import com.google.android.exoplayer2.audio.AudioRendererEventListener;
+import com.google.android.exoplayer2.audio.AudioSink;
+import com.google.android.exoplayer2.audio.MediaCodecAudioRenderer;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
+import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
+import com.google.android.exoplayer2.metadata.MetadataOutput;
+import com.google.android.exoplayer2.metadata.MetadataRenderer;
+import com.google.android.exoplayer2.text.TextOutput;
+import com.google.android.exoplayer2.video.MediaCodecVideoRenderer;
+import com.google.android.exoplayer2.video.VideoRendererEventListener;
 
 /**
  * Factory for renderers for {@link ExoPlayerWrapper}.
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
 /* package */ final class RenderersFactory
-        implements androidx.media2.exoplayer.external.RenderersFactory {
+        implements com.google.android.exoplayer2.RenderersFactory {
 
     public static final int VIDEO_RENDERER_INDEX = 0;
     public static final int AUDIO_RENDERER_INDEX = 1;
@@ -51,12 +52,12 @@ import androidx.media2.exoplayer.external.video.VideoRendererEventListener;
 
     private final Context mContext;
     private final AudioSink mAudioSink;
-    private final TextRenderer mTextRenderer;
+    private final androidx.media2.customplayer.TextRenderer mTextRenderer;
 
     RenderersFactory(
             Context context,
             AudioSink audioSink,
-            TextRenderer textRenderer) {
+            androidx.media2.customplayer.TextRenderer textRenderer) {
         mContext = context;
         mAudioSink = audioSink;
         mTextRenderer = textRenderer;
@@ -70,7 +71,7 @@ import androidx.media2.exoplayer.external.video.VideoRendererEventListener;
             TextOutput textRendererOutput,
             MetadataOutput metadataRendererOutput,
             @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager) {
-        return new Renderer[] {
+        return new Renderer[]{
                 new MediaCodecVideoRenderer(
                         mContext,
                         MediaCodecSelector.DEFAULT,
@@ -92,7 +93,7 @@ import androidx.media2.exoplayer.external.video.VideoRendererEventListener;
                 new MetadataRenderer(
                         metadataRendererOutput,
                         eventHandler.getLooper(),
-                        new Id3MetadataDecoderFactory())
+                        new androidx.media2.customplayer.Id3MetadataDecoderFactory())
         };
     }
 

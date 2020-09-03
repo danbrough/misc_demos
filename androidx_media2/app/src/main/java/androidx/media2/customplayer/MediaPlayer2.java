@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
@@ -539,7 +539,7 @@ import java.util.concurrent.Executor;
     public abstract PersistableBundle getMetrics();
 
     /**
-     * Sets playback rate using {@link PlaybackParams}. The player sets its internal
+     * Sets playback rate using {@link androidx.media2.customplayer.PlaybackParams}. The player sets its internal
      * PlaybackParams to the given input. This does not change the player state. For example,
      * if this is called with the speed of 2.0f in {@link #PLAYER_STATE_PAUSED}, the player will
      * just update internal property and stay paused. Once the client calls {@link #play()}
@@ -550,7 +550,7 @@ import java.util.concurrent.Executor;
      * @return a token which can be used to cancel the operation later with {@link #cancel}.
      */
     // This is an asynchronous call.
-    public abstract Object setPlaybackParams(@NonNull PlaybackParams params);
+    public abstract Object setPlaybackParams(@NonNull androidx.media2.customplayer.PlaybackParams params);
 
     /**
      * Gets the playback params, containing the current playback rate.
@@ -831,10 +831,10 @@ import java.util.concurrent.Executor;
          * not controlled by the associated timestamp.
          * <p>
          * Currently only HTTP live streaming data URI's embedded with timed ID3 tags generates
-         * {@link TimedMetaData}.
+         * {@link androidx.media2.customplayer.TimedMetaData}.
          *
          * @see MediaPlayer2#selectTrack(int)
-         * @see TimedMetaData
+         * @see androidx.media2.customplayer.TimedMetaData
          *
          * @param mp the MediaPlayer2 associated with this callback
          * @param item the MediaItem of this media item

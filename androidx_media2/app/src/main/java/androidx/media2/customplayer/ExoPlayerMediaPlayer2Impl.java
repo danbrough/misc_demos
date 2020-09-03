@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -37,7 +37,7 @@ import androidx.media.AudioAttributesCompat;
 import androidx.media2.common.MediaItem;
 import androidx.media2.common.SessionPlayer.TrackInfo;
 import androidx.media2.common.SubtitleData;
-import androidx.media2.exoplayer.external.Player;
+import com.google.android.exoplayer2.Player;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -305,7 +305,8 @@ import java.util.concurrent.RejectedExecutionException;
     }
 
     @Override
-    public @MediaPlayer2.MediaPlayer2State int getState() {
+    public @MediaPlayer2State
+    int getState() {
         return runPlayerCallableBlocking(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
@@ -405,7 +406,7 @@ import java.util.concurrent.RejectedExecutionException;
     }
 
     @Override
-    public Object setPlaybackParams(@NonNull final PlaybackParams params) {
+    public Object setPlaybackParams(@NonNull final androidx.media2.customplayer.PlaybackParams params) {
         return addTask(new Task(CALL_COMPLETED_SET_PLAYBACK_PARAMS, false) {
             @Override
             void process() {
@@ -416,8 +417,8 @@ import java.util.concurrent.RejectedExecutionException;
 
     @Override
     @NonNull
-    public PlaybackParams getPlaybackParams() {
-        return runPlayerCallableBlocking(new Callable<PlaybackParams>() {
+    public androidx.media2.customplayer.PlaybackParams getPlaybackParams() {
+        return runPlayerCallableBlocking(new Callable<androidx.media2.customplayer.PlaybackParams>() {
             @Override
             public PlaybackParams call() throws Exception {
                 return mPlayer.getPlaybackParams();
@@ -531,10 +532,10 @@ import java.util.concurrent.RejectedExecutionException;
     }
 
     @Override
-    public MediaTimestamp getTimestamp() {
-        return runPlayerCallableBlocking(new Callable<MediaTimestamp>() {
+    public androidx.media2.customplayer.MediaTimestamp getTimestamp() {
+        return runPlayerCallableBlocking(new Callable<androidx.media2.customplayer.MediaTimestamp>() {
             @Override
-            public MediaTimestamp call() {
+            public androidx.media2.customplayer.MediaTimestamp call() {
                 return mPlayer.getTimestamp();
             }
         });
@@ -709,7 +710,7 @@ import java.util.concurrent.RejectedExecutionException;
     public void onVideoSizeChanged(final MediaItem mediaItem, final int width, final int height) {
         notifyMediaPlayer2Event(new ExoPlayerMediaPlayer2Impl.Mp2EventNotifier() {
             @Override
-            public void notify(MediaPlayer2.EventCallback callback) {
+            public void notify(EventCallback callback) {
                 callback.onVideoSizeChanged(
                         ExoPlayerMediaPlayer2Impl.this,
                         mediaItem,
@@ -801,7 +802,7 @@ import java.util.concurrent.RejectedExecutionException;
     private void notifyOnInfo(final MediaItem mediaItem, final int what, final int extra) {
         notifyMediaPlayer2Event(new ExoPlayerMediaPlayer2Impl.Mp2EventNotifier() {
             @Override
-            public void notify(MediaPlayer2.EventCallback callback) {
+            public void notify(EventCallback callback) {
                 callback.onInfo(ExoPlayerMediaPlayer2Impl.this, mediaItem, what, extra);
             }
         });

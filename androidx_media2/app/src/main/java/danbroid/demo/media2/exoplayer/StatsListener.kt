@@ -2,16 +2,16 @@ package androidx.media2.player
 
 import android.annotation.SuppressLint
 import android.view.Surface
-import androidx.media2.exoplayer.external.ExoPlaybackException
-import androidx.media2.exoplayer.external.Format
-import androidx.media2.exoplayer.external.PlaybackParameters
-import androidx.media2.exoplayer.external.analytics.AnalyticsListener
-import androidx.media2.exoplayer.external.audio.AudioAttributes
-import androidx.media2.exoplayer.external.decoder.DecoderCounters
-import androidx.media2.exoplayer.external.metadata.Metadata
-import androidx.media2.exoplayer.external.source.MediaSourceEventListener
-import androidx.media2.exoplayer.external.source.TrackGroupArray
-import androidx.media2.exoplayer.external.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.Format
+import com.google.android.exoplayer2.PlaybackParameters
+import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.decoder.DecoderCounters
+import com.google.android.exoplayer2.metadata.Metadata
+import com.google.android.exoplayer2.source.MediaSourceEventListener
+import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import java.io.IOException
 
 @SuppressLint("RestrictedApi")

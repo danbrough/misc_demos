@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -22,14 +22,14 @@ import android.os.Looper;
 
 import androidx.annotation.IntDef;
 import androidx.core.util.Preconditions;
-import androidx.media2.exoplayer.external.BaseRenderer;
-import androidx.media2.exoplayer.external.C;
-import androidx.media2.exoplayer.external.ExoPlaybackException;
-import androidx.media2.exoplayer.external.Format;
-import androidx.media2.exoplayer.external.FormatHolder;
-import androidx.media2.exoplayer.external.text.SubtitleInputBuffer;
-import androidx.media2.exoplayer.external.util.MimeTypes;
-import androidx.media2.exoplayer.external.util.ParsableByteArray;
+import com.google.android.exoplayer2.BaseRenderer;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.FormatHolder;
+import com.google.android.exoplayer2.text.SubtitleInputBuffer;
+import com.google.android.exoplayer2.util.MimeTypes;
+import com.google.android.exoplayer2.util.ParsableByteArray;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import static android.media.MediaFormat.MIMETYPE_TEXT_CEA_608;
 import static android.media.MediaFormat.MIMETYPE_TEXT_CEA_708;
@@ -24,10 +24,10 @@ import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_ME
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_VIDEO;
-import static androidx.media2.player.MediaPlayer2.MEDIA_ERROR_IO;
-import static androidx.media2.player.MediaPlayer2.MEDIA_ERROR_MALFORMED;
-import static androidx.media2.player.MediaPlayer2.MEDIA_ERROR_TIMED_OUT;
-import static androidx.media2.player.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_IO;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_MALFORMED;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_TIMED_OUT;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -41,25 +41,25 @@ import androidx.media2.common.CallbackMediaItem;
 import androidx.media2.common.FileMediaItem;
 import androidx.media2.common.MediaItem;
 import androidx.media2.common.UriMediaItem;
-import androidx.media2.exoplayer.external.C;
-import androidx.media2.exoplayer.external.ExoPlaybackException;
-import androidx.media2.exoplayer.external.Format;
-import androidx.media2.exoplayer.external.ParserException;
-import androidx.media2.exoplayer.external.PlaybackParameters;
-import androidx.media2.exoplayer.external.SeekParameters;
-import androidx.media2.exoplayer.external.audio.AudioAttributes;
-import androidx.media2.exoplayer.external.extractor.DefaultExtractorsFactory;
-import androidx.media2.exoplayer.external.extractor.ExtractorsFactory;
-import androidx.media2.exoplayer.external.extractor.ts.AdtsExtractor;
-import androidx.media2.exoplayer.external.mediacodec.MediaFormatUtil;
-import androidx.media2.exoplayer.external.source.ExtractorMediaSource;
-import androidx.media2.exoplayer.external.source.MediaSource;
-import androidx.media2.exoplayer.external.source.hls.HlsMediaSource;
-import androidx.media2.exoplayer.external.upstream.DataSource;
-import androidx.media2.exoplayer.external.upstream.HttpDataSource;
-import androidx.media2.exoplayer.external.upstream.RawResourceDataSource;
-import androidx.media2.exoplayer.external.util.MimeTypes;
-import androidx.media2.exoplayer.external.util.Util;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.ParserException;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.SeekParameters;
+import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ts.AdtsExtractor;
+import com.google.android.exoplayer2.mediacodec.MediaFormatUtil;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.RawResourceDataSource;
+import com.google.android.exoplayer2.util.MimeTypes;
+import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -114,7 +114,7 @@ import java.net.SocketTimeoutException;
                     .createMediaSource(Uri.EMPTY);
         } else if (mediaItem instanceof CallbackMediaItem) {
             CallbackMediaItem callbackMediaItem = (CallbackMediaItem) mediaItem;
-            dataSourceFactory = DataSourceCallbackDataSource.getFactory(
+            dataSourceFactory = androidx.media2.customplayer.DataSourceCallbackDataSource.getFactory(
                     callbackMediaItem.getDataSourceCallback());
             return new ExtractorMediaSource.Factory(dataSourceFactory)
                     .setExtractorsFactory(sExtractorsFactory)
@@ -153,13 +153,13 @@ import java.net.SocketTimeoutException;
     /** Returns the ExoPlayer seek parameters corresponding to the given seek mode. */
     public static SeekParameters getSeekParameters(int seekMode) {
         switch (seekMode) {
-            case MediaPlayer2.SEEK_CLOSEST:
+            case androidx.media2.customplayer.MediaPlayer2.SEEK_CLOSEST:
                 return SeekParameters.EXACT;
-            case MediaPlayer2.SEEK_CLOSEST_SYNC:
+            case androidx.media2.customplayer.MediaPlayer2.SEEK_CLOSEST_SYNC:
                 return SeekParameters.CLOSEST_SYNC;
-            case MediaPlayer2.SEEK_NEXT_SYNC:
+            case androidx.media2.customplayer.MediaPlayer2.SEEK_NEXT_SYNC:
                 return SeekParameters.NEXT_SYNC;
-            case MediaPlayer2.SEEK_PREVIOUS_SYNC:
+            case androidx.media2.customplayer.MediaPlayer2.SEEK_PREVIOUS_SYNC:
                 return SeekParameters.PREVIOUS_SYNC;
             default:
                 throw new IllegalArgumentException();

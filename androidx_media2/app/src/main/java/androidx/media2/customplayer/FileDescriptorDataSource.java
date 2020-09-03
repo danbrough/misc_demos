@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
-import androidx.media2.exoplayer.external.C;
-import androidx.media2.exoplayer.external.upstream.BaseDataSource;
-import androidx.media2.exoplayer.external.upstream.DataSource;
-import androidx.media2.exoplayer.external.upstream.DataSpec;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.upstream.BaseDataSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 
 import java.io.EOFException;
 import java.io.FileDescriptor;
@@ -113,7 +113,7 @@ import java.io.InputStream;
         int bytesRead;
         synchronized (mLock) {
             // The file descriptor position is shared across all users, so seek before reading.
-            FileDescriptorUtil.seek(mFileDescriptor, mPosition);
+            androidx.media2.customplayer.FileDescriptorUtil.seek(mFileDescriptor, mPosition);
             bytesRead = Preconditions.checkNotNull(mInputStream).read(buffer, offset, bytesToRead);
             if (bytesRead == -1) {
                 if (mBytesRemaining != C.LENGTH_UNSET) {

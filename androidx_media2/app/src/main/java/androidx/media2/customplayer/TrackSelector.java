@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_AUDIO;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_METADATA;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_VIDEO;
-import static androidx.media2.player.RenderersFactory.AUDIO_RENDERER_INDEX;
-import static androidx.media2.player.RenderersFactory.METADATA_RENDERER_INDEX;
-import static androidx.media2.player.RenderersFactory.TEXT_RENDERER_INDEX;
-import static androidx.media2.player.RenderersFactory.VIDEO_RENDERER_INDEX;
-import static androidx.media2.player.TextRenderer.TRACK_TYPE_CEA608;
-import static androidx.media2.player.TextRenderer.TRACK_TYPE_CEA708;
-import static androidx.media2.player.TextRenderer.TRACK_TYPE_WEBVTT;
-import static androidx.media2.player.TrackSelector.InternalTextTrackInfo.UNSET;
+import static androidx.media2.customplayer.TextRenderer.TRACK_TYPE_CEA608;
+import static androidx.media2.customplayer.TextRenderer.TRACK_TYPE_CEA708;
+import static androidx.media2.customplayer.TextRenderer.TRACK_TYPE_WEBVTT;
+import static androidx.media2.customplayer.TrackSelector.InternalTextTrackInfo.UNSET;
 
 import android.annotation.SuppressLint;
 import android.media.MediaFormat;
@@ -38,15 +34,15 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import androidx.media2.common.MediaItem;
 import androidx.media2.common.SessionPlayer.TrackInfo;
-import androidx.media2.exoplayer.external.C;
-import androidx.media2.exoplayer.external.Format;
-import androidx.media2.exoplayer.external.source.TrackGroup;
-import androidx.media2.exoplayer.external.source.TrackGroupArray;
-import androidx.media2.exoplayer.external.trackselection.DefaultTrackSelector;
-import androidx.media2.exoplayer.external.trackselection.MappingTrackSelector;
-import androidx.media2.exoplayer.external.trackselection.TrackSelection;
-import androidx.media2.exoplayer.external.trackselection.TrackSelectionArray;
-import androidx.media2.exoplayer.external.util.MimeTypes;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.source.TrackGroup;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.util.MimeTypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +58,7 @@ import java.util.List;
 
     private int mNextTrackId;
     private MediaItem mCurrentMediaItem;
-    private final TextRenderer mTextRenderer;
+    private final androidx.media2.customplayer.TextRenderer mTextRenderer;
     private final DefaultTrackSelector mDefaultTrackSelector;
     private final SparseArray<InternalTrackInfo> mAudioTracks;
     private final SparseArray<InternalTrackInfo> mVideoTracks;
@@ -76,7 +72,7 @@ import java.util.List;
     private InternalTextTrackInfo mSelectedTextTrack;
     private int mPlayerTextTrackIndex;
 
-    TrackSelector(TextRenderer textRenderer) {
+    TrackSelector(androidx.media2.customplayer.TextRenderer textRenderer) {
         mTextRenderer = textRenderer;
         mDefaultTrackSelector = new DefaultTrackSelector();
         mAudioTracks = new SparseArray<>();
@@ -93,7 +89,7 @@ import java.util.List;
         mDefaultTrackSelector.setParameters(
                 new DefaultTrackSelector.ParametersBuilder()
                         .setSelectUndeterminedTextLanguage(true)
-                        .setRendererDisabled(METADATA_RENDERER_INDEX, /* disabled= */ true));
+                        .setRendererDisabled(RenderersFactory.METADATA_RENDERER_INDEX, /* disabled= */ true));
     }
 
     public DefaultTrackSelector getPlayerTrackSelector() {
@@ -130,21 +126,21 @@ import java.util.List;
         }
 
         // Get track selections to determine selected track.
-        TrackSelection audioTrackSelection = trackSelections.get(AUDIO_RENDERER_INDEX);
+        TrackSelection audioTrackSelection = trackSelections.get(RenderersFactory.AUDIO_RENDERER_INDEX);
         TrackGroup selectedAudioTrackGroup = audioTrackSelection == null ? null
                 : audioTrackSelection.getTrackGroup();
-        TrackSelection videoTrackSelection = trackSelections.get(VIDEO_RENDERER_INDEX);
+        TrackSelection videoTrackSelection = trackSelections.get(RenderersFactory.VIDEO_RENDERER_INDEX);
         TrackGroup selectedVideoTrackGroup = videoTrackSelection == null ? null
                 : videoTrackSelection.getTrackGroup();
-        TrackSelection metadataTrackSelection = trackSelections.get(METADATA_RENDERER_INDEX);
+        TrackSelection metadataTrackSelection = trackSelections.get(RenderersFactory.METADATA_RENDERER_INDEX);
         TrackGroup selectedMetadataTrackGroup = metadataTrackSelection == null ? null
                 : metadataTrackSelection.getTrackGroup();
-        TrackSelection textTrackSelection = trackSelections.get(TEXT_RENDERER_INDEX);
+        TrackSelection textTrackSelection = trackSelections.get(RenderersFactory.TEXT_RENDERER_INDEX);
         TrackGroup selectedTextTrackGroup = textTrackSelection == null ? null
                 : textTrackSelection.getTrackGroup();
 
         // Enumerate track information.
-        TrackGroupArray audioTrackGroups = mappedTrackInfo.getTrackGroups(AUDIO_RENDERER_INDEX);
+        TrackGroupArray audioTrackGroups = mappedTrackInfo.getTrackGroups(RenderersFactory.AUDIO_RENDERER_INDEX);
         for (int i = mAudioTracks.size(); i < audioTrackGroups.length; i++) {
             TrackGroup trackGroup = audioTrackGroups.get(i);
             InternalTrackInfo track = new InternalTrackInfo(
@@ -157,7 +153,7 @@ import java.util.List;
                 mSelectedAudioTrack = track;
             }
         }
-        TrackGroupArray videoTrackGroups = mappedTrackInfo.getTrackGroups(VIDEO_RENDERER_INDEX);
+        TrackGroupArray videoTrackGroups = mappedTrackInfo.getTrackGroups(RenderersFactory.VIDEO_RENDERER_INDEX);
         for (int i = mVideoTracks.size(); i < videoTrackGroups.length; i++) {
             TrackGroup trackGroup = videoTrackGroups.get(i);
             InternalTrackInfo track = new InternalTrackInfo(
@@ -171,7 +167,7 @@ import java.util.List;
             }
         }
         TrackGroupArray metadataTrackGroups =
-                mappedTrackInfo.getTrackGroups(METADATA_RENDERER_INDEX);
+                mappedTrackInfo.getTrackGroups(RenderersFactory.METADATA_RENDERER_INDEX);
         for (int i = mMetadataTracks.size(); i < metadataTrackGroups.length; i++) {
             TrackGroup trackGroup = metadataTrackGroups.get(i);
             InternalTrackInfo track = new InternalTrackInfo(
@@ -187,7 +183,7 @@ import java.util.List;
 
         // The text renderer exposes information about text tracks, but we may have preliminary
         // information from the player.
-        TrackGroupArray textTrackGroups = mappedTrackInfo.getTrackGroups(TEXT_RENDERER_INDEX);
+        TrackGroupArray textTrackGroups = mappedTrackInfo.getTrackGroups(RenderersFactory.TEXT_RENDERER_INDEX);
         for (int i = mTextTracks.size(); i < textTrackGroups.length; i++) {
             TrackGroup trackGroup = textTrackGroups.get(i);
             Format format = Preconditions.checkNotNull(trackGroup.getFormat(0));
@@ -278,7 +274,7 @@ import java.util.List;
             mSelectedAudioTrack = audioTrack;
             MappingTrackSelector.MappedTrackInfo mappedTrackInfo =
                     Preconditions.checkNotNull(mDefaultTrackSelector.getCurrentMappedTrackInfo());
-            TrackGroupArray audioTrackGroups = mappedTrackInfo.getTrackGroups(AUDIO_RENDERER_INDEX);
+            TrackGroupArray audioTrackGroups = mappedTrackInfo.getTrackGroups(RenderersFactory.AUDIO_RENDERER_INDEX);
             TrackGroup selectedTrackGroup = audioTrackGroups.get(audioTrack.mPlayerTrackIndex);
             // Selected all adaptive tracks.
             int[] trackIndices = new int[selectedTrackGroup.length];
@@ -289,7 +285,7 @@ import java.util.List;
                     new DefaultTrackSelector.SelectionOverride(audioTrack.mPlayerTrackIndex,
                             trackIndices);
             mDefaultTrackSelector.setParameters(mDefaultTrackSelector.buildUponParameters()
-                    .setSelectionOverride(AUDIO_RENDERER_INDEX, audioTrackGroups, selectionOverride)
+                    .setSelectionOverride(RenderersFactory.AUDIO_RENDERER_INDEX, audioTrackGroups, selectionOverride)
                     .build());
             return;
         }
@@ -300,14 +296,14 @@ import java.util.List;
             MappingTrackSelector.MappedTrackInfo mappedTrackInfo =
                     Preconditions.checkNotNull(mDefaultTrackSelector.getCurrentMappedTrackInfo());
             TrackGroupArray metadataTrackGroups =
-                    mappedTrackInfo.getTrackGroups(METADATA_RENDERER_INDEX);
+                    mappedTrackInfo.getTrackGroups(RenderersFactory.METADATA_RENDERER_INDEX);
             DefaultTrackSelector.SelectionOverride selectionOverride =
                     new DefaultTrackSelector.SelectionOverride(metadataTrack.mPlayerTrackIndex,
                             /* tracks= */ 0);
             mDefaultTrackSelector.setParameters(mDefaultTrackSelector.buildUponParameters()
-                    .setRendererDisabled(METADATA_RENDERER_INDEX, /* disabled= */ false)
+                    .setRendererDisabled(RenderersFactory.METADATA_RENDERER_INDEX, /* disabled= */ false)
                     .setSelectionOverride(
-                            METADATA_RENDERER_INDEX, metadataTrackGroups, selectionOverride)
+                            RenderersFactory.METADATA_RENDERER_INDEX, metadataTrackGroups, selectionOverride)
                     .build());
             return;
         }
@@ -320,11 +316,11 @@ import java.util.List;
             mPlayerTextTrackIndex = textTrack.mPlayerTrackIndex;
             MappingTrackSelector.MappedTrackInfo mappedTrackInfo =
                     Preconditions.checkNotNull(mDefaultTrackSelector.getCurrentMappedTrackInfo());
-            TrackGroupArray textTrackGroups = mappedTrackInfo.getTrackGroups(TEXT_RENDERER_INDEX);
+            TrackGroupArray textTrackGroups = mappedTrackInfo.getTrackGroups(RenderersFactory.TEXT_RENDERER_INDEX);
             DefaultTrackSelector.SelectionOverride selectionOverride =
                     new DefaultTrackSelector.SelectionOverride(mPlayerTextTrackIndex, 0);
             mDefaultTrackSelector.setParameters(mDefaultTrackSelector.buildUponParameters()
-                    .setSelectionOverride(TEXT_RENDERER_INDEX, textTrackGroups, selectionOverride)
+                    .setSelectionOverride(RenderersFactory.TEXT_RENDERER_INDEX, textTrackGroups, selectionOverride)
                     .build());
         }
         if (textTrack.mChannel != UNSET) {
@@ -343,7 +339,7 @@ import java.util.List;
         if (metadataTrack != null) {
             mSelectedMetadataTrack = null;
             mDefaultTrackSelector.setParameters(mDefaultTrackSelector.buildUponParameters()
-                    .setRendererDisabled(METADATA_RENDERER_INDEX, /* disabled= */ true));
+                    .setRendererDisabled(RenderersFactory.METADATA_RENDERER_INDEX, /* disabled= */ true));
             return;
         }
 
@@ -389,7 +385,7 @@ import java.util.List;
         final int mChannel;
         @Nullable final Format mFormat;
 
-        InternalTextTrackInfo(int playerTrackIndex, @TextRenderer.TextTrackType int type,
+        InternalTextTrackInfo(int playerTrackIndex, @androidx.media2.customplayer.TextRenderer.TextTrackType int type,
                 @Nullable Format format, int channel, int trackId) {
             super(playerTrackIndex, getTrackInfoType(type), getMediaFormat(type, format, channel),
                     trackId);
@@ -399,14 +395,14 @@ import java.util.List;
             mFormat = format;
         }
 
-        private static int getTrackInfoType(@TextRenderer.TextTrackType int type) {
+        private static int getTrackInfoType(@androidx.media2.customplayer.TextRenderer.TextTrackType int type) {
             // Hide WebVTT tracks, like the NuPlayer-based implementation
             // (see [internal: b/120081663]).
             return type == TRACK_TYPE_WEBVTT ? TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN
                     : TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
         }
 
-        private static MediaFormat getMediaFormat(@TextRenderer.TextTrackType int type,
+        private static MediaFormat getMediaFormat(@androidx.media2.customplayer.TextRenderer.TextTrackType int type,
                 @Nullable Format format, int channel) {
             @C.SelectionFlags int selectionFlags;
             if (type == TRACK_TYPE_CEA608 && channel == 0) {

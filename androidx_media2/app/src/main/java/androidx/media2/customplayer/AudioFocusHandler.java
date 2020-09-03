@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import static androidx.media2.common.SessionPlayer.PLAYER_STATE_PAUSED;
 
@@ -53,12 +53,12 @@ import androidx.media.AudioAttributesCompat;
 
     private final AudioFocusHandlerImpl mImpl;
 
-    AudioFocusHandler(Context context, MediaPlayer player) {
+    AudioFocusHandler(Context context, androidx.media2.customplayer.MediaPlayer player) {
         mImpl = new AudioFocusHandlerImplBase(context, player);
     }
 
     /**
-     * Should be called when the {@link MediaPlayer#play()} is called. Returns whether the play()
+     * Should be called when the {@link androidx.media2.customplayer.MediaPlayer#play()} is called. Returns whether the play()
      * can be proceed.
      *
      * @return {@code true} if it's OK to start playback because audio focus was successfully
@@ -70,14 +70,14 @@ import androidx.media.AudioAttributesCompat;
     }
 
     /**
-     * Called when the {@link MediaPlayer#pause()} is called.
+     * Called when the {@link androidx.media2.customplayer.MediaPlayer#pause()} is called.
      */
     public void onPause() {
         mImpl.onPause();
     }
 
     /**
-     * Called when the {@link MediaPlayer#reset()} is called.
+     * Called when the {@link androidx.media2.customplayer.MediaPlayer#reset()} is called.
      */
     public void onReset() {
         mImpl.onReset();
@@ -111,7 +111,7 @@ import androidx.media.AudioAttributesCompat;
         private final OnAudioFocusChangeListener mAudioFocusListener = new AudioFocusListener();
         final Object mLock = new Object();
         private final Context mContext;
-        final MediaPlayer mPlayer;
+        final androidx.media2.customplayer.MediaPlayer mPlayer;
         private final AudioManager mAudioManager;
 
         @GuardedBy("mLock")

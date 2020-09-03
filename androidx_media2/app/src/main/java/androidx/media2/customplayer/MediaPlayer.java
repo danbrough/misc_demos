@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.media2.player;
+package androidx.media2.customplayer;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 import static androidx.media2.common.SessionPlayer.PlayerResult.RESULT_ERROR_BAD_VALUE;
@@ -418,10 +418,10 @@ public final class MediaPlayer extends SessionPlayer {
     @Deprecated
     public static final int NO_TRACK_SELECTED = Integer.MIN_VALUE;
 
-    static final PlaybackParams DEFAULT_PLAYBACK_PARAMS = new PlaybackParams.Builder()
+    static final androidx.media2.customplayer.PlaybackParams DEFAULT_PLAYBACK_PARAMS = new androidx.media2.customplayer.PlaybackParams.Builder()
             .setSpeed(1f)
             .setPitch(1f)
-            .setAudioFallbackMode(PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT)
+            .setAudioFallbackMode(androidx.media2.customplayer.PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT)
             .build();
 
     private static final int END_OF_PLAYLIST = -1;
@@ -440,65 +440,66 @@ public final class MediaPlayer extends SessionPlayer {
 
     static {
         sResultCodeMap = new ArrayMap<>();
-        sResultCodeMap.put(MediaPlayer2.CALL_STATUS_NO_ERROR, RESULT_SUCCESS);
-        sResultCodeMap.put(MediaPlayer2.CALL_STATUS_ERROR_UNKNOWN, RESULT_ERROR_UNKNOWN);
+        sResultCodeMap.put(androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_NO_ERROR, RESULT_SUCCESS);
+        sResultCodeMap.put(androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_ERROR_UNKNOWN, RESULT_ERROR_UNKNOWN);
         sResultCodeMap.put(
-                MediaPlayer2.CALL_STATUS_INVALID_OPERATION, RESULT_ERROR_INVALID_STATE);
-        sResultCodeMap.put(MediaPlayer2.CALL_STATUS_BAD_VALUE, RESULT_ERROR_BAD_VALUE);
+                androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_INVALID_OPERATION, RESULT_ERROR_INVALID_STATE);
+        sResultCodeMap.put(androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_BAD_VALUE, RESULT_ERROR_BAD_VALUE);
         sResultCodeMap.put(
-                MediaPlayer2.CALL_STATUS_PERMISSION_DENIED, RESULT_ERROR_PERMISSION_DENIED);
-        sResultCodeMap.put(MediaPlayer2.CALL_STATUS_ERROR_IO, RESULT_ERROR_IO);
-        sResultCodeMap.put(MediaPlayer2.CALL_STATUS_SKIPPED, RESULT_INFO_SKIPPED);
+                androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_PERMISSION_DENIED, RESULT_ERROR_PERMISSION_DENIED);
+        sResultCodeMap.put(androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_ERROR_IO, RESULT_ERROR_IO);
+        sResultCodeMap.put(androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_SKIPPED, RESULT_INFO_SKIPPED);
 
         sErrorCodeMap = new ArrayMap<>();
-        sErrorCodeMap.put(MediaPlayer2.MEDIA_ERROR_UNKNOWN, PLAYER_ERROR_UNKNOWN);
-        sErrorCodeMap.put(MediaPlayer2.MEDIA_ERROR_IO, PLAYER_ERROR_IO);
-        sErrorCodeMap.put(MediaPlayer2.MEDIA_ERROR_MALFORMED, PLAYER_ERROR_MALFORMED);
-        sErrorCodeMap.put(MediaPlayer2.MEDIA_ERROR_UNSUPPORTED, PLAYER_ERROR_UNSUPPORTED);
-        sErrorCodeMap.put(MediaPlayer2.MEDIA_ERROR_TIMED_OUT, PLAYER_ERROR_TIMED_OUT);
+        sErrorCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN, PLAYER_ERROR_UNKNOWN);
+        sErrorCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_IO, PLAYER_ERROR_IO);
+        sErrorCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_MALFORMED, PLAYER_ERROR_MALFORMED);
+        sErrorCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNSUPPORTED, PLAYER_ERROR_UNSUPPORTED);
+        sErrorCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_TIMED_OUT, PLAYER_ERROR_TIMED_OUT);
 
         sInfoCodeMap = new ArrayMap<>();
         sInfoCodeMap.put(
-                MediaPlayer2.MEDIA_INFO_VIDEO_RENDERING_START, MEDIA_INFO_VIDEO_RENDERING_START);
+                androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_VIDEO_RENDERING_START, MEDIA_INFO_VIDEO_RENDERING_START);
         sInfoCodeMap.put(
-                MediaPlayer2.MEDIA_INFO_VIDEO_TRACK_LAGGING, MEDIA_INFO_VIDEO_TRACK_LAGGING);
-        sInfoCodeMap.put(MediaPlayer2.MEDIA_INFO_BUFFERING_UPDATE, MEDIA_INFO_BUFFERING_UPDATE);
-        sInfoCodeMap.put(MediaPlayer2.MEDIA_INFO_BAD_INTERLEAVING, MEDIA_INFO_BAD_INTERLEAVING);
-        sInfoCodeMap.put(MediaPlayer2.MEDIA_INFO_NOT_SEEKABLE, MEDIA_INFO_NOT_SEEKABLE);
-        sInfoCodeMap.put(MediaPlayer2.MEDIA_INFO_METADATA_UPDATE, MEDIA_INFO_METADATA_UPDATE);
-        sInfoCodeMap.put(MediaPlayer2.MEDIA_INFO_AUDIO_NOT_PLAYING, MEDIA_INFO_AUDIO_NOT_PLAYING);
-        sInfoCodeMap.put(MediaPlayer2.MEDIA_INFO_VIDEO_NOT_PLAYING, MEDIA_INFO_VIDEO_NOT_PLAYING);
+                androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_VIDEO_TRACK_LAGGING, MEDIA_INFO_VIDEO_TRACK_LAGGING);
+        sInfoCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_BUFFERING_UPDATE, MEDIA_INFO_BUFFERING_UPDATE);
+        sInfoCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_BAD_INTERLEAVING, MEDIA_INFO_BAD_INTERLEAVING);
+        sInfoCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_NOT_SEEKABLE, MEDIA_INFO_NOT_SEEKABLE);
+        sInfoCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_METADATA_UPDATE, MEDIA_INFO_METADATA_UPDATE);
+        sInfoCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_AUDIO_NOT_PLAYING, MEDIA_INFO_AUDIO_NOT_PLAYING);
+        sInfoCodeMap.put(androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_VIDEO_NOT_PLAYING, MEDIA_INFO_VIDEO_NOT_PLAYING);
 
         sSeekModeMap = new ArrayMap<>();
-        sSeekModeMap.put(SEEK_PREVIOUS_SYNC, MediaPlayer2.SEEK_PREVIOUS_SYNC);
-        sSeekModeMap.put(SEEK_NEXT_SYNC, MediaPlayer2.SEEK_NEXT_SYNC);
-        sSeekModeMap.put(SEEK_CLOSEST_SYNC, MediaPlayer2.SEEK_CLOSEST_SYNC);
-        sSeekModeMap.put(SEEK_CLOSEST, MediaPlayer2.SEEK_CLOSEST);
+        sSeekModeMap.put(SEEK_PREVIOUS_SYNC, androidx.media2.customplayer.MediaPlayer2.SEEK_PREVIOUS_SYNC);
+        sSeekModeMap.put(SEEK_NEXT_SYNC, androidx.media2.customplayer.MediaPlayer2.SEEK_NEXT_SYNC);
+        sSeekModeMap.put(SEEK_CLOSEST_SYNC, androidx.media2.customplayer.MediaPlayer2.SEEK_CLOSEST_SYNC);
+        sSeekModeMap.put(SEEK_CLOSEST, androidx.media2.customplayer.MediaPlayer2.SEEK_CLOSEST);
 
         sPrepareDrmStatusMap = new ArrayMap<>();
-        sPrepareDrmStatusMap.put(MediaPlayer2.PREPARE_DRM_STATUS_SUCCESS,
+        sPrepareDrmStatusMap.put(androidx.media2.customplayer.MediaPlayer2.PREPARE_DRM_STATUS_SUCCESS,
                 DrmResult.RESULT_SUCCESS);
-        sPrepareDrmStatusMap.put(MediaPlayer2.PREPARE_DRM_STATUS_PROVISIONING_NETWORK_ERROR,
+        sPrepareDrmStatusMap.put(androidx.media2.customplayer.MediaPlayer2.PREPARE_DRM_STATUS_PROVISIONING_NETWORK_ERROR,
                 DrmResult.RESULT_ERROR_PROVISIONING_NETWORK_ERROR);
-        sPrepareDrmStatusMap.put(MediaPlayer2.PREPARE_DRM_STATUS_PROVISIONING_SERVER_ERROR,
+        sPrepareDrmStatusMap.put(androidx.media2.customplayer.MediaPlayer2.PREPARE_DRM_STATUS_PROVISIONING_SERVER_ERROR,
                 DrmResult.RESULT_ERROR_PREPARATION_ERROR);
-        sPrepareDrmStatusMap.put(MediaPlayer2.PREPARE_DRM_STATUS_PREPARATION_ERROR,
+        sPrepareDrmStatusMap.put(androidx.media2.customplayer.MediaPlayer2.PREPARE_DRM_STATUS_PREPARATION_ERROR,
                 DrmResult.RESULT_ERROR_PREPARATION_ERROR);
-        sPrepareDrmStatusMap.put(MediaPlayer2.PREPARE_DRM_STATUS_UNSUPPORTED_SCHEME,
+        sPrepareDrmStatusMap.put(androidx.media2.customplayer.MediaPlayer2.PREPARE_DRM_STATUS_UNSUPPORTED_SCHEME,
                 DrmResult.RESULT_ERROR_UNSUPPORTED_SCHEME);
-        sPrepareDrmStatusMap.put(MediaPlayer2.PREPARE_DRM_STATUS_RESOURCE_BUSY,
+        sPrepareDrmStatusMap.put(androidx.media2.customplayer.MediaPlayer2.PREPARE_DRM_STATUS_RESOURCE_BUSY,
                 DrmResult.RESULT_ERROR_RESOURCE_BUSY);
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    MediaPlayer2 mPlayer;
+            androidx.media2.customplayer.MediaPlayer2 mPlayer;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     ExecutorService mExecutor;
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     static final class PendingCommand {
         @SuppressWarnings("WeakerAccess") /* synthetic access */
-        @MediaPlayer2.CallCompleted final int mCallType;
+        @androidx.media2.customplayer.MediaPlayer2.CallCompleted
+        final int mCallType;
         @SuppressWarnings("WeakerAccess") /* synthetic access */
         final ResolvableFuture<? extends PlayerResult> mFuture;
         @SuppressWarnings("WeakerAccess") /* synthetic access */
@@ -677,7 +678,7 @@ public final class MediaPlayer extends SessionPlayer {
             throw new NullPointerException("context shouldn't be null");
         }
         mState = PLAYER_STATE_IDLE;
-        mPlayer = MediaPlayer2.create(context);
+        mPlayer = androidx.media2.customplayer.MediaPlayer2.create(context);
         mExecutor = Executors.newFixedThreadPool(1);
         mPlayer.setEventCallback(mExecutor, new Mp2Callback());
         mPlayer.setDrmEventCallback(mExecutor, new Mp2DrmCallback());
@@ -762,7 +763,7 @@ public final class MediaPlayer extends SessionPlayer {
                     future = ResolvableFuture.create();
                     synchronized (mPendingCommands) {
                         Object token = mPlayer.play();
-                        addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_PLAY, future, token);
+                        addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PLAY, future, token);
                     }
                 } else {
                     future = createFutureForResultCode(RESULT_ERROR_UNKNOWN);
@@ -802,7 +803,7 @@ public final class MediaPlayer extends SessionPlayer {
                 mAudioFocusHandler.onPause();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.pause();
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_PAUSE, future, token);
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PAUSE, future, token);
                 }
                 futures.add(future);
                 return futures;
@@ -840,7 +841,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.prepare();
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_PREPARE, future, token);
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PREPARE, future, token);
                 }
                 // TODO: Changing buffering state is not correct. Think about changing MP2 event
                 // APIs for the initial buffering for prepare case.
@@ -885,7 +886,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.seekTo(position);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SEEK_TO, future, token);
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SEEK_TO, future, token);
                 }
                 futures.add(future);
                 return futures;
@@ -926,10 +927,10 @@ public final class MediaPlayer extends SessionPlayer {
                 ArrayList<ResolvableFuture<PlayerResult>> futures = new ArrayList<>();
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
-                    Object token = mPlayer.setPlaybackParams(new PlaybackParams.Builder(
+                    Object token = mPlayer.setPlaybackParams(new androidx.media2.customplayer.PlaybackParams.Builder(
                             mPlayer.getPlaybackParams())
                             .setSpeed(playbackSpeed).build());
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_PLAYBACK_PARAMS,
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_PLAYBACK_PARAMS,
                             future, token);
                 }
                 futures.add(future);
@@ -972,7 +973,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.setAudioAttributes(attributes);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_AUDIO_ATTRIBUTES,
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_AUDIO_ATTRIBUTES,
                             future, token);
                 }
                 futures.add(future);
@@ -2060,7 +2061,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.setSurface(surface);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_SURFACE, future, token);
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_SURFACE, future, token);
                 }
                 futures.add(future);
                 return futures;
@@ -2149,13 +2150,13 @@ public final class MediaPlayer extends SessionPlayer {
      */
     @Override
     @NonNull
-    public VideoSize getVideoSize() {
+    public androidx.media2.customplayer.VideoSize getVideoSize() {
         synchronized (mStateLock) {
             if (mClosed) {
-                return new VideoSize(0, 0);
+                return new androidx.media2.customplayer.VideoSize(0, 0);
             }
         }
-        return new VideoSize(mPlayer.getVideoWidth(), mPlayer.getVideoHeight());
+        return new androidx.media2.customplayer.VideoSize(mPlayer.getVideoWidth(), mPlayer.getVideoHeight());
     }
 
 
@@ -2176,7 +2177,7 @@ public final class MediaPlayer extends SessionPlayer {
     }
 
     /**
-     * Sets playback params using {@link PlaybackParams}.
+     * Sets playback params using {@link androidx.media2.customplayer.PlaybackParams}.
      * <p>
      * On success, a {@link SessionPlayer.PlayerResult} is returned with
      * the current media item when the command completed.
@@ -2187,7 +2188,7 @@ public final class MediaPlayer extends SessionPlayer {
      * completed.
      */
     @NonNull
-    public ListenableFuture<PlayerResult> setPlaybackParams(@NonNull final PlaybackParams params) {
+    public ListenableFuture<PlayerResult> setPlaybackParams(@NonNull final androidx.media2.customplayer.PlaybackParams params) {
         if (params == null) {
             throw new NullPointerException("params shouldn't be null");
         }
@@ -2203,7 +2204,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.setPlaybackParams(params);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_PLAYBACK_PARAMS,
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_PLAYBACK_PARAMS,
                             future, token);
                 }
                 futures.add(future);
@@ -2264,10 +2265,10 @@ public final class MediaPlayer extends SessionPlayer {
                 ArrayList<ResolvableFuture<PlayerResult>> futures = new ArrayList<>();
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 int mp2SeekMode = sSeekModeMap.containsKey(mode)
-                        ? sSeekModeMap.get(mode) : MediaPlayer2.SEEK_NEXT_SYNC;
+                        ? sSeekModeMap.get(mode) : androidx.media2.customplayer.MediaPlayer2.SEEK_NEXT_SYNC;
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.seekTo(position, mp2SeekMode);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SEEK_TO, future, token);
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SEEK_TO, future, token);
                 }
                 futures.add(future);
                 return futures;
@@ -2342,7 +2343,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.setAudioSessionId(sessionId);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_AUDIO_SESSION_ID,
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_AUDIO_SESSION_ID,
                             future, token);
                 }
                 futures.add(future);
@@ -2402,7 +2403,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.attachAuxEffect(effectId);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_ATTACH_AUX_EFFECT,
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_ATTACH_AUX_EFFECT,
                             future, token);
                 }
                 futures.add(future);
@@ -2452,7 +2453,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.setAuxEffectSendLevel(level);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_AUX_EFFECT_SEND_LEVEL,
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_AUX_EFFECT_SEND_LEVEL,
                             future, token);
                 }
                 futures.add(future);
@@ -2571,7 +2572,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.selectTrack(trackInfo.getId());
-                    addPendingCommandWithTrackInfoLocked(MediaPlayer2.CALL_COMPLETED_SELECT_TRACK,
+                    addPendingCommandWithTrackInfoLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SELECT_TRACK,
                             future, trackInfo, token);
                 }
                 futures.add(future);
@@ -2627,7 +2628,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.deselectTrack(trackInfo.getId());
-                    addPendingCommandWithTrackInfoLocked(MediaPlayer2.CALL_COMPLETED_DESELECT_TRACK,
+                    addPendingCommandWithTrackInfoLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_DESELECT_TRACK,
                             future, trackInfo, token);
                 }
                 futures.add(future);
@@ -2670,7 +2671,7 @@ public final class MediaPlayer extends SessionPlayer {
     @Nullable
     @RestrictTo(LIBRARY)
     public DrmInfo getDrmInfo() {
-        MediaPlayer2.DrmInfo info = mPlayer.getDrmInfo();
+        androidx.media2.customplayer.MediaPlayer2.DrmInfo info = mPlayer.getDrmInfo();
         return info == null ? null : new DrmInfo(info);
     }
 
@@ -2712,7 +2713,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ResolvableFuture<DrmResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
                     Object token = mPlayer.prepareDrm(uuid);
-                    addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_PREPARE_DRM, future, token);
+                    addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PREPARE_DRM, future, token);
                 }
                 futures.add(future);
                 return futures;
@@ -2737,7 +2738,7 @@ public final class MediaPlayer extends SessionPlayer {
     public void releaseDrm() throws NoDrmSchemeException {
         try {
             mPlayer.releaseDrm();
-        } catch (MediaPlayer2.NoDrmSchemeException e) {
+        } catch (androidx.media2.customplayer.MediaPlayer2.NoDrmSchemeException e) {
             throw new NoDrmSchemeException(e.getMessage());
         }
     }
@@ -2790,7 +2791,7 @@ public final class MediaPlayer extends SessionPlayer {
         try {
             return mPlayer.getDrmKeyRequest(
                     keySetId, initData, mimeType, keyType, optionalParameters);
-        } catch (MediaPlayer2.NoDrmSchemeException e) {
+        } catch (androidx.media2.customplayer.MediaPlayer2.NoDrmSchemeException e) {
             throw new NoDrmSchemeException(e.getMessage());
         }
     }
@@ -2823,7 +2824,7 @@ public final class MediaPlayer extends SessionPlayer {
             throws NoDrmSchemeException, DeniedByServerException {
         try {
             return mPlayer.provideDrmKeyResponse(keySetId, response);
-        } catch (MediaPlayer2.NoDrmSchemeException e) {
+        } catch (androidx.media2.customplayer.MediaPlayer2.NoDrmSchemeException e) {
             throw new NoDrmSchemeException(e.getMessage());
         }
     }
@@ -2842,7 +2843,7 @@ public final class MediaPlayer extends SessionPlayer {
         }
         try {
             mPlayer.restoreDrmKeys(keySetId);
-        } catch (MediaPlayer2.NoDrmSchemeException e) {
+        } catch (androidx.media2.customplayer.MediaPlayer2.NoDrmSchemeException e) {
             throw new NoDrmSchemeException(e.getMessage());
         }
     }
@@ -2865,7 +2866,7 @@ public final class MediaPlayer extends SessionPlayer {
         }
         try {
             return mPlayer.getDrmPropertyString(propertyName);
-        } catch (MediaPlayer2.NoDrmSchemeException e) {
+        } catch (androidx.media2.customplayer.MediaPlayer2.NoDrmSchemeException e) {
             throw new NoDrmSchemeException(e.getMessage());
         }
     }
@@ -2892,7 +2893,7 @@ public final class MediaPlayer extends SessionPlayer {
         }
         try {
             mPlayer.setDrmPropertyString(propertyName, value);
-        } catch (MediaPlayer2.NoDrmSchemeException e) {
+        } catch (androidx.media2.customplayer.MediaPlayer2.NoDrmSchemeException e) {
             throw new NoDrmSchemeException(e.getMessage());
         }
     }
@@ -2910,9 +2911,9 @@ public final class MediaPlayer extends SessionPlayer {
     @RestrictTo(LIBRARY)
     public void setOnDrmConfigHelper(@Nullable final OnDrmConfigHelper listener) {
         mPlayer.setOnDrmConfigHelper(listener == null ? null :
-                new MediaPlayer2.OnDrmConfigHelper() {
+                new androidx.media2.customplayer.MediaPlayer2.OnDrmConfigHelper() {
                     @Override
-                    public void onDrmConfig(MediaPlayer2 mp, MediaItem item) {
+                    public void onDrmConfig(androidx.media2.customplayer.MediaPlayer2 mp, MediaItem item) {
                         listener.onDrmConfig(MediaPlayer.this, item);
                     }
                 });
@@ -3030,7 +3031,7 @@ public final class MediaPlayer extends SessionPlayer {
         ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
         synchronized (mPendingCommands) {
             Object token = mPlayer.setMediaItem(item);
-            addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_DATA_SOURCE, future, token);
+            addPendingCommandLocked(androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_DATA_SOURCE, future, token);
         }
         synchronized (mPlaylistLock) {
             mSetMediaItemCalled = true;
@@ -3044,7 +3045,7 @@ public final class MediaPlayer extends SessionPlayer {
         synchronized (mPendingCommands) {
             Object token = mPlayer.setNextMediaItem(item);
             addPendingCommandLocked(
-                    MediaPlayer2.CALL_COMPLETED_SET_NEXT_DATA_SOURCE, future, token);
+                    androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_NEXT_DATA_SOURCE, future, token);
         }
         return future;
     }
@@ -3055,7 +3056,7 @@ public final class MediaPlayer extends SessionPlayer {
         synchronized (mPendingCommands) {
             Object token = mPlayer.skipToNext();
             addPendingCommandLocked(
-                    MediaPlayer2.CALL_COMPLETED_SKIP_TO_NEXT, future, token);
+                    androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SKIP_TO_NEXT, future, token);
         }
         return future;
     }
@@ -3066,7 +3067,7 @@ public final class MediaPlayer extends SessionPlayer {
         synchronized (mPendingCommands) {
             Object token = mPlayer.setPlayerVolume(volume);
             addPendingCommandLocked(
-                    MediaPlayer2.CALL_COMPLETED_SET_PLAYER_VOLUME, future, token);
+                    androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_PLAYER_VOLUME, future, token);
         }
         return future;
     }
@@ -3166,7 +3167,7 @@ public final class MediaPlayer extends SessionPlayer {
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    void handleCallComplete(MediaPlayer2 mp, final MediaItem item, int what, int status) {
+    void handleCallComplete(androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, int what, int status) {
         PendingCommand expected;
         synchronized (mPendingCommands) {
             expected = mPendingCommands.pollFirst();
@@ -3179,18 +3180,18 @@ public final class MediaPlayer extends SessionPlayer {
         if (what != expected.mCallType) {
             Log.w(TAG, "Call type does not match. expected:" + expected.mCallType
                     + " actual:" + what);
-            status = MediaPlayer2.CALL_STATUS_ERROR_UNKNOWN;
+            status = androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_ERROR_UNKNOWN;
         }
-        if (status == MediaPlayer2.CALL_STATUS_NO_ERROR) {
+        if (status == androidx.media2.customplayer.MediaPlayer2.CALL_STATUS_NO_ERROR) {
             switch (what) {
-                case MediaPlayer2.CALL_COMPLETED_PREPARE:
-                case MediaPlayer2.CALL_COMPLETED_PAUSE:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PREPARE:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PAUSE:
                     setState(PLAYER_STATE_PAUSED);
                     break;
-                case MediaPlayer2.CALL_COMPLETED_PLAY:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PLAY:
                     setState(PLAYER_STATE_PLAYING);
                     break;
-                case MediaPlayer2.CALL_COMPLETED_SEEK_TO:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SEEK_TO:
                     final long pos = getCurrentPosition();
                     notifySessionPlayerCallback(new SessionPlayerCallbackNotifier() {
                         @Override
@@ -3200,8 +3201,8 @@ public final class MediaPlayer extends SessionPlayer {
                         }
                     });
                     break;
-                case MediaPlayer2.CALL_COMPLETED_SET_DATA_SOURCE:
-                case MediaPlayer2.CALL_COMPLETED_SKIP_TO_NEXT:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_DATA_SOURCE:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SKIP_TO_NEXT:
                     notifySessionPlayerCallback(new SessionPlayerCallbackNotifier() {
                         @Override
                         public void callCallback(
@@ -3210,7 +3211,7 @@ public final class MediaPlayer extends SessionPlayer {
                         }
                     });
                     break;
-                case MediaPlayer2.CALL_COMPLETED_SET_PLAYBACK_PARAMS:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_PLAYBACK_PARAMS:
                     // TODO: Need to check if the speed value is really changed.
                     final float speed = mPlayer.getPlaybackParams().getSpeed();
                     notifySessionPlayerCallback(new SessionPlayerCallbackNotifier() {
@@ -3221,7 +3222,7 @@ public final class MediaPlayer extends SessionPlayer {
                         }
                     });
                     break;
-                case MediaPlayer2.CALL_COMPLETED_SET_AUDIO_ATTRIBUTES:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SET_AUDIO_ATTRIBUTES:
                     final AudioAttributesCompat attr = mPlayer.getAudioAttributes();
                     notifySessionPlayerCallback(new SessionPlayerCallbackNotifier() {
                         @Override
@@ -3230,7 +3231,7 @@ public final class MediaPlayer extends SessionPlayer {
                         }
                     });
                     break;
-                case MediaPlayer2.CALL_COMPLETED_SELECT_TRACK:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_SELECT_TRACK:
                     notifySessionPlayerCallback(new SessionPlayerCallbackNotifier() {
                         @Override
                         public void callCallback(SessionPlayer.PlayerCallback callback) {
@@ -3238,7 +3239,7 @@ public final class MediaPlayer extends SessionPlayer {
                         }
                     });
                     break;
-                case MediaPlayer2.CALL_COMPLETED_DESELECT_TRACK:
+                case androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_DESELECT_TRACK:
                     notifySessionPlayerCallback(new SessionPlayerCallbackNotifier() {
                         @Override
                         public void callCallback(SessionPlayer.PlayerCallback callback) {
@@ -3248,7 +3249,7 @@ public final class MediaPlayer extends SessionPlayer {
                     break;
             }
         }
-        if (what != MediaPlayer2.CALL_COMPLETED_PREPARE_DRM) {
+        if (what != androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PREPARE_DRM) {
             Integer resultCode = sResultCodeMap.containsKey(status)
                     ? sResultCodeMap.get(status) : RESULT_ERROR_UNKNOWN;
             expected.setResult(new PlayerResult(resultCode, item));
@@ -3283,10 +3284,10 @@ public final class MediaPlayer extends SessionPlayer {
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    class Mp2DrmCallback extends MediaPlayer2.DrmEventCallback {
+    class Mp2DrmCallback extends androidx.media2.customplayer.MediaPlayer2.DrmEventCallback {
         @Override
         public void onDrmInfo(
-                MediaPlayer2 mp, final MediaItem item, final MediaPlayer2.DrmInfo drmInfo) {
+                androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, final androidx.media2.customplayer.MediaPlayer2.DrmInfo drmInfo) {
             notifyMediaPlayerCallback(new MediaPlayerCallbackNotifier() {
                 @Override
                 public void callCallback(PlayerCallback callback) {
@@ -3297,16 +3298,16 @@ public final class MediaPlayer extends SessionPlayer {
         }
 
         @Override
-        public void onDrmPrepared(MediaPlayer2 mp, final MediaItem item, final int status) {
-            handleCallComplete(mp, item, MediaPlayer2.CALL_COMPLETED_PREPARE_DRM, status);
+        public void onDrmPrepared(androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, final int status) {
+            handleCallComplete(mp, item, androidx.media2.customplayer.MediaPlayer2.CALL_COMPLETED_PREPARE_DRM, status);
         }
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    class Mp2Callback extends MediaPlayer2.EventCallback {
+    class Mp2Callback extends androidx.media2.customplayer.MediaPlayer2.EventCallback {
         @Override
         public void onVideoSizeChanged(
-                MediaPlayer2 mp, final MediaItem item, final int width, final int height) {
+                androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, final int width, final int height) {
             MediaItem currentItem = getCurrentMediaItem();
             if (currentItem != null && currentItem == item) {
                 final androidx.media2.common.VideoSize commonSize =
@@ -3322,7 +3323,7 @@ public final class MediaPlayer extends SessionPlayer {
 
         @Override
         public void onTimedMetaDataAvailable(
-                MediaPlayer2 mp, final MediaItem item, final TimedMetaData data) {
+                androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, final androidx.media2.customplayer.TimedMetaData data) {
             notifyMediaPlayerCallback(new MediaPlayerCallbackNotifier() {
                 @Override
                 public void callCallback(PlayerCallback callback) {
@@ -3333,7 +3334,7 @@ public final class MediaPlayer extends SessionPlayer {
 
         @Override
         public void onError(
-                MediaPlayer2 mp, final MediaItem item, final int what, final int extra) {
+                androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, final int what, final int extra) {
             setState(PLAYER_STATE_ERROR);
             setBufferingState(item, BUFFERING_STATE_UNKNOWN);
             notifyMediaPlayerCallback(new MediaPlayerCallbackNotifier() {
@@ -3346,21 +3347,21 @@ public final class MediaPlayer extends SessionPlayer {
 
         @Override
         public void onInfo(
-                MediaPlayer2 mp, final MediaItem item, final int mp2What, final int extra) {
+                androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, final int mp2What, final int extra) {
             switch (mp2What) {
-                case MediaPlayer2.MEDIA_INFO_BUFFERING_START:
+                case androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_BUFFERING_START:
                     setBufferingState(item, BUFFERING_STATE_BUFFERING_AND_STARVED);
                     break;
-                case MediaPlayer2.MEDIA_INFO_PREPARED:
-                case MediaPlayer2.MEDIA_INFO_BUFFERING_END:
+                case androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_PREPARED:
+                case androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_BUFFERING_END:
                     setBufferingState(item, BUFFERING_STATE_BUFFERING_AND_PLAYABLE);
                     break;
-                case MediaPlayer2.MEDIA_INFO_BUFFERING_UPDATE:
+                case androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_BUFFERING_UPDATE:
                     if (extra /* percent */ >= 100) {
                         setBufferingState(item, BUFFERING_STATE_COMPLETE);
                     }
                     break;
-                case MediaPlayer2.MEDIA_INFO_DATA_SOURCE_START:
+                case androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_DATA_SOURCE_START:
                     boolean shouldNotifyCurrentMediaItemChanged;
                     MediaItem nextPlaylistItem;
                     synchronized (mPlaylistLock) {
@@ -3408,7 +3409,7 @@ public final class MediaPlayer extends SessionPlayer {
                         }
                     }
                     break;
-                case MediaPlayer2.MEDIA_INFO_DATA_SOURCE_LIST_END:
+                case androidx.media2.customplayer.MediaPlayer2.MEDIA_INFO_DATA_SOURCE_LIST_END:
                     MediaItem nextItemToPlay;
                     synchronized (mPlaylistLock) {
                         mCurrentShuffleIdx = mShuffledList.indexOf(item);
@@ -3450,13 +3451,13 @@ public final class MediaPlayer extends SessionPlayer {
 
         @Override
         public void onCallCompleted(
-                MediaPlayer2 mp, final MediaItem item, int what, int status) {
+                androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, int what, int status) {
             handleCallComplete(mp, item, what, status);
         }
 
         @Override
         public void onMediaTimeDiscontinuity(
-                MediaPlayer2 mp, final MediaItem item, final MediaTimestamp timestamp) {
+                androidx.media2.customplayer.MediaPlayer2 mp, final MediaItem item, final MediaTimestamp timestamp) {
             notifyMediaPlayerCallback(new MediaPlayerCallbackNotifier() {
                 @Override
                 public void callCallback(PlayerCallback callback) {
@@ -3466,13 +3467,13 @@ public final class MediaPlayer extends SessionPlayer {
         }
 
         @Override
-        public void onCommandLabelReached(MediaPlayer2 mp, Object label) {
+        public void onCommandLabelReached(androidx.media2.customplayer.MediaPlayer2 mp, Object label) {
             // Ignore. MediaPlayer does not use MediaPlayer2.notifyWhenCommandLabelReached().
         }
 
         @Override
-        public void onSubtitleData(@NonNull MediaPlayer2 mp, @NonNull final MediaItem item,
-                @NonNull final SessionPlayer.TrackInfo track, @NonNull final SubtitleData data) {
+        public void onSubtitleData(@NonNull androidx.media2.customplayer.MediaPlayer2 mp, @NonNull final MediaItem item,
+                                   @NonNull final SessionPlayer.TrackInfo track, @NonNull final SubtitleData data) {
             notifySessionPlayerCallback(new SessionPlayerCallbackNotifier() {
                 @Override
                 public void callCallback(SessionPlayer.PlayerCallback callback) {
@@ -3482,7 +3483,7 @@ public final class MediaPlayer extends SessionPlayer {
         }
 
         @Override
-        public void onTracksChanged(@NonNull MediaPlayer2 mp,
+        public void onTracksChanged(@NonNull androidx.media2.customplayer.MediaPlayer2 mp,
                 @NonNull List<SessionPlayer.TrackInfo> tracks) {
             notifySessionPlayerCallback(callback -> callback.onTracksChanged(MediaPlayer.this,
                     tracks));
@@ -3500,7 +3501,7 @@ public final class MediaPlayer extends SessionPlayer {
          */
         @Deprecated
         public void onVideoSizeChanged(
-                @NonNull MediaPlayer mp, @NonNull MediaItem item, @NonNull VideoSize size) { }
+                @NonNull MediaPlayer mp, @NonNull MediaItem item, @NonNull androidx.media2.customplayer.VideoSize size) { }
 
         /**
          * Called to indicate the video size
@@ -3529,9 +3530,9 @@ public final class MediaPlayer extends SessionPlayer {
          * not controlled by the associated timestamp.
          * <p>
          * Currently only HTTP live streaming data URI's embedded with timed ID3 tags generates
-         * {@link TimedMetaData}.
+         * {@link androidx.media2.customplayer.TimedMetaData}.
          *
-         * @see TimedMetaData
+         * @see androidx.media2.customplayer.TimedMetaData
          *
          * @param mp the player associated with this callback
          * @param item the MediaItem of this media item
@@ -3627,7 +3628,7 @@ public final class MediaPlayer extends SessionPlayer {
      */
     @RestrictTo(LIBRARY)
     public static final class DrmInfo {
-        private final MediaPlayer2.DrmInfo mMp2DrmInfo;
+        private final androidx.media2.customplayer.MediaPlayer2.DrmInfo mMp2DrmInfo;
 
         /**
          * Returns the PSSH info of the media item for each supported DRM scheme.
@@ -3647,7 +3648,7 @@ public final class MediaPlayer extends SessionPlayer {
             return mMp2DrmInfo.getSupportedSchemes();
         }
 
-        DrmInfo(MediaPlayer2.DrmInfo info) {
+        DrmInfo(androidx.media2.customplayer.MediaPlayer2.DrmInfo info) {
             mMp2DrmInfo = info;
         }
     }

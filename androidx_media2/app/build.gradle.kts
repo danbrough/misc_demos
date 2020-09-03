@@ -72,9 +72,9 @@ dependencies {
   implementation(Kotlin.stdlib.jdk8)
 
   api(AndroidX.media2.session)
-  api(AndroidX.media2.exoplayer)
+  //api(AndroidX.media2.exoplayer)
 
-  api(AndroidX.media2.player)
+ // api(AndroidX.media2.player)
   api(AndroidX.media2.common)
 
   implementation("com.google.guava:guava:29.0-android")
@@ -90,10 +90,11 @@ dependencies {
   implementation("com.github.danbrough.androidutils:menu:_")
   implementation("com.github.danbrough.androidutils:slf4j:_")
 
-  implementation("com.google.android.exoplayer:exoplayer-core:2.10.4")
-  implementation("com.google.android.exoplayer:exoplayer-hls:2.10.4")
+  implementation("com.google.android.exoplayer:exoplayer-core:2.11.8")
+  implementation("com.google.android.exoplayer:exoplayer-hls:2.11.8")
 
   implementation(Square.okHttp3.okHttp)
+
 
 
 //  implementation(project(":menu"))

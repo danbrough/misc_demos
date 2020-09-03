@@ -2,13 +2,12 @@ package danbroid.demo.media2.exoplayer
 
 import android.annotation.SuppressLint
 import androidx.media2.common.SessionPlayer
-import androidx.media2.exoplayer.external.SimpleExoPlayer
-import androidx.media2.exoplayer.external.analytics.AnalyticsListener
-import androidx.media2.exoplayer.external.metadata.Metadata
-import androidx.media2.exoplayer.external.source.MediaSourceEventListener
 import androidx.media2.player.StatsListener
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.source.MediaSourceEventListener
 
-object  PlayerUtils {
+object PlayerUtils {
   @SuppressLint("RestrictedApi")
   fun configure(player: SessionPlayer) {
     runCatching {
@@ -20,6 +19,7 @@ object  PlayerUtils {
         it.isAccessible = true
         it.get(p)
       }
+
       wrapper.javaClass.getDeclaredField("mPlayer").let {
         it.isAccessible = true
         val exoPlayer = it.get(wrapper) as SimpleExoPlayer
@@ -45,17 +45,18 @@ object  PlayerUtils {
             log.warn("onBandwidthEstimate() totalBytesLoaded: $totalBytesLoaded bitrateEstimate: $bitrateEstimate")
           }
 
-          override fun onMetadata(eventTime: AnalyticsListener.EventTime, metadata: Metadata) {
+          override fun onMetadata(
+            eventTime: AnalyticsListener.EventTime,
+            metadata: com.google.android.exoplayer2.metadata.Metadata
+          ) {
             log.warn("metadata: $metadata")
           }
+
         })
       }
-
-
-    }?.exceptionOrNull()?.also {
+    }.exceptionOrNull()?.also {
       log.error(it.message, it)
     }
-
   }
 }
 
