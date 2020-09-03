@@ -1,24 +1,16 @@
 package danbroid.demo.media2.content
 
 
-import android.graphics.Color
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
-import androidx.media2.common.MediaMetadata
-import androidx.media2.common.UriMediaItem
-import androidx.media2.player.MediaPlayer
+import androidx.media2.exoplayer.external.metadata.MetadataDecoderFactory
 import danbroid.demo.media2.R
 import danbroid.demo.media2.media.client.AudioClient
-import danbroid.demo.media2.media.client.AudioTest
 import danbroid.demo.media2.model.AudioClientModel
-import danbroid.util.menu.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import danbroid.util.menu.MenuActionContext
+import danbroid.util.menu.MenuItemBuilder
+import danbroid.util.menu.menu
+import danbroid.util.menu.rootMenu
 import org.slf4j.LoggerFactory
-import java.util.*
 
 const val URI_CONTENT_ROOT = "demo://content"
 
@@ -27,31 +19,22 @@ private val log = LoggerFactory.getLogger("danbroid.demo.media2.content")
 private val MenuActionContext.audioClient: AudioClient
   get() = fragment!!.viewModels<AudioClientModel>().value.client
 
+
 val rootContent: MenuItemBuilder =
   rootMenu<MenuItemBuilder> {
     id = URI_CONTENT_ROOT
     titleID = R.string.app_name
-
-    log.error("RUNNING THIS BIT")
-
-
-    menu {
-      title = "Player Test"
-      onClick = {
-        AudioTest(context).run()
-      }
-    }
-
     menu {
       title = "Play"
       onClick = {
         audioClient.play()
       }
     }
+
     menu {
-      title = "Prepare"
+      title = "Test"
       onClick = {
-        audioClient.prepare()
+        audioClient.test()
       }
     }
 
@@ -62,12 +45,37 @@ val rootContent: MenuItemBuilder =
       }
     }
 
+
     menu {
       title = "State"
       onClick = {
         audioClient.state()
       }
     }
+    val rnz_url = "http://radionz-ice.streamguys.com/National_aac128"
+    val url_u80s = "http://ice4.somafm.com/u80s-256-mp3"
+    menu {
+      title = "U80s"
+      onClick = {
+        log.trace("playing U80s")
+        audioClient.playUri(url_u80s)
+      }
+    }
+
+    menu {
+      title = "RNZ"
+      onClick = {
+        audioClient.playUri(rnz_url)
+      }
+    }
+
+    menu {
+      title = "MP3"
+      onClick = {
+        audioClient.playUri("http://192.168.1.2/music/Calexico/2015%20Edge%20Of%20The%20Sun/05%20cumbia%20de%20donde.mp3")
+      }
+    }
   }
+
 
 

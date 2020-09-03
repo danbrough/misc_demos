@@ -3,18 +3,18 @@ package danbroid.demo.media2.media
 import android.content.ComponentName
 import android.content.Intent
 import android.graphics.BitmapFactory
-import androidx.core.content.ContextCompat
+import android.net.Uri
+import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
-import androidx.media2.common.MediaItem
-import androidx.media2.common.MediaMetadata
-import androidx.media2.common.SessionPlayer
-import androidx.media2.common.UriMediaItem
+import androidx.media2.common.*
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.LibraryResult
 import androidx.media2.session.MediaLibraryService
 import androidx.media2.session.MediaSession
+import androidx.media2.session.SessionResult
 import danbroid.demo.media2.R
+import danbroid.demo.media2.exoplayer.PlayerUtils
 import java.util.concurrent.Executors
 
 class AudioService : MediaLibraryService() {
@@ -34,16 +34,37 @@ class AudioService : MediaLibraryService() {
     super.onCreate()
 
     player = MediaPlayer(applicationContext)
+
     player.setAudioAttributes(
       AudioAttributesCompat.Builder()
         .setUsage(AudioAttributesCompat.USAGE_MEDIA)
         .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
         .build()
     )
+
+
+    player.registerPlayerCallback({}, object : SessionPlayer.PlayerCallback() {
+      override fun onSubtitleData(
+        player: SessionPlayer,
+        item: MediaItem,
+        track: SessionPlayer.TrackInfo,
+        data: SubtitleData
+      ) {
+        log.error("SUBTITLE DATA: $data")
+      }
+    })
+
+    log.info("created player: $player")
+    PlayerUtils.configure(player)
+
+
+
     session =
       MediaLibrarySession.Builder(this, player, executor, sessionCallback)
         .setId("session")
         .build()
+
+
   }
 
   override fun startForegroundService(service: Intent): ComponentName? {
@@ -69,12 +90,33 @@ class AudioService : MediaLibraryService() {
       return root
     }
 
+    override fun onSubscribe(
+      session: MediaLibrarySession,
+      controller: MediaSession.ControllerInfo,
+      parentId: String,
+      params: LibraryParams?
+    ): Int {
+      log.warn("onSubscribe() $parentId")
+      return BaseResult.RESULT_SUCCESS
+    }
+
+    override fun onSetMediaUri(
+      session: MediaSession,
+      controller: MediaSession.ControllerInfo,
+      uri: Uri,
+      extras: Bundle?
+    ): Int {
+      log.warn("onSetMediaUrl() $uri")
+      return SessionResult.RESULT_SUCCESS
+    }
+
     override fun onCreateMediaItem(
       session: MediaSession,
       controller: MediaSession.ControllerInfo,
       mediaId: String
     ): MediaItem? {
       log.error("onCreateMediaItem() $mediaId")
+
 
       return UriMediaItem.Builder(mediaId.toUri())
         .setStartPosition(0L).setEndPosition(-1L)

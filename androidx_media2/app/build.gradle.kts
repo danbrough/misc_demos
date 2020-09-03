@@ -14,7 +14,7 @@ android {
   compileSdkVersion(ProjectVersions.SDK_VERSION)
 
   defaultConfig {
-    //buildToolsVersion("30.0.2")
+    buildToolsVersion("30.0.2")
 
     minSdkVersion(ProjectVersions.MIN_SDK_VERSION)
     targetSdkVersion(ProjectVersions.SDK_VERSION)
@@ -27,7 +27,6 @@ android {
     vectorDrawables {
       useSupportLibrary = true
     }
-
   }
 
   lintOptions {
@@ -48,7 +47,6 @@ android {
   kapt {
     correctErrorTypes = true
   }
-
 
 }
 
@@ -75,6 +73,7 @@ dependencies {
 
   api(AndroidX.media2.session)
   api(AndroidX.media2.exoplayer)
+
   api(AndroidX.media2.player)
   api(AndroidX.media2.common)
 
@@ -91,6 +90,8 @@ dependencies {
   implementation("com.github.danbrough.androidutils:menu:_")
   implementation("com.github.danbrough.androidutils:slf4j:_")
 
+  implementation("com.google.android.exoplayer:exoplayer-core:2.10.4")
+  implementation("com.google.android.exoplayer:exoplayer-hls:2.10.4")
 
   implementation(Square.okHttp3.okHttp)
 
