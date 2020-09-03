@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
 import androidx.media2.common.*
@@ -14,13 +15,9 @@ import androidx.media2.session.MediaLibraryService
 import androidx.media2.session.MediaSession
 import androidx.media2.session.SessionResult
 import danbroid.demo.media2.R
-import danbroid.demo.media2.exoplayer.PlayerUtils
-import java.util.concurrent.Executors
 
 class AudioService : MediaLibraryService() {
 
-
-  val executor = Executors.newSingleThreadExecutor()
 
   val sessionCallback = SessionCallback()
 
@@ -43,7 +40,7 @@ class AudioService : MediaLibraryService() {
     )
 
 
-    player.registerPlayerCallback({}, object : SessionPlayer.PlayerCallback() {
+    /*player.registerPlayerCallback({}, object : SessionPlayer.PlayerCallback() {
       override fun onSubtitleData(
         player: SessionPlayer,
         item: MediaItem,
@@ -52,12 +49,14 @@ class AudioService : MediaLibraryService() {
       ) {
         log.error("SUBTITLE DATA: $data")
       }
-    })
+    })*/
 
     log.info("created player: $player")
-    PlayerUtils.configure(player)
+
+    //PlayerUtils.configure(player)
 
 
+    val executor = ContextCompat.getMainExecutor(this)
 
     session =
       MediaLibrarySession.Builder(this, player, executor, sessionCallback)

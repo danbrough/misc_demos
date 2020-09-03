@@ -18,6 +18,10 @@ private val log = LoggerFactory.getLogger("danbroid.demo.media2.content")
 private val MenuActionContext.audioClient: AudioClient
   get() = fragment!!.viewModels<AudioClientModel>().value.client
 
+private const val rnz_url = "http://radionz-ice.streamguys.com/National_aac128"
+private const val url_u80s = "http://ice4.somafm.com/u80s-256-mp3"
+private const val flac_url =
+  "http://192.168.1.2/music/Blue%20Nile%2CThe/1984%20A%20Walk%20Across%20The%20Rooftops/04%20-%20Stay.flac"
 
 val rootContent: MenuItemBuilder =
   rootMenu<MenuItemBuilder> {
@@ -31,9 +35,16 @@ val rootContent: MenuItemBuilder =
     }
 
     menu {
-      title = "Test"
+      title = "Test u80s"
       onClick = {
-        audioClient.test()
+        audioClient.test.play(url_u80s)
+      }
+    }
+
+    menu {
+      title = "Test Flac"
+      onClick = {
+        audioClient.test.play(flac_url)
       }
     }
 
@@ -51,8 +62,7 @@ val rootContent: MenuItemBuilder =
         audioClient.state()
       }
     }
-    val rnz_url = "http://radionz-ice.streamguys.com/National_aac128"
-    val url_u80s = "http://ice4.somafm.com/u80s-256-mp3"
+
     menu {
       title = "U80s"
       onClick = {
@@ -74,6 +84,40 @@ val rootContent: MenuItemBuilder =
         audioClient.playUri("http://192.168.1.2/music/Calexico/2015%20Edge%20Of%20The%20Sun/05%20cumbia%20de%20donde.mp3")
       }
     }
+
+    menu {
+      title = "Opus Test"
+      onClick = {
+        audioClient.playUri("http://192.168.1.2/music/Aldus%20Harding/2019%20Designer/02%20-%20Designer.opus")
+      }
+    }
+
+    menu {
+      title = "Flac Test"
+      onClick = {
+        audioClient.playUri(flac_url)
+      }
+    }
+    /*
+
+
+
+  menu {
+    title = "Short OGG"
+    isPlayable = true
+    uri = "https://h1.danbrough.org/media/tests/test.ogg"
+    imageID = R.drawable.ic_kiwi
+
+  }
+
+
+  menu {
+    title = "Short OGA"
+    isPlayable = true
+    uri = "https://h1.danbrough.org/media/tests/test.oga"
+    imageID = R.drawable.ic_favorite
+  }
+     */
   }
 
 

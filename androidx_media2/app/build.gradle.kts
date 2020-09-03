@@ -90,8 +90,32 @@ dependencies {
   implementation("com.github.danbrough.androidutils:menu:_")
   implementation("com.github.danbrough.androidutils:slf4j:_")
 
-  implementation("com.google.android.exoplayer:exoplayer-core:2.11.8")
-  implementation("com.google.android.exoplayer:exoplayer-hls:2.11.8")
+  val exo_vanilla = false
+  val exo_version = if (exo_vanilla) "2.11.8" else "2.11.8-dan02"
+  val exo_package =
+    if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
+
+  if (exo_vanilla) {
+
+    implementation("$exo_package:exoplayer-core:$exo_version")
+    implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
+    implementation("$exo_package:exoplayer-ui:$exo_version")
+    implementation("$exo_package:exoplayer-hls:$exo_version")
+    implementation("$exo_package:extension-cast:$exo_version")
+  } else {
+
+    implementation("$exo_package:library-core:$exo_version")
+    implementation("$exo_package:library-smoothstreaming:$exo_version")
+    implementation("$exo_package:library-ui:$exo_version")
+    implementation("$exo_package:library-hls:$exo_version")
+
+
+    // implementation("$exo_package:extension-mediasession:$exo_version")
+    //implementation("$exo_package:extension-okhttp:$exo_version")
+    implementation("$exo_package:extension-cast:$exo_version")
+    implementation("$exo_package:extension-opus:$exo_version")
+    implementation("$exo_package:extension-flac:$exo_version")
+  }
 
   implementation(Square.okHttp3.okHttp)
 

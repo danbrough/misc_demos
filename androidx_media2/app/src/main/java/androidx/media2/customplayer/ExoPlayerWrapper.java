@@ -41,6 +41,7 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.analytics.AnalyticsListener;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.audio.AudioCapabilities;
 import com.google.android.exoplayer2.audio.AudioListener;
@@ -66,6 +67,9 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.RenderersFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -84,7 +88,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
  * must be made.
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
-/* package */ final class ExoPlayerWrapper {
+/* package */ public final class ExoPlayerWrapper {
 
     private static final String TAG = "ExoPlayerWrapper";
 
@@ -459,6 +463,8 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         return new MediaTimestamp(positionUs, System.nanoTime(), speed);
     }
 
+    private static final Logger log  = LoggerFactory.getLogger(SimpleExoPlayer.class);
+
     public void reset() {
         if (mPlayer != null) {
             mPlayer.setPlayWhenReady(false);
@@ -479,18 +485,28 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
 
         mTrackSelector = new androidx.media2.customplayer.TrackSelector(textRenderer);
 
+        log.warn("creating player",new Exception("CREATED PLAYER"));
 
         mPlayer =  new com.google.android.exoplayer2.SimpleExoPlayer.Builder(mContext, renderersFactory)
                 .setTrackSelector(mTrackSelector.getPlayerTrackSelector())
                 .setBandwidthMeter(mBandwidthMeter)
                 .setLooper(mLooper)
                 .build();
+
+        mPlayer.getAnalyticsCollector().addListener(new AnalyticsListener() {
+            @Override
+            public void onMetadata(EventTime eventTime, Metadata metadata) {
+                log.error("metadata: $metadata");
+            }
+        });
+
+
         mPlayerHandler = new Handler(mPlayer.getPlaybackLooper());
         mMediaItemQueue = new MediaItemQueue(mContext, mPlayer, mListener);
         mPlayer.addListener(listener);
         // TODO(b/80232248): Switch to AnalyticsListener once default methods work.
         mPlayer.setVideoDebugListener(listener);
-        mPlayer.addMetadataOutput(listener);
+        //mPlayer.addMetadataOutput(listener);
         mVideoWidth = 0;
         mVideoHeight = 0;
         mPrepared = false;

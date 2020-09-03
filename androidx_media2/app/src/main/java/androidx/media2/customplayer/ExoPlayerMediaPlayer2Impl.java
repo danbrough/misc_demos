@@ -88,6 +88,7 @@ import java.util.concurrent.RejectedExecutionException;
         mPlayer = new ExoPlayerWrapper(
                 context.getApplicationContext(),
                 /* listener= */ this,
+            //    mHandlerThread.getLooper());
                 mHandlerThread.getLooper());
         // Player callbacks will be called on the task handler thread.
         mTaskHandler = new Handler(mPlayer.getLooper());
