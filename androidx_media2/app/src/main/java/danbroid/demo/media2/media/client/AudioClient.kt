@@ -10,17 +10,14 @@ import androidx.media2.session.MediaController
 import androidx.media2.session.MediaSessionManager
 import androidx.media2.session.SessionCommandGroup
 import com.google.common.util.concurrent.ListenableFuture
-import danbroid.demo.media2.media.AudioService
-import danbroid.demo.media2.media.PlayerTest
-import danbroid.demo.media2.media.buffState
-import danbroid.demo.media2.media.playerState
+import danbroid.demo.media2.media.*
 
 
 class AudioClient(context: Context) {
 
   val context = context.applicationContext
 
-  val test = PlayerTest(context)
+  val test = ExoWrapperTest(context)
 
   val controllerCallback = object : MediaBrowser.BrowserCallback() {
 
@@ -67,6 +64,7 @@ class AudioClient(context: Context) {
   val executor = getMainExecutor(context)//Executors.newSingleThreadExecutor()
 
   val mediaController: MediaBrowser by lazy {
+
     val sessionManager = MediaSessionManager.getInstance(context)
     log.debug("got sessionManager: $sessionManager")
     val serviceToken = sessionManager.sessionServiceTokens.first {

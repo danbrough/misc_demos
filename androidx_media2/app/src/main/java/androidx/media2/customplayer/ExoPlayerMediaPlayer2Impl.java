@@ -53,13 +53,13 @@ import java.util.concurrent.RejectedExecutionException;
  * An implementation of {@link MediaPlayer2} based on a repackaged version of ExoPlayer.
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
-/* package */ final class ExoPlayerMediaPlayer2Impl extends MediaPlayer2
-        implements ExoPlayerWrapper.Listener {
+/* package */ public final class ExoPlayerMediaPlayer2Impl extends MediaPlayer2
+        implements androidx.media2.customplayer.ExoPlayerWrapper.Listener {
 
     private static final String TAG = "ExoPlayerMediaPlayer2";
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final ExoPlayerWrapper mPlayer;
+    final androidx.media2.customplayer.ExoPlayerWrapper mPlayer;
 
     private final Handler mTaskHandler;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
@@ -85,10 +85,9 @@ import java.util.concurrent.RejectedExecutionException;
     ExoPlayerMediaPlayer2Impl(@NonNull Context context) {
         mHandlerThread = new HandlerThread("ExoMediaPlayer2Thread");
         mHandlerThread.start();
-        mPlayer = new ExoPlayerWrapper(
+        mPlayer = new androidx.media2.customplayer.ExoPlayerWrapper(
                 context.getApplicationContext(),
                 /* listener= */ this,
-            //    mHandlerThread.getLooper());
                 mHandlerThread.getLooper());
         // Player callbacks will be called on the task handler thread.
         mTaskHandler = new Handler(mPlayer.getLooper());
@@ -306,8 +305,7 @@ import java.util.concurrent.RejectedExecutionException;
     }
 
     @Override
-    public @MediaPlayer2State
-    int getState() {
+    public @MediaPlayer2.MediaPlayer2State int getState() {
         return runPlayerCallableBlocking(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
@@ -711,7 +709,7 @@ import java.util.concurrent.RejectedExecutionException;
     public void onVideoSizeChanged(final MediaItem mediaItem, final int width, final int height) {
         notifyMediaPlayer2Event(new ExoPlayerMediaPlayer2Impl.Mp2EventNotifier() {
             @Override
-            public void notify(EventCallback callback) {
+            public void notify(MediaPlayer2.EventCallback callback) {
                 callback.onVideoSizeChanged(
                         ExoPlayerMediaPlayer2Impl.this,
                         mediaItem,
@@ -803,7 +801,7 @@ import java.util.concurrent.RejectedExecutionException;
     private void notifyOnInfo(final MediaItem mediaItem, final int what, final int extra) {
         notifyMediaPlayer2Event(new ExoPlayerMediaPlayer2Impl.Mp2EventNotifier() {
             @Override
-            public void notify(EventCallback callback) {
+            public void notify(MediaPlayer2.EventCallback callback) {
                 callback.onInfo(ExoPlayerMediaPlayer2Impl.this, mediaItem, what, extra);
             }
         });

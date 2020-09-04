@@ -3,17 +3,23 @@ package danbroid.demo.media2.media
 import android.content.ComponentName
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.net.Uri
-import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
 import androidx.media2.common.*
+import androidx.media2.customplayer.ExoPlayerMediaPlayer2Impl
+import androidx.media2.customplayer.ExoPlayerWrapper
 import androidx.media2.customplayer.MediaPlayer
+import androidx.media2.player.StatsListener
 import androidx.media2.session.LibraryResult
 import androidx.media2.session.MediaLibraryService
 import androidx.media2.session.MediaSession
-import androidx.media2.session.SessionResult
+import com.google.android.exoplayer2.ExoPlayerLibraryInfo
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.metadata.Metadata
+import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import danbroid.demo.media2.R
 
 class AudioService : MediaLibraryService() {
@@ -30,6 +36,7 @@ class AudioService : MediaLibraryService() {
     log.info("onCreate()")
     super.onCreate()
 
+    log.error("PLAYER VERSION: ${ExoPlayerLibraryInfo.VERSION_SLASHY}")
     player = MediaPlayer(applicationContext)
 
     player.setAudioAttributes(
@@ -38,6 +45,42 @@ class AudioService : MediaLibraryService() {
         .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
         .build()
     )
+
+    val exoPlayerImpl2 = player.javaClass.getDeclaredField("mPlayer").let {
+      it.isAccessible = true
+      it.get(player) as ExoPlayerMediaPlayer2Impl
+    }
+
+    val exoPlayerWrapper = exoPlayerImpl2.javaClass.getDeclaredField("mPlayer").let {
+      it.isAccessible = true
+      it.get(exoPlayerImpl2) as ExoPlayerWrapper
+    }
+
+    val exoPlayer = exoPlayerWrapper.javaClass.getDeclaredField("mPlayer").let {
+      it.isAccessible = true
+      it.get(exoPlayerWrapper) as SimpleExoPlayer
+    }
+
+    exoPlayer.addAnalyticsListener(object : StatsListener {
+      override fun onTracksChanged(
+        eventTime: AnalyticsListener.EventTime,
+        trackGroups: TrackGroupArray,
+        trackSelections: TrackSelectionArray
+      ) {
+        log.error("onTracksChanged()")
+        for (n in 0 until trackGroups.length) {
+          for (m in 0 until trackGroups[n].length) {
+            trackGroups[n].getFormat(m).also {
+              log.error("METADATA: ${it.metadata}")
+            }
+          }
+        }
+      }
+
+      override fun onMetadata(eventTime: AnalyticsListener.EventTime, metadata: Metadata) {
+        log.error("onMetadata() $metadata")
+      }
+    })
 
 
     /*player.registerPlayerCallback({}, object : SessionPlayer.PlayerCallback() {
@@ -99,15 +142,6 @@ class AudioService : MediaLibraryService() {
       return BaseResult.RESULT_SUCCESS
     }
 
-    override fun onSetMediaUri(
-      session: MediaSession,
-      controller: MediaSession.ControllerInfo,
-      uri: Uri,
-      extras: Bundle?
-    ): Int {
-      log.warn("onSetMediaUrl() $uri")
-      return SessionResult.RESULT_SUCCESS
-    }
 
     override fun onCreateMediaItem(
       session: MediaSession,
@@ -130,7 +164,7 @@ class AudioService : MediaLibraryService() {
               MediaMetadata.METADATA_KEY_DISPLAY_ICON,
               BitmapFactory.decodeResource(
                 resources,
-                R.drawable.media_session_service_notification_ic_music_note
+                R.drawable.cast_album_art_placeholder
               )
             )
             .putString(MediaMetadata.METADATA_KEY_MEDIA_URI, mediaId)

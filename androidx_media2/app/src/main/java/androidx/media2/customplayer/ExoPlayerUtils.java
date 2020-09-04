@@ -24,10 +24,6 @@ import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_ME
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_VIDEO;
-import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_IO;
-import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_MALFORMED;
-import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_TIMED_OUT;
-import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -114,7 +110,7 @@ import java.net.SocketTimeoutException;
                     .createMediaSource(Uri.EMPTY);
         } else if (mediaItem instanceof CallbackMediaItem) {
             CallbackMediaItem callbackMediaItem = (CallbackMediaItem) mediaItem;
-            dataSourceFactory = androidx.media2.customplayer.DataSourceCallbackDataSource.getFactory(
+            dataSourceFactory = DataSourceCallbackDataSource.getFactory(
                     callbackMediaItem.getDataSourceCallback());
             return new ExtractorMediaSource.Factory(dataSourceFactory)
                     .setExtractorsFactory(sExtractorsFactory)
@@ -153,13 +149,13 @@ import java.net.SocketTimeoutException;
     /** Returns the ExoPlayer seek parameters corresponding to the given seek mode. */
     public static SeekParameters getSeekParameters(int seekMode) {
         switch (seekMode) {
-            case androidx.media2.customplayer.MediaPlayer2.SEEK_CLOSEST:
+            case MediaPlayer2.SEEK_CLOSEST:
                 return SeekParameters.EXACT;
-            case androidx.media2.customplayer.MediaPlayer2.SEEK_CLOSEST_SYNC:
+            case MediaPlayer2.SEEK_CLOSEST_SYNC:
                 return SeekParameters.CLOSEST_SYNC;
-            case androidx.media2.customplayer.MediaPlayer2.SEEK_NEXT_SYNC:
+            case MediaPlayer2.SEEK_NEXT_SYNC:
                 return SeekParameters.NEXT_SYNC;
-            case androidx.media2.customplayer.MediaPlayer2.SEEK_PREVIOUS_SYNC:
+            case MediaPlayer2.SEEK_PREVIOUS_SYNC:
                 return SeekParameters.PREVIOUS_SYNC;
             default:
                 throw new IllegalArgumentException();
@@ -171,16 +167,16 @@ import java.net.SocketTimeoutException;
         if (exception.type == ExoPlaybackException.TYPE_SOURCE) {
             IOException sourceException = exception.getSourceException();
             if (sourceException instanceof ParserException) {
-                return MEDIA_ERROR_MALFORMED;
+                return MediaPlayer2.MEDIA_ERROR_MALFORMED;
             } else {
                 if (sourceException instanceof HttpDataSource.HttpDataSourceException
                         && sourceException.getCause() instanceof SocketTimeoutException) {
-                    return MEDIA_ERROR_TIMED_OUT;
+                    return MediaPlayer2.MEDIA_ERROR_TIMED_OUT;
                 }
-                return MEDIA_ERROR_IO;
+                return MediaPlayer2.MEDIA_ERROR_IO;
             }
         }
-        return MEDIA_ERROR_UNKNOWN;
+        return MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     }
 
     /** Returns the ExoPlayer track type for the given track type. */

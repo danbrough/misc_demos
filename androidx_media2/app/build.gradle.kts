@@ -20,7 +20,7 @@ android {
     targetSdkVersion(ProjectVersions.SDK_VERSION)
     versionCode = ProjectVersions.BUILD_VERSION
     versionName = ProjectVersions.VERSION_NAME
-    // multiDexEnabled = true
+    multiDexEnabled = true
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
 
@@ -71,17 +71,16 @@ dependencies {
   implementation(AndroidX.coreKtx)
   implementation(Kotlin.stdlib.jdk8)
 
-  api(AndroidX.media2.session)
-  //api(AndroidX.media2.exoplayer)
-
- // api(AndroidX.media2.player)
-  api(AndroidX.media2.common)
+  val media_version = "1.1.0-alpha01"
+  //implementation("androidx.media2:media2-exoplayer:$media_version")
+  //implementation("androidx.media2:media2-player:$media_version")
+  implementation("androidx.media2:media2-session:$media_version")
+  implementation("androidx.media2:media2-common:$media_version")
 
   implementation("com.google.guava:guava:29.0-android")
 
 
   api(AndroidX.concurrent.futures)
-  api(AndroidX.media2.common)
   //implementation("com.github.danbrough.exoplayer:extension-media2:2.12.0-dan02")
 
   //implementation(Libs.slf4j_android)
@@ -118,7 +117,6 @@ dependencies {
   }
 
   implementation(Square.okHttp3.okHttp)
-
 
 
 //  implementation(project(":menu"))

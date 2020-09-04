@@ -16,17 +16,8 @@
 
 package androidx.media2.customplayer;
 
-import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_AUDIO;
-import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_METADATA;
-import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
-import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN;
-import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_VIDEO;
-import static androidx.media2.customplayer.TextRenderer.TRACK_TYPE_CEA608;
-import static androidx.media2.customplayer.TextRenderer.TRACK_TYPE_CEA708;
-import static androidx.media2.customplayer.TextRenderer.TRACK_TYPE_WEBVTT;
-import static androidx.media2.customplayer.TrackSelector.InternalTextTrackInfo.UNSET;
-
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.media.MediaFormat;
 import android.util.SparseArray;
 
@@ -34,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import androidx.media2.common.MediaItem;
 import androidx.media2.common.SessionPlayer.TrackInfo;
+
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.source.TrackGroup;
@@ -48,8 +40,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_AUDIO;
+import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_METADATA;
+import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
+import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN;
+import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_VIDEO;
+import static androidx.media2.customplayer.TrackSelector.InternalTextTrackInfo.UNSET;
+
 /**
- * Manages track selection for {@link ExoPlayerWrapper}.
+ * Manages track selection for {@link androidx.media2.customplayer.ExoPlayerWrapper}.
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
 /* package */ final class TrackSelector {
@@ -58,7 +57,7 @@ import java.util.List;
 
     private int mNextTrackId;
     private MediaItem mCurrentMediaItem;
-    private final androidx.media2.customplayer.TextRenderer mTextRenderer;
+    private final TextRenderer mTextRenderer;
     private final DefaultTrackSelector mDefaultTrackSelector;
     private final SparseArray<InternalTrackInfo> mAudioTracks;
     private final SparseArray<InternalTrackInfo> mVideoTracks;
@@ -72,9 +71,9 @@ import java.util.List;
     private InternalTextTrackInfo mSelectedTextTrack;
     private int mPlayerTextTrackIndex;
 
-    TrackSelector(androidx.media2.customplayer.TextRenderer textRenderer) {
+    TrackSelector(Context context, TextRenderer textRenderer) {
         mTextRenderer = textRenderer;
-        mDefaultTrackSelector = new DefaultTrackSelector();
+        mDefaultTrackSelector = new DefaultTrackSelector(context);
         mAudioTracks = new SparseArray<>();
         mVideoTracks = new SparseArray<>();
         mMetadataTracks = new SparseArray<>();
@@ -352,11 +351,11 @@ import java.util.List;
     private static int getTextTrackType(String sampleMimeType) {
         switch (sampleMimeType) {
             case MimeTypes.APPLICATION_CEA608:
-                return TRACK_TYPE_CEA608;
+                return TextRenderer.TRACK_TYPE_CEA608;
             case MimeTypes.APPLICATION_CEA708:
-                return TRACK_TYPE_CEA708;
+                return TextRenderer.TRACK_TYPE_CEA708;
             case MimeTypes.TEXT_VTT:
-                return TRACK_TYPE_WEBVTT;
+                return TextRenderer.TRACK_TYPE_WEBVTT;
             default:
                 throw new IllegalArgumentException("Unexpected text MIME type " + sampleMimeType);
         }
@@ -367,7 +366,7 @@ import java.util.List;
         final TrackInfo mExternalTrackInfo;
 
         InternalTrackInfo(int playerTrackIndex, int trackInfoType, @Nullable MediaFormat format,
-                int trackId) {
+                          int trackId) {
             mPlayerTrackIndex = playerTrackIndex;
             mExternalTrackInfo = new TrackInfo(trackId, trackInfoType, format,
                     trackInfoType != MEDIA_TRACK_TYPE_VIDEO);
@@ -383,10 +382,11 @@ import java.util.List;
 
         final int mType;
         final int mChannel;
-        @Nullable final Format mFormat;
+        @Nullable
+        final Format mFormat;
 
-        InternalTextTrackInfo(int playerTrackIndex, @androidx.media2.customplayer.TextRenderer.TextTrackType int type,
-                @Nullable Format format, int channel, int trackId) {
+        InternalTextTrackInfo(int playerTrackIndex, @TextRenderer.TextTrackType int type,
+                              @Nullable Format format, int channel, int trackId) {
             super(playerTrackIndex, getTrackInfoType(type), getMediaFormat(type, format, channel),
                     trackId);
 
@@ -395,30 +395,30 @@ import java.util.List;
             mFormat = format;
         }
 
-        private static int getTrackInfoType(@androidx.media2.customplayer.TextRenderer.TextTrackType int type) {
+        private static int getTrackInfoType(@TextRenderer.TextTrackType int type) {
             // Hide WebVTT tracks, like the NuPlayer-based implementation
             // (see [internal: b/120081663]).
-            return type == TRACK_TYPE_WEBVTT ? TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN
+            return type == TextRenderer.TRACK_TYPE_WEBVTT ? TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN
                     : TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
         }
 
-        private static MediaFormat getMediaFormat(@androidx.media2.customplayer.TextRenderer.TextTrackType int type,
-                @Nullable Format format, int channel) {
+        private static MediaFormat getMediaFormat(@TextRenderer.TextTrackType int type,
+                                                  @Nullable Format format, int channel) {
             @C.SelectionFlags int selectionFlags;
-            if (type == TRACK_TYPE_CEA608 && channel == 0) {
+            if (type == TextRenderer.TRACK_TYPE_CEA608 && channel == 0) {
                 selectionFlags = C.SELECTION_FLAG_AUTOSELECT | C.SELECTION_FLAG_DEFAULT;
-            } else if (type == TRACK_TYPE_CEA708 && channel == 1) {
+            } else if (type == TextRenderer.TRACK_TYPE_CEA708 && channel == 1) {
                 selectionFlags = C.SELECTION_FLAG_DEFAULT;
             } else {
                 selectionFlags = format == null ? 0 : format.selectionFlags;
             }
             String language = format == null ? C.LANGUAGE_UNDETERMINED : format.language;
             MediaFormat mediaFormat = new MediaFormat();
-            if (type == TRACK_TYPE_CEA608) {
+            if (type == TextRenderer.TRACK_TYPE_CEA608) {
                 mediaFormat.setString(MediaFormat.KEY_MIME, MIMETYPE_TEXT_CEA_608);
-            } else if (type == TRACK_TYPE_CEA708) {
+            } else if (type == TextRenderer.TRACK_TYPE_CEA708) {
                 mediaFormat.setString(MediaFormat.KEY_MIME, MIMETYPE_TEXT_CEA_708);
-            } else if (type == TRACK_TYPE_WEBVTT) {
+            } else if (type == TextRenderer.TRACK_TYPE_WEBVTT) {
                 mediaFormat.setString(MediaFormat.KEY_MIME, MimeTypes.TEXT_VTT);
             } else {
                 // Unexpected.

@@ -16,7 +16,6 @@
 
 package androidx.media2.customplayer;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -36,7 +35,9 @@ import androidx.media2.common.MediaItem;
 import androidx.media2.common.SessionPlayer.TrackInfo;
 import androidx.media2.common.SubtitleData;
 import androidx.media2.common.UriMediaItem;
+
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
@@ -64,9 +65,6 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.RenderersFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,15 +78,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
-
 /**
  * Wraps an ExoPlayer instance and provides methods and notifies events like those in the
- * {@link androidx.media2.customplayer.MediaPlayer2} API. {@link #getLooper()} returns the looper on which all other method calls
+ * {@link MediaPlayer2} API. {@link #getLooper()} returns the looper on which all other method calls
  * must be made.
  */
-@SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
-/* package */ public final class ExoPlayerWrapper {
+/* package */public final class ExoPlayerWrapper {
 
     private static final String TAG = "ExoPlayerWrapper";
 
@@ -151,7 +146,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         /**
          * Called when timed metadata is handled.
          */
-        void onTimedMetadata(MediaItem mediaItem, androidx.media2.customplayer.TimedMetaData timedMetaData);
+        void onTimedMetadata(MediaItem mediaItem, TimedMetaData timedMetaData);
 
         /**
          * Called when playback transitions to the next media item.
@@ -171,7 +166,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         /**
          * Called when a change in the progression of media time is detected.
          */
-        void onMediaTimeDiscontinuity(MediaItem mediaItem, androidx.media2.customplayer.MediaTimestamp mediaTimestamp);
+        void onMediaTimeDiscontinuity(MediaItem mediaItem, MediaTimestamp mediaTimestamp);
 
         /**
          * Called when playback of the item list has ended.
@@ -199,7 +194,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     private SimpleExoPlayer mPlayer;
     private Handler mPlayerHandler;
     private DefaultAudioSink mAudioSink;
-    private androidx.media2.customplayer.TrackSelector mTrackSelector;
+    private TrackSelector mTrackSelector;
     private MediaItemQueue mMediaItemQueue;
 
     private boolean mHasAudioAttributes;
@@ -221,7 +216,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
      * @param listener A listener for player wrapper events.
      * @param looper   The looper that will be used for player events.
      */
-    ExoPlayerWrapper(Context context, Listener listener, Looper looper) {
+    public ExoPlayerWrapper(Context context, Listener listener, Looper looper) {
         mContext = context.getApplicationContext();
         mListener = listener;
         mLooper = looper;
@@ -261,34 +256,34 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         mPlayer.setPlayWhenReady(false);
     }
 
-    public void seekTo(long position, @androidx.media2.customplayer.MediaPlayer2.SeekMode int mode) {
-        mPlayer.setSeekParameters(androidx.media2.customplayer.ExoPlayerUtils.getSeekParameters(mode));
+    public void seekTo(long position, @MediaPlayer2.SeekMode int mode) {
+        mPlayer.setSeekParameters(ExoPlayerUtils.getSeekParameters(mode));
         mPlayer.seekTo(position);
     }
 
     public long getCurrentPosition() {
-        Preconditions.checkState(getState() != androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_IDLE);
+        Preconditions.checkState(getState() != MediaPlayer2.PLAYER_STATE_IDLE);
         return Math.max(0, mPlayer.getCurrentPosition());
     }
 
     public long getDuration() {
-        Preconditions.checkState(getState() != androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_IDLE);
+        Preconditions.checkState(getState() != MediaPlayer2.PLAYER_STATE_IDLE);
         long duration = mPlayer.getDuration();
         return duration == C.TIME_UNSET ? -1 : duration;
     }
 
     public long getBufferedPosition() {
-        Preconditions.checkState(getState() != androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_IDLE);
+        Preconditions.checkState(getState() != MediaPlayer2.PLAYER_STATE_IDLE);
         return mPlayer.getBufferedPosition();
     }
 
-    public @androidx.media2.customplayer.MediaPlayer2.MediaPlayer2State
+    public @MediaPlayer2.MediaPlayer2State
     int getState() {
         if (hasError()) {
-            return androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_ERROR;
+            return MediaPlayer2.PLAYER_STATE_ERROR;
         }
         if (mNewlyPrepared) {
-            return androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_PREPARED;
+            return MediaPlayer2.PLAYER_STATE_PREPARED;
         }
         int state = mPlayer.getPlaybackState();
         boolean playWhenReady = mPlayer.getPlayWhenReady();
@@ -296,13 +291,13 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         // groups.
         switch (state) {
             case Player.STATE_IDLE:
-                return androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_IDLE;
+                return MediaPlayer2.PLAYER_STATE_IDLE;
             case Player.STATE_ENDED:
             case Player.STATE_BUFFERING:
-                return androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_PAUSED;
+                return MediaPlayer2.PLAYER_STATE_PAUSED;
             case Player.STATE_READY:
-                return playWhenReady ? androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_PLAYING
-                        : androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_PAUSED;
+                return playWhenReady ? MediaPlayer2.PLAYER_STATE_PLAYING
+                        : MediaPlayer2.PLAYER_STATE_PAUSED;
             default:
                 throw new IllegalStateException();
         }
@@ -340,7 +335,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
 
     public void setAudioAttributes(AudioAttributesCompat audioAttributes) {
         mHasAudioAttributes = true;
-        mPlayer.setAudioAttributes(androidx.media2.customplayer.ExoPlayerUtils.getAudioAttributes(audioAttributes));
+        mPlayer.setAudioAttributes(ExoPlayerUtils.getAudioAttributes(audioAttributes));
 
         // Reset the audio session ID, as it gets cleared by setting audio attributes.
         if (mAudioSessionId != C.AUDIO_SESSION_ID_UNSET) {
@@ -350,7 +345,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
 
     public AudioAttributesCompat getAudioAttributes() {
         return mHasAudioAttributes
-                ? androidx.media2.customplayer.ExoPlayerUtils.getAudioAttributesCompat(mPlayer.getAudioAttributes()) : null;
+                ? ExoPlayerUtils.getAudioAttributesCompat(mPlayer.getAudioAttributes()) : null;
     }
 
     public void setAudioSessionId(int audioSessionId) {
@@ -380,8 +375,8 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     public void setPlaybackParams(androidx.media2.customplayer.PlaybackParams playbackParams2) {
         // TODO(b/80232248): Decide how to handle fallback modes, which ExoPlayer doesn't support.
         mPlaybackParams = playbackParams2;
-        mPlayer.setPlaybackParameters(androidx.media2.customplayer.ExoPlayerUtils.getPlaybackParameters(mPlaybackParams));
-        if (getState() == androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_PLAYING) {
+        mPlayer.setPlaybackParameters(ExoPlayerUtils.getPlaybackParameters(mPlaybackParams));
+        if (getState() == MediaPlayer2.PLAYER_STATE_PLAYING) {
             mListener.onMediaTimeDiscontinuity(getCurrentMediaItem(), getTimestamp());
         }
     }
@@ -444,18 +439,18 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         }
         PersistableBundle bundle = new PersistableBundle();
         if (primaryVideoMimeType != null) {
-            bundle.putString(androidx.media2.customplayer.MediaPlayer2.MetricsConstants.MIME_TYPE_VIDEO, primaryVideoMimeType);
+            bundle.putString(MediaPlayer2.MetricsConstants.MIME_TYPE_VIDEO, primaryVideoMimeType);
         }
         if (primaryAudioMimeType != null) {
-            bundle.putString(androidx.media2.customplayer.MediaPlayer2.MetricsConstants.MIME_TYPE_AUDIO, primaryAudioMimeType);
+            bundle.putString(MediaPlayer2.MetricsConstants.MIME_TYPE_AUDIO, primaryAudioMimeType);
         }
-        bundle.putLong(androidx.media2.customplayer.MediaPlayer2.MetricsConstants.DURATION,
+        bundle.putLong(MediaPlayer2.MetricsConstants.DURATION,
                 durationMs == C.TIME_UNSET ? -1 : durationMs);
-        bundle.putLong(androidx.media2.customplayer.MediaPlayer2.MetricsConstants.PLAYING, playingTimeMs);
+        bundle.putLong(MediaPlayer2.MetricsConstants.PLAYING, playingTimeMs);
         return bundle;
     }
 
-    public androidx.media2.customplayer.MediaTimestamp getTimestamp() {
+    public MediaTimestamp getTimestamp() {
         long positionUs = mPlayer.getPlaybackState() == Player.STATE_IDLE
                 ? 0L : C.msToUs(getCurrentPosition());
         float speed = mPlayer.getPlaybackState() == Player.STATE_READY && mPlayer.getPlayWhenReady()
@@ -463,12 +458,12 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         return new MediaTimestamp(positionUs, System.nanoTime(), speed);
     }
 
-    private static final Logger log  = LoggerFactory.getLogger(SimpleExoPlayer.class);
+    private static final Logger log = LoggerFactory.getLogger(ExoPlayerWrapper.class);
 
     public void reset() {
         if (mPlayer != null) {
             mPlayer.setPlayWhenReady(false);
-            if (getState() != androidx.media2.customplayer.MediaPlayer2.PLAYER_STATE_IDLE) {
+            if (getState() != MediaPlayer2.PLAYER_STATE_IDLE) {
                 mListener.onMediaTimeDiscontinuity(getCurrentMediaItem(), getTimestamp());
             }
             mPlayer.release();
@@ -477,36 +472,52 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         ComponentListener listener = new ComponentListener();
         mAudioSink = new DefaultAudioSink(
                 AudioCapabilities.getCapabilities(mContext), new AudioProcessor[0]);
-        androidx.media2.customplayer.TextRenderer textRenderer = new androidx.media2.customplayer.TextRenderer(listener);
-
-        /*RenderersFactory renderersFactory = new RenderersFactory(mContext, mAudioSink,
-                textRenderer);*/
-        RenderersFactory renderersFactory = new  DefaultRenderersFactory(mContext);
-
-        mTrackSelector = new androidx.media2.customplayer.TrackSelector(textRenderer);
-
-        log.warn("creating player",new Exception("CREATED PLAYER"));
-
-        mPlayer =  new com.google.android.exoplayer2.SimpleExoPlayer.Builder(mContext, renderersFactory)
+        TextRenderer textRenderer = new TextRenderer(listener);
+        RenderersFactory renderersFactory = new RenderersFactory(mContext, mAudioSink,
+                textRenderer);
+        mTrackSelector = new TrackSelector(mContext,textRenderer);
+        mPlayer = new SimpleExoPlayer.Builder(mContext, renderersFactory)
                 .setTrackSelector(mTrackSelector.getPlayerTrackSelector())
                 .setBandwidthMeter(mBandwidthMeter)
                 .setLooper(mLooper)
                 .build();
-
-        mPlayer.getAnalyticsCollector().addListener(new AnalyticsListener() {
-            @Override
-            public void onMetadata(EventTime eventTime, Metadata metadata) {
-                log.error("metadata: $metadata");
-            }
-        });
-
-
         mPlayerHandler = new Handler(mPlayer.getPlaybackLooper());
         mMediaItemQueue = new MediaItemQueue(mContext, mPlayer, mListener);
         mPlayer.addListener(listener);
         // TODO(b/80232248): Switch to AnalyticsListener once default methods work.
         mPlayer.setVideoDebugListener(listener);
-        //mPlayer.addMetadataOutput(listener);
+        mPlayer.addMetadataOutput(listener);
+        log.warn("adding analytics listener..");
+        mPlayer.addAnalyticsListener(new AnalyticsListener() {
+   /*         override fun onTracksChanged(eventTime: AnalyticsListener.EventTime, trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
+                log.error("onTracksChanged()")
+                for (n in 0 until trackGroups.length) {
+                    for (m in 0 until trackGroups[n].length) {
+                        trackGroups[n].getFormat(m).also {
+                            log.error("METADATA: ${it.metadata}")
+                        }
+                    }
+                }
+            }*/
+
+
+            @Override
+            public void onTracksChanged(EventTime eventTime, TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+                log.error("onTracksChanged()");
+                for(int n =0; n < trackGroups.length; n++){
+                    TrackGroup trackGroup = trackGroups.get(n);
+                    for(int m = 0; m < trackGroup.length; m++){
+                        log.error("METADATA: " + trackGroup.getFormat(m).metadata);
+                    }
+                }
+            }
+
+            @Override
+            public void onMetadata(EventTime eventTime, Metadata metadata) {
+                log.error("onMetadata(): " + metadata);
+            }
+        });
+
         mVideoWidth = 0;
         mVideoHeight = 0;
         mPrepared = false;
@@ -633,7 +644,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     void handlePlayerError(ExoPlaybackException exception) {
         mListener.onMediaTimeDiscontinuity(getCurrentMediaItem(), getTimestamp());
-        mListener.onError(getCurrentMediaItem(), androidx.media2.customplayer.ExoPlayerUtils.getError(exception));
+        mListener.onError(getCurrentMediaItem(), ExoPlayerUtils.getError(exception));
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
@@ -731,7 +742,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     final class ComponentListener extends Player.DefaultEventListener
             implements VideoRendererEventListener, AudioListener,
-            androidx.media2.customplayer.TextRenderer.Output, MetadataOutput {
+            TextRenderer.Output, MetadataOutput {
 
         // DefaultEventListener implementation.
 
@@ -963,7 +974,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
             List<MediaSource> mediaSources = new ArrayList<>(mediaItems.size());
             for (MediaItem mediaItem : mediaItems) {
                 if (mediaItem == null) {
-                    mListener.onError(/* mediaItem= */ null, MEDIA_ERROR_UNKNOWN);
+                    mListener.onError(/* mediaItem= */ null, MediaPlayer2.MEDIA_ERROR_UNKNOWN);
                     return;
                 }
                 appendMediaItem(
@@ -1075,7 +1086,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
             }
 
             // Create a source for the item.
-            MediaSource mediaSource = androidx.media2.customplayer.ExoPlayerUtils.createUnclippedMediaSource(
+            MediaSource mediaSource = ExoPlayerUtils.createUnclippedMediaSource(
                     mContext, dataSourceFactory, mediaItem);
 
             // Apply clipping if needed.

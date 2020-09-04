@@ -113,7 +113,7 @@ import java.io.InputStream;
         int bytesRead;
         synchronized (mLock) {
             // The file descriptor position is shared across all users, so seek before reading.
-            androidx.media2.customplayer.FileDescriptorUtil.seek(mFileDescriptor, mPosition);
+            FileDescriptorUtil.seek(mFileDescriptor, mPosition);
             bytesRead = Preconditions.checkNotNull(mInputStream).read(buffer, offset, bytesToRead);
             if (bytesRead == -1) {
                 if (mBytesRemaining != C.LENGTH_UNSET) {

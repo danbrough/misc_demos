@@ -222,7 +222,7 @@ import java.util.concurrent.Executor;
  * MediaPlayer2 objects on a thread that has its own running Looper. This can be done on the main UI
  * thread, which has a Looper.</p>
  */
-/* package */ abstract class MediaPlayer2 {
+/* package */public abstract class MediaPlayer2 {
 
     /**
      * Create a MediaPlayer2 object.
@@ -232,7 +232,7 @@ import java.util.concurrent.Executor;
      */
     @NonNull
     public static MediaPlayer2 create(@NonNull Context context) {
-        return new ExoPlayerMediaPlayer2Impl(context);
+        return new androidx.media2.customplayer.ExoPlayerMediaPlayer2Impl(context);
     }
 
     protected MediaPlayer2() { }
@@ -634,7 +634,7 @@ import java.util.concurrent.Executor;
     public abstract Object seekTo(long msec, @SeekMode int mode);
 
     /**
-     * Gets current playback position as a {@link MediaTimestamp}.
+     * Gets current playback position as a {@link androidx.media2.customplayer.MediaTimestamp}.
      * <p>
      * The MediaTimestamp represents how the media time correlates to the system time in
      * a linear fashion using an anchor and a clock rate. During regular playback, the media
@@ -644,15 +644,15 @@ import java.util.concurrent.Executor;
      * <p>
      * To help users get current playback position, this method always anchors the timestamp
      * to the current {@link System#nanoTime system time}, so
-     * {@link MediaTimestamp#getAnchorMediaTimeUs} can be used as current playback position.
+     * {@link androidx.media2.customplayer.MediaTimestamp#getAnchorMediaTimeUs} can be used as current playback position.
      *
      * @return a MediaTimestamp object if a timestamp is available, or {@code null} if no timestamp
      *         is available, e.g. because the media player has not been initialized.
      *
-     * @see MediaTimestamp
+     * @see androidx.media2.customplayer.MediaTimestamp
      */
     @Nullable
-    public abstract MediaTimestamp getTimestamp();
+    public abstract androidx.media2.customplayer.MediaTimestamp getTimestamp();
 
     /**
      * Resets the MediaPlayer2 to its uninitialized state. After calling
@@ -896,7 +896,7 @@ import java.util.concurrent.Executor;
          * @param mp the MediaPlayer2 the media time pertains to.
          * @param item the MediaItem of this media item
          * @param timestamp the timestamp that correlates media time, system time and clock rate,
-         *     or {@link MediaTimestamp#TIMESTAMP_UNKNOWN} in an error case.
+         *     or {@link androidx.media2.customplayer.MediaTimestamp#TIMESTAMP_UNKNOWN} in an error case.
          */
         public void onMediaTimeDiscontinuity(
                 MediaPlayer2 mp, MediaItem item, MediaTimestamp timestamp) { }

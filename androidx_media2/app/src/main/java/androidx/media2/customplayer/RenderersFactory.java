@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.Handler;
 
 import androidx.annotation.Nullable;
-
 import com.google.android.exoplayer2.Renderer;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.audio.AudioSink;
@@ -36,7 +35,7 @@ import com.google.android.exoplayer2.video.MediaCodecVideoRenderer;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 
 /**
- * Factory for renderers for {@link ExoPlayerWrapper}.
+ * Factory for renderers for {@link androidx.media2.customplayer.ExoPlayerWrapper}.
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
 /* package */ final class RenderersFactory
@@ -52,12 +51,12 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
 
     private final Context mContext;
     private final AudioSink mAudioSink;
-    private final androidx.media2.customplayer.TextRenderer mTextRenderer;
+    private final TextRenderer mTextRenderer;
 
     RenderersFactory(
             Context context,
             AudioSink audioSink,
-            androidx.media2.customplayer.TextRenderer textRenderer) {
+            TextRenderer textRenderer) {
         mContext = context;
         mAudioSink = audioSink;
         mTextRenderer = textRenderer;
@@ -71,7 +70,7 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
             TextOutput textRendererOutput,
             MetadataOutput metadataRendererOutput,
             @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager) {
-        return new Renderer[]{
+        return new Renderer[] {
                 new MediaCodecVideoRenderer(
                         mContext,
                         MediaCodecSelector.DEFAULT,
