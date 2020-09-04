@@ -57,6 +57,7 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -475,11 +476,13 @@ import java.util.Map;
         TextRenderer textRenderer = new TextRenderer(listener);
         RenderersFactory renderersFactory = new RenderersFactory(mContext, mAudioSink,
                 textRenderer);
+        DefaultRenderersFactory renderersFactory2 = new DefaultRenderersFactory(mContext);
         mTrackSelector = new TrackSelector(mContext,textRenderer);
         mPlayer = new SimpleExoPlayer.Builder(mContext, renderersFactory)
                 .setTrackSelector(mTrackSelector.getPlayerTrackSelector())
+               // .setTrackSelector(new DefaultTrackSelector(mContext))
                 .setBandwidthMeter(mBandwidthMeter)
-                .setLooper(mLooper)
+               .setLooper(mLooper)
                 .build();
         mPlayerHandler = new Handler(mPlayer.getPlaybackLooper());
         mMediaItemQueue = new MediaItemQueue(mContext, mPlayer, mListener);
@@ -664,10 +667,13 @@ import java.util.Map;
     void handleMetadata(Metadata metadata) {
         int length = metadata.length();
         for (int i = 0; i < length; i++) {
-            androidx.media2.customplayer.ByteArrayFrame byteArrayFrame = (androidx.media2.customplayer.ByteArrayFrame) metadata.get(i);
-            mListener.onTimedMetadata(
-                    getCurrentMediaItem(),
-                    new TimedMetaData(byteArrayFrame.mTimestamp, byteArrayFrame.mData));
+            Metadata.Entry entry = metadata.get(i);
+            if (entry instanceof ByteArrayFrame) {
+                androidx.media2.customplayer.ByteArrayFrame byteArrayFrame = (androidx.media2.customplayer.ByteArrayFrame) metadata.get(i);
+                mListener.onTimedMetadata(
+                        getCurrentMediaItem(),
+                        new TimedMetaData(byteArrayFrame.mTimestamp, byteArrayFrame.mData));
+            }
         }
     }
 
@@ -740,8 +746,8 @@ import java.util.Map;
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final class ComponentListener extends Player.DefaultEventListener
-            implements VideoRendererEventListener, AudioListener,
+    final class ComponentListener
+            implements VideoRendererEventListener, AudioListener,Player.EventListener,
             TextRenderer.Output, MetadataOutput {
 
         // DefaultEventListener implementation.

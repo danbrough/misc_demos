@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.audio.MediaCodecAudioRenderer;
 import com.google.android.exoplayer2.drm.DrmSessionManager;
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
+import com.google.android.exoplayer2.metadata.MetadataDecoderFactory;
 import com.google.android.exoplayer2.metadata.MetadataOutput;
 import com.google.android.exoplayer2.metadata.MetadataRenderer;
 import com.google.android.exoplayer2.text.TextOutput;
@@ -92,7 +93,7 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
                 new MetadataRenderer(
                         metadataRendererOutput,
                         eventHandler.getLooper(),
-                        new androidx.media2.customplayer.Id3MetadataDecoderFactory())
+                        MetadataDecoderFactory.DEFAULT)
         };
     }
 

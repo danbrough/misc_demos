@@ -87,8 +87,8 @@ import static androidx.media2.customplayer.TrackSelector.InternalTextTrackInfo.U
         // text renderer. By default, metadata tracks are not selected.
         mDefaultTrackSelector.setParameters(
                 new DefaultTrackSelector.ParametersBuilder()
-                        .setSelectUndeterminedTextLanguage(true)
-                        .setRendererDisabled(RenderersFactory.METADATA_RENDERER_INDEX, /* disabled= */ true));
+                        .setSelectUndeterminedTextLanguage(true));
+                        //.setRendererDisabled(RenderersFactory.METADATA_RENDERER_INDEX, /* disabled= */ true));
     }
 
     public DefaultTrackSelector getPlayerTrackSelector() {
