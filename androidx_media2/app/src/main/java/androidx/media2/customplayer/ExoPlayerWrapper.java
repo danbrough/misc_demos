@@ -476,15 +476,17 @@ import java.util.Map;
         TextRenderer textRenderer = new TextRenderer(listener);
         RenderersFactory renderersFactory = new RenderersFactory(mContext, mAudioSink,
                 textRenderer);
+
         DefaultRenderersFactory renderersFactory2 = new DefaultRenderersFactory(mContext);
         mTrackSelector = new TrackSelector(mContext,textRenderer);
         mPlayer = new SimpleExoPlayer.Builder(mContext, renderersFactory)
                 .setTrackSelector(mTrackSelector.getPlayerTrackSelector())
                // .setTrackSelector(new DefaultTrackSelector(mContext))
                 .setBandwidthMeter(mBandwidthMeter)
-               .setLooper(mLooper)
+               //.setLooper(mLooper)
                 .build();
         mPlayerHandler = new Handler(mPlayer.getPlaybackLooper());
+
         mMediaItemQueue = new MediaItemQueue(mContext, mPlayer, mListener);
         mPlayer.addListener(listener);
         // TODO(b/80232248): Switch to AnalyticsListener once default methods work.

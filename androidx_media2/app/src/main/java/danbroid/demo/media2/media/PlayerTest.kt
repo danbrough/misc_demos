@@ -108,6 +108,7 @@ class ExoWrapperTest(context: Context) : PlayerTest(context) {
     ExoPlayerWrapper(context, listener, Looper.getMainLooper()).also {
       log.warn("calling reset")
       it.reset()
+      it.prepare()
     }
   }
 
@@ -125,7 +126,6 @@ class ExoWrapperTest(context: Context) : PlayerTest(context) {
         )
         .build()
     )
-    player.prepare()
     player.play()
 
   }
