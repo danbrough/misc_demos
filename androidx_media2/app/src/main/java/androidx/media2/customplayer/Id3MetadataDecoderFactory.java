@@ -29,7 +29,7 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import java.util.Arrays;
 
 /**
- * Factory for metadata decoders that provide raw ID3 data in {@link androidx.media2.customplayer.ByteArrayFrame}s.
+ * Factory for metadata decoders that provide raw ID3 data in {@link ByteArrayFrame}s.
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
 /* package */ final class Id3MetadataDecoderFactory implements MetadataDecoderFactory {
@@ -47,7 +47,7 @@ import java.util.Arrays;
                 long timestamp = inputBuffer.timeUs;
                 byte[] bufferData = inputBuffer.data.array();
                 Metadata.Entry entry =
-                        new androidx.media2.customplayer.ByteArrayFrame(timestamp, Arrays.copyOf(bufferData, bufferData.length));
+                        new ByteArrayFrame(timestamp, Arrays.copyOf(bufferData, bufferData.length));
                 return new Metadata(entry);
             }
         };

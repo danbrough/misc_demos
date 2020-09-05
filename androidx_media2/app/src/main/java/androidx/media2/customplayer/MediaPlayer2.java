@@ -222,7 +222,7 @@ import java.util.concurrent.Executor;
  * MediaPlayer2 objects on a thread that has its own running Looper. This can be done on the main UI
  * thread, which has a Looper.</p>
  */
-/* package */public abstract class MediaPlayer2 {
+/* package */ public abstract class MediaPlayer2 {
 
     /**
      * Create a MediaPlayer2 object.
@@ -232,7 +232,7 @@ import java.util.concurrent.Executor;
      */
     @NonNull
     public static MediaPlayer2 create(@NonNull Context context) {
-        return new androidx.media2.customplayer.ExoPlayerMediaPlayer2Impl(context);
+        return new ExoPlayerMediaPlayer2Impl(context);
     }
 
     protected MediaPlayer2() { }
@@ -539,7 +539,7 @@ import java.util.concurrent.Executor;
     public abstract PersistableBundle getMetrics();
 
     /**
-     * Sets playback rate using {@link androidx.media2.customplayer.PlaybackParams}. The player sets its internal
+     * Sets playback rate using {@link PlaybackParams}. The player sets its internal
      * PlaybackParams to the given input. This does not change the player state. For example,
      * if this is called with the speed of 2.0f in {@link #PLAYER_STATE_PAUSED}, the player will
      * just update internal property and stay paused. Once the client calls {@link #play()}
@@ -550,7 +550,7 @@ import java.util.concurrent.Executor;
      * @return a token which can be used to cancel the operation later with {@link #cancel}.
      */
     // This is an asynchronous call.
-    public abstract Object setPlaybackParams(@NonNull androidx.media2.customplayer.PlaybackParams params);
+    public abstract Object setPlaybackParams(@NonNull PlaybackParams params);
 
     /**
      * Gets the playback params, containing the current playback rate.
@@ -634,7 +634,7 @@ import java.util.concurrent.Executor;
     public abstract Object seekTo(long msec, @SeekMode int mode);
 
     /**
-     * Gets current playback position as a {@link androidx.media2.customplayer.MediaTimestamp}.
+     * Gets current playback position as a {@link MediaTimestamp}.
      * <p>
      * The MediaTimestamp represents how the media time correlates to the system time in
      * a linear fashion using an anchor and a clock rate. During regular playback, the media
@@ -644,15 +644,15 @@ import java.util.concurrent.Executor;
      * <p>
      * To help users get current playback position, this method always anchors the timestamp
      * to the current {@link System#nanoTime system time}, so
-     * {@link androidx.media2.customplayer.MediaTimestamp#getAnchorMediaTimeUs} can be used as current playback position.
+     * {@link MediaTimestamp#getAnchorMediaTimeUs} can be used as current playback position.
      *
      * @return a MediaTimestamp object if a timestamp is available, or {@code null} if no timestamp
      *         is available, e.g. because the media player has not been initialized.
      *
-     * @see androidx.media2.customplayer.MediaTimestamp
+     * @see MediaTimestamp
      */
     @Nullable
-    public abstract androidx.media2.customplayer.MediaTimestamp getTimestamp();
+    public abstract MediaTimestamp getTimestamp();
 
     /**
      * Resets the MediaPlayer2 to its uninitialized state. After calling
@@ -831,10 +831,10 @@ import java.util.concurrent.Executor;
          * not controlled by the associated timestamp.
          * <p>
          * Currently only HTTP live streaming data URI's embedded with timed ID3 tags generates
-         * {@link androidx.media2.customplayer.TimedMetaData}.
+         * {@link TimedMetaData}.
          *
          * @see MediaPlayer2#selectTrack(int)
-         * @see androidx.media2.customplayer.TimedMetaData
+         * @see TimedMetaData
          *
          * @param mp the MediaPlayer2 associated with this callback
          * @param item the MediaItem of this media item
@@ -896,7 +896,7 @@ import java.util.concurrent.Executor;
          * @param mp the MediaPlayer2 the media time pertains to.
          * @param item the MediaItem of this media item
          * @param timestamp the timestamp that correlates media time, system time and clock rate,
-         *     or {@link androidx.media2.customplayer.MediaTimestamp#TIMESTAMP_UNKNOWN} in an error case.
+         *     or {@link MediaTimestamp#TIMESTAMP_UNKNOWN} in an error case.
          */
         public void onMediaTimeDiscontinuity(
                 MediaPlayer2 mp, MediaItem item, MediaTimestamp timestamp) { }

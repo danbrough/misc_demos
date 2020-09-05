@@ -61,7 +61,7 @@ class AudioService : MediaLibraryService() {
       it.get(exoPlayerWrapper) as SimpleExoPlayer
     }
 
-    exoPlayer.addAnalyticsListener(object : StatsListener {
+    exoPlayer.analyticsCollector.addListener(object : StatsListener {
       override fun onTracksChanged(
         eventTime: AnalyticsListener.EventTime,
         trackGroups: TrackGroupArray,

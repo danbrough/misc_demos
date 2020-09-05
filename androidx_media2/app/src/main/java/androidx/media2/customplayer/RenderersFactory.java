@@ -28,7 +28,6 @@ import com.google.android.exoplayer2.audio.MediaCodecAudioRenderer;
 import com.google.android.exoplayer2.drm.DrmSessionManager;
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
-import com.google.android.exoplayer2.metadata.MetadataDecoderFactory;
 import com.google.android.exoplayer2.metadata.MetadataOutput;
 import com.google.android.exoplayer2.metadata.MetadataRenderer;
 import com.google.android.exoplayer2.text.TextOutput;
@@ -36,7 +35,7 @@ import com.google.android.exoplayer2.video.MediaCodecVideoRenderer;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 
 /**
- * Factory for renderers for {@link androidx.media2.customplayer.ExoPlayerWrapper}.
+ * Factory for renderers for {@link ExoPlayerWrapper}.
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
 /* package */ final class RenderersFactory
@@ -93,7 +92,8 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
                 new MetadataRenderer(
                         metadataRendererOutput,
                         eventHandler.getLooper(),
-                        MetadataDecoderFactory.DEFAULT)
+                        com.google.android.exoplayer2.metadata.MetadataDecoderFactory.DEFAULT )
+                       // new Id3MetadataDecoderFactory())
         };
     }
 

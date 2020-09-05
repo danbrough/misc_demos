@@ -418,10 +418,10 @@ public final class MediaPlayer extends SessionPlayer {
     @Deprecated
     public static final int NO_TRACK_SELECTED = Integer.MIN_VALUE;
 
-    static final androidx.media2.customplayer.PlaybackParams DEFAULT_PLAYBACK_PARAMS = new androidx.media2.customplayer.PlaybackParams.Builder()
+    static final PlaybackParams DEFAULT_PLAYBACK_PARAMS = new PlaybackParams.Builder()
             .setSpeed(1f)
             .setPitch(1f)
-            .setAudioFallbackMode(androidx.media2.customplayer.PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT)
+            .setAudioFallbackMode(PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT)
             .build();
 
     private static final int END_OF_PLAYLIST = -1;
@@ -636,7 +636,7 @@ public final class MediaPlayer extends SessionPlayer {
     private boolean mClosed;
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final androidx.media2.customplayer.AudioFocusHandler mAudioFocusHandler;
+    final AudioFocusHandler mAudioFocusHandler;
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     final Object mPlaylistLock = new Object();
@@ -682,7 +682,7 @@ public final class MediaPlayer extends SessionPlayer {
         mPlayer.setEventCallback(mExecutor, new Mp2Callback());
         mPlayer.setDrmEventCallback(mExecutor, new Mp2DrmCallback());
         mCurrentShuffleIdx = NO_MEDIA_ITEM;
-        mAudioFocusHandler = new androidx.media2.customplayer.AudioFocusHandler(context, this);
+        mAudioFocusHandler = new AudioFocusHandler(context, this);
     }
 
     @GuardedBy("mPendingCommands")
@@ -926,7 +926,7 @@ public final class MediaPlayer extends SessionPlayer {
                 ArrayList<ResolvableFuture<PlayerResult>> futures = new ArrayList<>();
                 ResolvableFuture<PlayerResult> future = ResolvableFuture.create();
                 synchronized (mPendingCommands) {
-                    Object token = mPlayer.setPlaybackParams(new androidx.media2.customplayer.PlaybackParams.Builder(
+                    Object token = mPlayer.setPlaybackParams(new PlaybackParams.Builder(
                             mPlayer.getPlaybackParams())
                             .setSpeed(playbackSpeed).build());
                     addPendingCommandLocked(MediaPlayer2.CALL_COMPLETED_SET_PLAYBACK_PARAMS,
@@ -2149,13 +2149,13 @@ public final class MediaPlayer extends SessionPlayer {
      */
     @Override
     @NonNull
-    public androidx.media2.customplayer.VideoSize getVideoSize() {
+    public VideoSize getVideoSize() {
         synchronized (mStateLock) {
             if (mClosed) {
-                return new androidx.media2.customplayer.VideoSize(0, 0);
+                return new VideoSize(0, 0);
             }
         }
-        return new androidx.media2.customplayer.VideoSize(mPlayer.getVideoWidth(), mPlayer.getVideoHeight());
+        return new VideoSize(mPlayer.getVideoWidth(), mPlayer.getVideoHeight());
     }
 
 
@@ -2176,7 +2176,7 @@ public final class MediaPlayer extends SessionPlayer {
     }
 
     /**
-     * Sets playback params using {@link androidx.media2.customplayer.PlaybackParams}.
+     * Sets playback params using {@link PlaybackParams}.
      * <p>
      * On success, a {@link SessionPlayer.PlayerResult} is returned with
      * the current media item when the command completed.
@@ -2187,7 +2187,7 @@ public final class MediaPlayer extends SessionPlayer {
      * completed.
      */
     @NonNull
-    public ListenableFuture<PlayerResult> setPlaybackParams(@NonNull final androidx.media2.customplayer.PlaybackParams params) {
+    public ListenableFuture<PlayerResult> setPlaybackParams(@NonNull final PlaybackParams params) {
         if (params == null) {
             throw new NullPointerException("params shouldn't be null");
         }
@@ -3500,7 +3500,7 @@ public final class MediaPlayer extends SessionPlayer {
          */
         @Deprecated
         public void onVideoSizeChanged(
-                @NonNull MediaPlayer mp, @NonNull MediaItem item, @NonNull androidx.media2.customplayer.VideoSize size) { }
+                @NonNull MediaPlayer mp, @NonNull MediaItem item, @NonNull VideoSize size) { }
 
         /**
          * Called to indicate the video size

@@ -24,6 +24,10 @@ import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_ME
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_UNKNOWN;
 import static androidx.media2.common.SessionPlayer.TrackInfo.MEDIA_TRACK_TYPE_VIDEO;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_IO;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_MALFORMED;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_TIMED_OUT;
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -167,16 +171,16 @@ import java.net.SocketTimeoutException;
         if (exception.type == ExoPlaybackException.TYPE_SOURCE) {
             IOException sourceException = exception.getSourceException();
             if (sourceException instanceof ParserException) {
-                return MediaPlayer2.MEDIA_ERROR_MALFORMED;
+                return MEDIA_ERROR_MALFORMED;
             } else {
                 if (sourceException instanceof HttpDataSource.HttpDataSourceException
                         && sourceException.getCause() instanceof SocketTimeoutException) {
-                    return MediaPlayer2.MEDIA_ERROR_TIMED_OUT;
+                    return MEDIA_ERROR_TIMED_OUT;
                 }
-                return MediaPlayer2.MEDIA_ERROR_IO;
+                return MEDIA_ERROR_IO;
             }
         }
-        return MediaPlayer2.MEDIA_ERROR_UNKNOWN;
+        return MEDIA_ERROR_UNKNOWN;
     }
 
     /** Returns the ExoPlayer track type for the given track type. */

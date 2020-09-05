@@ -16,6 +16,9 @@
 
 package androidx.media2.customplayer;
 
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -35,14 +38,11 @@ import androidx.media2.common.MediaItem;
 import androidx.media2.common.SessionPlayer.TrackInfo;
 import androidx.media2.common.SubtitleData;
 import androidx.media2.common.UriMediaItem;
-
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.analytics.AnalyticsListener;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.audio.AudioCapabilities;
 import com.google.android.exoplayer2.audio.AudioListener;
@@ -57,7 +57,6 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -65,9 +64,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -84,99 +80,64 @@ import java.util.Map;
  * {@link MediaPlayer2} API. {@link #getLooper()} returns the looper on which all other method calls
  * must be made.
  */
-/* package */public final class ExoPlayerWrapper {
+@SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
+/* package */ public final class ExoPlayerWrapper {
 
     private static final String TAG = "ExoPlayerWrapper";
 
-    /**
-     * Listener for player wrapper events.
-     */
+    /** Listener for player wrapper events. */
     public interface Listener {
 
-        /**
-         * Called when the player is prepared.
-         */
+        /** Called when the player is prepared. */
         void onPrepared(MediaItem mediaItem);
 
-        /**
-         * Called when the list of available tracks changes.
-         */
+        /** Called when the list of available tracks changes. */
         void onTracksChanged(@NonNull List<TrackInfo> tracks);
 
-        /**
-         * Called when a seek request has completed.
-         */
+        /** Called when a seek request has completed. */
         void onSeekCompleted();
 
-        /**
-         * Called when the player rebuffers.
-         */
+        /** Called when the player rebuffers. */
         void onBufferingStarted(MediaItem mediaItem);
 
-        /**
-         * Called when the player becomes ready again after rebuffering.
-         */
+        /** Called when the player becomes ready again after rebuffering. */
         void onBufferingEnded(MediaItem mediaItem);
 
-        /**
-         * Called periodically with the player's buffered position as a percentage.
-         */
+        /** Called periodically with the player's buffered position as a percentage. */
         void onBufferingUpdate(MediaItem mediaItem, int bufferingPercentage);
 
-        /**
-         * Called when a sample of the available bandwidth is known.
-         */
+        /** Called when a sample of the available bandwidth is known. */
         void onBandwidthSample(MediaItem mediaItem2, int bitrateKbps);
 
-        /**
-         * Called when video rendering of the specified media item has started.
-         */
+        /** Called when video rendering of the specified media item has started. */
         void onVideoRenderingStart(MediaItem mediaItem);
 
-        /**
-         * Called when the video size of the specified media item has changed.
-         */
+        /** Called when the video size of the specified media item has changed. */
         void onVideoSizeChanged(MediaItem mediaItem, int width, int height);
 
-        /**
-         * Called when subtitle data is handled.
-         */
+        /** Called when subtitle data is handled. */
         void onSubtitleData(@NonNull MediaItem mediaItem, @NonNull TrackInfo track,
-                            @NonNull SubtitleData subtitleData);
+                @NonNull SubtitleData subtitleData);
 
-        /**
-         * Called when timed metadata is handled.
-         */
+        /** Called when timed metadata is handled. */
         void onTimedMetadata(MediaItem mediaItem, TimedMetaData timedMetaData);
 
-        /**
-         * Called when playback transitions to the next media item.
-         */
+        /** Called when playback transitions to the next media item. */
         void onMediaItemStartedAsNext(MediaItem mediaItem);
 
-        /**
-         * Called when playback of a media item ends.
-         */
+        /** Called when playback of a media item ends. */
         void onMediaItemEnded(MediaItem mediaItem);
 
-        /**
-         * Called when playback of the specified item loops back to its start.
-         */
+        /** Called when playback of the specified item loops back to its start. */
         void onLoop(MediaItem mediaItem);
 
-        /**
-         * Called when a change in the progression of media time is detected.
-         */
+        /** Called when a change in the progression of media time is detected. */
         void onMediaTimeDiscontinuity(MediaItem mediaItem, MediaTimestamp mediaTimestamp);
 
-        /**
-         * Called when playback of the item list has ended.
-         */
+        /** Called when playback of the item list has ended. */
         void onPlaybackEnded(MediaItem mediaItem);
 
-        /**
-         * Called when the player encounters an error.
-         */
+        /** Called when the player encounters an error. */
         void onError(MediaItem mediaItem, int what);
 
     }
@@ -208,14 +169,14 @@ import java.util.Map;
     private boolean mPendingSeek;
     private int mVideoWidth;
     private int mVideoHeight;
-    private androidx.media2.customplayer.PlaybackParams mPlaybackParams;
+    private PlaybackParams mPlaybackParams;
 
     /**
      * Creates a new ExoPlayer wrapper.
      *
-     * @param context  The context for accessing system components.
+     * @param context The context for accessing system components.
      * @param listener A listener for player wrapper events.
-     * @param looper   The looper that will be used for player events.
+     * @param looper The looper that will be used for player events.
      */
     public ExoPlayerWrapper(Context context, Listener listener, Looper looper) {
         mContext = context.getApplicationContext();
@@ -278,8 +239,7 @@ import java.util.Map;
         return mPlayer.getBufferedPosition();
     }
 
-    public @MediaPlayer2.MediaPlayer2State
-    int getState() {
+    public @MediaPlayer2.MediaPlayer2State int getState() {
         if (hasError()) {
             return MediaPlayer2.PLAYER_STATE_ERROR;
         }
@@ -325,7 +285,7 @@ import java.util.Map;
 
     public void setNextMediaItems(List<MediaItem> mediaItems) {
         if (mMediaItemQueue.isEmpty()) {
-            for (MediaItem item : mediaItems) {
+            for (MediaItem item: mediaItems) {
                 ((FileMediaItem) item).increaseRefCount();
                 ((FileMediaItem) item).decreaseRefCount();
             }
@@ -373,7 +333,7 @@ import java.util.Map;
         mPlayer.setAuxEffectInfo(new AuxEffectInfo(mAuxEffectId, auxEffectSendLevel));
     }
 
-    public void setPlaybackParams(androidx.media2.customplayer.PlaybackParams playbackParams2) {
+    public void setPlaybackParams(PlaybackParams playbackParams2) {
         // TODO(b/80232248): Decide how to handle fallback modes, which ExoPlayer doesn't support.
         mPlaybackParams = playbackParams2;
         mPlayer.setPlaybackParameters(ExoPlayerUtils.getPlaybackParameters(mPlaybackParams));
@@ -382,7 +342,7 @@ import java.util.Map;
         }
     }
 
-    public androidx.media2.customplayer.PlaybackParams getPlaybackParams() {
+    public PlaybackParams getPlaybackParams() {
         return mPlaybackParams;
     }
 
@@ -459,8 +419,6 @@ import java.util.Map;
         return new MediaTimestamp(positionUs, System.nanoTime(), speed);
     }
 
-    private static final Logger log = LoggerFactory.getLogger(ExoPlayerWrapper.class);
-
     public void reset() {
         if (mPlayer != null) {
             mPlayer.setPlayWhenReady(false);
@@ -476,53 +434,18 @@ import java.util.Map;
         TextRenderer textRenderer = new TextRenderer(listener);
         RenderersFactory renderersFactory = new RenderersFactory(mContext, mAudioSink,
                 textRenderer);
-
-        DefaultRenderersFactory renderersFactory2 = new DefaultRenderersFactory(mContext);
         mTrackSelector = new TrackSelector(mContext,textRenderer);
         mPlayer = new SimpleExoPlayer.Builder(mContext, renderersFactory)
                 .setTrackSelector(mTrackSelector.getPlayerTrackSelector())
-               // .setTrackSelector(new DefaultTrackSelector(mContext))
                 .setBandwidthMeter(mBandwidthMeter)
-               //.setLooper(mLooper)
+                .setLooper(mLooper)
                 .build();
         mPlayerHandler = new Handler(mPlayer.getPlaybackLooper());
-
         mMediaItemQueue = new MediaItemQueue(mContext, mPlayer, mListener);
         mPlayer.addListener(listener);
         // TODO(b/80232248): Switch to AnalyticsListener once default methods work.
         mPlayer.setVideoDebugListener(listener);
         mPlayer.addMetadataOutput(listener);
-        log.warn("adding analytics listener..");
-        mPlayer.addAnalyticsListener(new AnalyticsListener() {
-   /*         override fun onTracksChanged(eventTime: AnalyticsListener.EventTime, trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
-                log.error("onTracksChanged()")
-                for (n in 0 until trackGroups.length) {
-                    for (m in 0 until trackGroups[n].length) {
-                        trackGroups[n].getFormat(m).also {
-                            log.error("METADATA: ${it.metadata}")
-                        }
-                    }
-                }
-            }*/
-
-
-            @Override
-            public void onTracksChanged(EventTime eventTime, TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-                log.error("onTracksChanged()");
-                for(int n =0; n < trackGroups.length; n++){
-                    TrackGroup trackGroup = trackGroups.get(n);
-                    for(int m = 0; m < trackGroup.length; m++){
-                        log.error("METADATA: " + trackGroup.getFormat(m).metadata);
-                    }
-                }
-            }
-
-            @Override
-            public void onMetadata(EventTime eventTime, Metadata metadata) {
-                log.error("onMetadata(): " + metadata);
-            }
-        });
-
         mVideoWidth = 0;
         mVideoHeight = 0;
         mPrepared = false;
@@ -533,7 +456,7 @@ import java.util.Map;
         mAudioSessionId = C.AUDIO_SESSION_ID_UNSET;
         mAuxEffectId = AuxEffectInfo.NO_AUX_EFFECT_ID;
         mAuxEffectSendLevel = 0f;
-        mPlaybackParams = new androidx.media2.customplayer.PlaybackParams.Builder()
+        mPlaybackParams = new PlaybackParams.Builder()
                 .setSpeed(1f)
                 .setPitch(1f)
                 .setAudioFallbackMode(PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT)
@@ -669,9 +592,9 @@ import java.util.Map;
     void handleMetadata(Metadata metadata) {
         int length = metadata.length();
         for (int i = 0; i < length; i++) {
-            Metadata.Entry entry = metadata.get(i);
+            Metadata.Entry entry =  metadata.get(i);
             if (entry instanceof ByteArrayFrame) {
-                androidx.media2.customplayer.ByteArrayFrame byteArrayFrame = (androidx.media2.customplayer.ByteArrayFrame) metadata.get(i);
+                ByteArrayFrame byteArrayFrame = (ByteArrayFrame) entry;
                 mListener.onTimedMetadata(
                         getCurrentMediaItem(),
                         new TimedMetaData(byteArrayFrame.mTimestamp, byteArrayFrame.mData));
@@ -748,8 +671,8 @@ import java.util.Map;
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final class ComponentListener
-            implements VideoRendererEventListener, AudioListener,Player.EventListener,
+    final class ComponentListener extends Player.DefaultEventListener
+            implements VideoRendererEventListener, AudioListener,
             TextRenderer.Output, MetadataOutput {
 
         // DefaultEventListener implementation.
@@ -804,17 +727,14 @@ import java.util.Map;
         }
 
         @Override
-        public void onVideoEnabled(DecoderCounters counters) {
-        }
+        public void onVideoEnabled(DecoderCounters counters) {}
 
         @Override
         public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs,
-                                              long initializationDurationMs) {
-        }
+                long initializationDurationMs) {}
 
         @Override
-        public void onDroppedFrames(int count, long elapsedMs) {
-        }
+        public void onDroppedFrames(int count, long elapsedMs) {}
 
         @Override
         public void onVideoDisabled(DecoderCounters counters) {
@@ -830,12 +750,10 @@ import java.util.Map;
         }
 
         @Override
-        public void onAudioAttributesChanged(AudioAttributes audioAttributes) {
-        }
+        public void onAudioAttributesChanged(AudioAttributes audioAttributes) {}
 
         @Override
-        public void onVolumeChanged(float volume) {
-        }
+        public void onVolumeChanged(float volume) {}
 
         // TextRenderer.Output implementation.
 
@@ -982,7 +900,7 @@ import java.util.Map;
             List<MediaSource> mediaSources = new ArrayList<>(mediaItems.size());
             for (MediaItem mediaItem : mediaItems) {
                 if (mediaItem == null) {
-                    mListener.onError(/* mediaItem= */ null, MediaPlayer2.MEDIA_ERROR_UNKNOWN);
+                    mListener.onError(/* mediaItem= */ null, MEDIA_ERROR_UNKNOWN);
                     return;
                 }
                 appendMediaItem(
@@ -1090,7 +1008,7 @@ import java.util.Map;
                 long length = fileMediaItem.getFileDescriptorLength();
                 Object lock = mFileDescriptorRegistry.registerMediaItemAndGetLock(fileDescriptor);
                 dataSourceFactory =
-                        androidx.media2.customplayer.FileDescriptorDataSource.getFactory(fileDescriptor, offset, length, lock);
+                        FileDescriptorDataSource.getFactory(fileDescriptor, offset, length, lock);
             }
 
             // Create a source for the item.

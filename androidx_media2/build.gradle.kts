@@ -2,8 +2,8 @@ buildscript {
 
 
     dependencies {
-    classpath("com.android.tools.build:gradle:4.2.0-alpha09")
-    //classpath("com.android.tools.build:gradle:4.1.0-rc02")
+    //classpath("com.android.tools.build:gradle:4.2.0-alpha09")
+    classpath("com.android.tools.build:gradle:4.1.0-rc02")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
     classpath(AndroidX.navigation.safeArgsGradlePlugin)
 

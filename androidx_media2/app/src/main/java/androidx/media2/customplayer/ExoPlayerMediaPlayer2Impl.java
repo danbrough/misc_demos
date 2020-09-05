@@ -54,12 +54,12 @@ import java.util.concurrent.RejectedExecutionException;
  */
 @SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
 /* package */ public final class ExoPlayerMediaPlayer2Impl extends MediaPlayer2
-        implements androidx.media2.customplayer.ExoPlayerWrapper.Listener {
+        implements ExoPlayerWrapper.Listener {
 
     private static final String TAG = "ExoPlayerMediaPlayer2";
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final androidx.media2.customplayer.ExoPlayerWrapper mPlayer;
+    final ExoPlayerWrapper mPlayer;
 
     private final Handler mTaskHandler;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
@@ -85,7 +85,7 @@ import java.util.concurrent.RejectedExecutionException;
     ExoPlayerMediaPlayer2Impl(@NonNull Context context) {
         mHandlerThread = new HandlerThread("ExoMediaPlayer2Thread");
         mHandlerThread.start();
-        mPlayer = new androidx.media2.customplayer.ExoPlayerWrapper(
+        mPlayer = new ExoPlayerWrapper(
                 context.getApplicationContext(),
                 /* listener= */ this,
                 mHandlerThread.getLooper());
@@ -405,7 +405,7 @@ import java.util.concurrent.RejectedExecutionException;
     }
 
     @Override
-    public Object setPlaybackParams(@NonNull final androidx.media2.customplayer.PlaybackParams params) {
+    public Object setPlaybackParams(@NonNull final PlaybackParams params) {
         return addTask(new Task(CALL_COMPLETED_SET_PLAYBACK_PARAMS, false) {
             @Override
             void process() {
@@ -416,8 +416,8 @@ import java.util.concurrent.RejectedExecutionException;
 
     @Override
     @NonNull
-    public androidx.media2.customplayer.PlaybackParams getPlaybackParams() {
-        return runPlayerCallableBlocking(new Callable<androidx.media2.customplayer.PlaybackParams>() {
+    public PlaybackParams getPlaybackParams() {
+        return runPlayerCallableBlocking(new Callable<PlaybackParams>() {
             @Override
             public PlaybackParams call() throws Exception {
                 return mPlayer.getPlaybackParams();
@@ -531,10 +531,10 @@ import java.util.concurrent.RejectedExecutionException;
     }
 
     @Override
-    public androidx.media2.customplayer.MediaTimestamp getTimestamp() {
-        return runPlayerCallableBlocking(new Callable<androidx.media2.customplayer.MediaTimestamp>() {
+    public MediaTimestamp getTimestamp() {
+        return runPlayerCallableBlocking(new Callable<MediaTimestamp>() {
             @Override
-            public androidx.media2.customplayer.MediaTimestamp call() {
+            public MediaTimestamp call() {
                 return mPlayer.getTimestamp();
             }
         });
