@@ -1,4 +1,4 @@
-package androidx.media2.player
+package danbroid.demo.media2.media
 
 import android.annotation.SuppressLint
 import android.view.Surface

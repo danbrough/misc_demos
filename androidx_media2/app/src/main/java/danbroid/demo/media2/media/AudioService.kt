@@ -10,7 +10,7 @@ import androidx.media2.common.*
 import androidx.media2.customplayer.ExoPlayerMediaPlayer2Impl
 import androidx.media2.customplayer.ExoPlayerWrapper
 import androidx.media2.customplayer.MediaPlayer
-import androidx.media2.player.StatsListener
+import danbroid.demo.media2.media.StatsListener
 import androidx.media2.session.LibraryResult
 import androidx.media2.session.MediaLibraryService
 import androidx.media2.session.MediaSession
@@ -71,7 +71,7 @@ class AudioService : MediaLibraryService() {
         for (n in 0 until trackGroups.length) {
           for (m in 0 until trackGroups[n].length) {
             trackGroups[n].getFormat(m).also {
-              log.error("METADATA: ${it.metadata}")
+              log.error("trackMetadata: ${it.metadata}")
             }
           }
         }

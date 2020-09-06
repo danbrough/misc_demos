@@ -90,7 +90,10 @@ class AudioClient(context: Context) {
       log.debug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
       if (mediaController.playerState != MediaPlayer.PLAYER_STATE_PLAYING) {
         log.debug("skipping to start of playlist")
-        mediaController.skipToPlaylistItem(0)
+        mediaController.skipToPlaylistItem(0).addListener({
+          mediaController.play()
+        }, executor)
+
       }
     }
 

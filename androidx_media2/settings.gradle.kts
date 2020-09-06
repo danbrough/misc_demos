@@ -3,7 +3,7 @@ import de.fayard.dependencies.bootstrapRefreshVersionsAndDependencies
 
 pluginManagement {
   repositories {
-    mavenLocal()
+    jcenter()
     gradlePluginPortal()
   }
 }

@@ -9,7 +9,7 @@ import androidx.media2.customplayer.ExoPlayerWrapper.Listener
 import androidx.media2.customplayer.MediaPlayer2
 import androidx.media2.customplayer.MediaTimestamp
 import androidx.media2.customplayer.TimedMetaData
-import androidx.media2.player.StatsListener
+import danbroid.demo.media2.media.StatsListener
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
