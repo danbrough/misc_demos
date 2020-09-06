@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="danbroid.demo.media2.MainActivity">
+    tools:context="danbroid.demo.bottomsheet.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -20,17 +20,18 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
     <include layout="@layout/fragment_navhost" />
 
-    <fragment
-        android:id="@+id/bottom_controls_fragment"
-        android:name="danbroid.demo.media2.ui.ControlsFragment"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/bottom_sheet_container"
+        android:name="danbroid.demo.bottomsheet.ui.BottomSheetFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="bottom"
+        android:background="@color/cardview_dark_background"
         app:behavior_draggable="false"
         app:behavior_hideable="false"
+        app:behavior_peekHeight="60dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

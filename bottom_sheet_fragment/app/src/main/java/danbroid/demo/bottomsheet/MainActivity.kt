@@ -1,21 +1,17 @@
-package danbroid.demo.media2
+package danbroid.demo.bottomsheet
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import danbroid.demo.media2.content.rootContent
-import danbroid.demo.media2.model.AudioClientModel
+import danbroid.demo.bottomsheet.content.rootContent
 import danbroid.util.menu.ui.MenuImplementation
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_bottom_controls.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,7 +20,6 @@ class MainActivity : AppCompatActivity() {
       rootContent
     }
   }
-
 
   protected val navController: NavController
     get() = findNavController(R.id.nav_host_fragment)
@@ -37,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     setSupportActionBar(toolbar)
 
     setupActionBarWithNavController(navController)
-
     log.warn("intent $intent")
     log.warn("data:${intent?.data}")
     intent?.extras?.also {
@@ -46,7 +40,6 @@ class MainActivity : AppCompatActivity() {
       }
     }
   }
-
 
   override fun onNewIntent(intent: Intent?) {
     log.warn("onNewIntent!() $intent")

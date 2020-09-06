@@ -71,6 +71,13 @@ dependencies {
   implementation(AndroidX.coreKtx)
   implementation(Kotlin.stdlib.jdk8)
 
+  implementation(AndroidX.navigation.fragmentKtx)
+  implementation(AndroidX.navigation.uiKtx)
+  implementation(AndroidX.constraintLayout)
+  implementation(AndroidX.preferenceKtx)
+
+  implementation(Google.android.material)
+
   val media_version = "1.1.0-alpha01"
   //implementation("androidx.media2:media2-exoplayer:$media_version")
   //implementation("androidx.media2:media2-player:$media_version")
@@ -141,15 +148,6 @@ dependencies {
 
   // For local unit tests
   testImplementation("com.google.dagger:hilt-android-testing:_")*/
-
-
-
-  implementation(AndroidX.navigation.fragmentKtx)
-  implementation(AndroidX.navigation.uiKtx)
-  implementation(AndroidX.constraintLayout)
-  implementation(AndroidX.preferenceKtx)
-
-  implementation(Google.android.material)
 
 
 }
