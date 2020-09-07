@@ -43,7 +43,24 @@ val rootContent: MenuItemBuilder by lazy {
       liveChildren = liveChildrenProducer
     }
 
-
+    menu {
+      title = "Another Menu1"
+    }
+    menu {
+      title = "Another Menu2"
+    }
+    menu {
+      title = "Another Menu3"
+    }
+    menu {
+      title = "Another Menu4"
+    }
+    menu {
+      title = "Another Menu5"
+    }
+    menu {
+      title = "Another Menu6"
+    }
   }
 }
 

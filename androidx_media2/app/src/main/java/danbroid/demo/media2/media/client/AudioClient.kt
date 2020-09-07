@@ -2,8 +2,11 @@ package danbroid.demo.media2.media.client
 
 import android.content.Context
 import androidx.core.content.ContextCompat.getMainExecutor
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
+import androidx.media2.common.SessionPlayer
 import androidx.media2.customplayer.MediaPlayer
 import androidx.media2.session.MediaBrowser
 import androidx.media2.session.MediaController
@@ -17,7 +20,15 @@ class AudioClient(context: Context) {
 
   val context = context.applicationContext
 
-  val test = ExoWrapperTest(context)
+  init {
+    log.error("Created AudioClient")
+  }
+
+  private val _pauseEnabled = MutableLiveData<Boolean>()
+  val pauseEnabled: LiveData<Boolean> = _pauseEnabled
+
+  private val _connected = MutableLiveData<Boolean>(false)
+  val connected: LiveData<Boolean> = _connected
 
   val controllerCallback = object : MediaBrowser.BrowserCallback() {
 
@@ -39,16 +50,27 @@ class AudioClient(context: Context) {
       }
     }
 
+    override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
+      log.debug("item: $item")
+    }
+
     override fun onBufferingStateChanged(controller: MediaController, item: MediaItem, state: Int) {
       log.debug("onBufferingStateChanged() ${state.buffState}")
     }
 
     override fun onPlayerStateChanged(controller: MediaController, state: Int) {
       log.debug("onPlayerStateChanged() ${state.playerState}")
+      _pauseEnabled.value  = state == SessionPlayer.PLAYER_STATE_PLAYING
     }
 
     override fun onConnected(controller: MediaController, allowedCommands: SessionCommandGroup) {
-      log.warn("onConnected() allowedCommands: ${allowedCommands.commands}")
+      log.warn("onConnected()")
+      _connected.value = true
+    }
+
+    override fun onDisconnected(controller: MediaController) {
+      log.warn("onDisconnected()")
+      _connected.value = false
     }
 
     override fun onPlaylistChanged(
@@ -63,7 +85,7 @@ class AudioClient(context: Context) {
 
   val executor = getMainExecutor(context)//Executors.newSingleThreadExecutor()
 
-  val mediaController: MediaBrowser by lazy {
+  val mediaController: MediaBrowser = let {
 
     val sessionManager = MediaSessionManager.getInstance(context)
     log.debug("got sessionManager: $sessionManager")

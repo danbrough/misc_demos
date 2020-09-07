@@ -2,6 +2,7 @@ package danbroid.demo.media2.content
 
 
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import danbroid.demo.media2.R
@@ -18,7 +19,7 @@ const val URI_CONTENT_ROOT = "demo://content"
 private val log = LoggerFactory.getLogger("danbroid.demo.media2.content")
 
 private val MenuActionContext.audioClient: AudioClient
-  get() = fragment!!.viewModels<AudioClientModel>().value.client
+  get() = fragment!!.activityViewModels<AudioClientModel>().value.client
 
 private const val rnz_url = "http://radionz-ice.streamguys.com/National_aac128"
 private const val url_u80s = "http://ice4.somafm.com/u80s-256-mp3"

@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/cardview_dark_background"
     android:id="@+id/bottom_controls"
     android:layout_width="match_parent"
-    android:visibility="visible"
-    android:layout_height="match_parent">
-<!--
-    <com.google.android.exoplayer2.ui.PlayerControlView
-        android:id="@+id/controls_view"
+    android:layout_height="52dp"
+    android:background="?colorPrimary"
+    android:gravity="center_vertical|left"
+    android:orientation="vertical">
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />-->
-    <Button
-        android:text="Hello WOrld"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</FrameLayout>
+        android:layout_height="2dp" android:background="?colorAccent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_play_pause"
+            style="@style/BottomControlButton"
+            android:src="@drawable/ic_media_pause_light" />
+    </LinearLayout>
+
+</LinearLayout>
