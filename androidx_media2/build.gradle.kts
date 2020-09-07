@@ -22,13 +22,13 @@ buildscript {
 
 apply("project.gradle.kts")
 
-allprojects {
+subprojects {
 
   repositories {
     mavenLocal()
     google()
     jcenter()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    //maven("https://dl.bintray.com/kotlin/kotlin-eap")
     mavenCentral()
     maven("https://jitpack.io")
   }

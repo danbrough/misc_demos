@@ -96,6 +96,11 @@ dependencies {
   implementation("com.github.danbrough.androidutils:menu:_")
   implementation("com.github.danbrough.androidutils:slf4j:_")
 
+/*  implementation("com.mikepenz:iconics-core:5.0.3")
+  implementation("com.mikepenz:iconics-views:5.0.3")
+  implementation ("com.mikepenz:fontawesome-typeface:5.9.0.0-kotlin")
+  implementation("com.mikepenz:community-material-typeface:5.3.45.1-kotlin")*/
+
   val exo_vanilla = false
   val exo_version = if (exo_vanilla) "2.11.8" else "2.11.8-dan02"
   val exo_package =
@@ -119,7 +124,7 @@ dependencies {
     // implementation("$exo_package:extension-mediasession:$exo_version")
     //implementation("$exo_package:extension-okhttp:$exo_version")
     implementation("$exo_package:extension-cast:$exo_version")
-    implementation("$exo_package:extension-opus:$exo_version")
+   // implementation("$exo_package:extension-opus:$exo_version")
     implementation("$exo_package:extension-flac:$exo_version")
   }
 

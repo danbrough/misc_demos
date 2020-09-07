@@ -20,15 +20,18 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/fragment_navhost" />
+    <include
+        layout="@layout/fragment_navhost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="52dp" />
 
     <fragment
         android:id="@+id/bottom_controls_fragment"
         android:name="danbroid.demo.media2.ui.ControlsFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-    />
+        android:layout_gravity="bottom" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

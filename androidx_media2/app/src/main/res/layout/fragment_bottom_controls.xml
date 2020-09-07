@@ -11,7 +11,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="2dp" android:background="?colorAccent" />
+        android:layout_height="2dp"
+        android:background="?colorAccent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,9 +20,24 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/btn_prev"
+            style="@style/BottomControlButton"
+            android:src="@drawable/ic_skip_previous" />
+        <!--
+                <item name="backgroundTint">@color/colorPrimaryLight</item>
+        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:tint">?colorAccent</item>
+        -->
+
+        <ImageButton
             android:id="@+id/btn_play_pause"
             style="@style/BottomControlButton"
             android:src="@drawable/ic_media_pause_light" />
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            style="@style/BottomControlButton"
+            android:src="@drawable/ic_skip_next" />
     </LinearLayout>
 
 </LinearLayout>
