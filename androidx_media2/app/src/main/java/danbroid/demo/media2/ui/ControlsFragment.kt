@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-
 import danbroid.demo.media2.R
 import danbroid.demo.media2.model.AudioClientModel
 import kotlinx.android.synthetic.main.fragment_bottom_controls.*
@@ -33,11 +32,11 @@ class ControlsFragment : BottomSheetDialogFragment() {
 
 
     btn_prev.setOnClickListener {
-      model.client.mediaController.skipToPreviousPlaylistItem()
+      model.client.skipToPrev()
     }
 
     btn_next.setOnClickListener {
-      model.client.mediaController.skipToNextPlaylistItem()
+      model.client.skipToNext()
     }
 
     model.client.connected.observe(viewLifecycleOwner) {

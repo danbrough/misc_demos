@@ -1,10 +1,7 @@
 package danbroid.demo.media2.content
 
 
-import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import danbroid.demo.media2.R
 import danbroid.demo.media2.media.client.AudioClient
 import danbroid.demo.media2.model.AudioClientModel
@@ -32,30 +29,17 @@ val rootContent: MenuItemBuilder =
   rootMenu<MenuItemBuilder> {
     id = URI_CONTENT_ROOT
     titleID = R.string.app_name
+
+
+
     menu {
-      title = "Play"
+      title = "Play1"
       onClick = {
         audioClient.play()
       }
     }
 
-    menu {
-      title = "Parent"
-      menu {
-        title = "Child"
-        onClick = {
-          fragment?.activity?.also {
-            it.findViewById<View>(R.id.bottom_controls).also {
-              log.warn("Got view: $it")
-              BottomSheetBehavior.from(it).also {
-                log.warn("behaviour: $it")
-                it.state = BottomSheetBehavior.STATE_EXPANDED
-              }
-            }
-          }
-        }
-      }
-    }
+
 /*
 
     menu {
