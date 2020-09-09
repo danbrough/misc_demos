@@ -102,7 +102,7 @@ dependencies {
   implementation("com.mikepenz:community-material-typeface:5.3.45.1-kotlin")*/
 
   val exo_vanilla = false
-  val exo_version = if (exo_vanilla) "2.11.8" else "2.11.8-dan02"
+  val exo_version = if (exo_vanilla) "2.11.8" else "2.12.0-dan05"// "2.11.8-dan02"
   val exo_package =
     if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
 
@@ -115,10 +115,10 @@ dependencies {
     implementation("$exo_package:extension-cast:$exo_version")
   } else {
 
-    implementation("$exo_package:library-core:$exo_version")
-    implementation("$exo_package:library-smoothstreaming:$exo_version")
-    implementation("$exo_package:library-ui:$exo_version")
-    implementation("$exo_package:library-hls:$exo_version")
+    implementation("$exo_package:exoplayer-core:$exo_version")
+    implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
+    implementation("$exo_package:exoplayer-ui:$exo_version")
+    implementation("$exo_package:exoplayer-hls:$exo_version")
 
 
     // implementation("$exo_package:extension-mediasession:$exo_version")

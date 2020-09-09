@@ -20,13 +20,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import com.google.android.exoplayer2.Renderer;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.audio.AudioSink;
 import com.google.android.exoplayer2.audio.MediaCodecAudioRenderer;
-import com.google.android.exoplayer2.drm.DrmSessionManager;
-import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import com.google.android.exoplayer2.metadata.MetadataOutput;
 import com.google.android.exoplayer2.metadata.MetadataRenderer;
@@ -63,19 +60,13 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
     }
 
     @Override
-    public Renderer[] createRenderers(
-            Handler eventHandler,
-            VideoRendererEventListener videoRendererEventListener,
-            AudioRendererEventListener audioRendererEventListener,
-            TextOutput textRendererOutput,
-            MetadataOutput metadataRendererOutput,
-            @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager) {
-        return new Renderer[] {
+    public Renderer[] createRenderers(Handler eventHandler, VideoRendererEventListener videoRendererEventListener, AudioRendererEventListener audioRendererEventListener, TextOutput textRendererOutput, MetadataOutput metadataRendererOutput) {
+
+        return new Renderer[]{
                 new MediaCodecVideoRenderer(
                         mContext,
                         MediaCodecSelector.DEFAULT,
                         DEFAULT_ALLOWED_VIDEO_JOINING_TIME_MS,
-                        drmSessionManager,
                         /* playClearSamplesWithoutKeys= */ false,
                         eventHandler,
                         videoRendererEventListener,
@@ -83,7 +74,6 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
                 new MediaCodecAudioRenderer(
                         mContext,
                         MediaCodecSelector.DEFAULT,
-                        drmSessionManager,
                         /* playClearSamplesWithoutKeys= */ false,
                         eventHandler,
                         audioRendererEventListener,
@@ -92,8 +82,8 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
                 new MetadataRenderer(
                         metadataRendererOutput,
                         eventHandler.getLooper(),
-                        com.google.android.exoplayer2.metadata.MetadataDecoderFactory.DEFAULT )
-                       // new Id3MetadataDecoderFactory())
+                        com.google.android.exoplayer2.metadata.MetadataDecoderFactory.DEFAULT)
+                // new Id3MetadataDecoderFactory())
         };
     }
 

@@ -33,9 +33,9 @@ val rootContent: MenuItemBuilder =
 
 
     menu {
-      title = "Play1"
+      title = "Play"
       onClick = {
-        audioClient.play()
+        audioClient.mediaController.play()
       }
     }
 
@@ -78,20 +78,6 @@ val rootContent: MenuItemBuilder =
     }
 */
 
-    menu {
-      title = "Pause"
-      onClick = {
-        audioClient.togglePause()
-      }
-    }
-
-
-    menu {
-      title = "State"
-      onClick = {
-        audioClient.state()
-      }
-    }
 
     menu {
       title = "U80s"

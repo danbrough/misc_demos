@@ -16,8 +16,6 @@
 
 package androidx.media2.customplayer;
 
-import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
@@ -38,6 +36,7 @@ import androidx.media2.common.MediaItem;
 import androidx.media2.common.SessionPlayer.TrackInfo;
 import androidx.media2.common.SubtitleData;
 import androidx.media2.common.UriMediaItem;
+
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
@@ -65,6 +64,9 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -75,6 +77,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
+
 /**
  * Wraps an ExoPlayer instance and provides methods and notifies events like those in the
  * {@link MediaPlayer2} API. {@link #getLooper()} returns the looper on which all other method calls
@@ -84,6 +88,7 @@ import java.util.Map;
 /* package */ public final class ExoPlayerWrapper {
 
     private static final String TAG = "ExoPlayerWrapper";
+    private static final Logger log = LoggerFactory.getLogger(ExoPlayerWrapper.class);
 
     /** Listener for player wrapper events. */
     public interface Listener {
@@ -201,11 +206,13 @@ import java.util.Map;
     }
 
     public void prepare() {
+        log.trace("prepare()");
         Preconditions.checkState(!mPrepared);
         mMediaItemQueue.preparePlayer();
     }
 
     public void play() {
+        log.trace("play()");
         mNewlyPrepared = false;
         if (mPlayer.getPlaybackState() == Player.STATE_ENDED) {
             mPlayer.seekTo(0);
@@ -214,6 +221,7 @@ import java.util.Map;
     }
 
     public void pause() {
+        log.trace("pause()");
         mNewlyPrepared = false;
         mPlayer.setPlayWhenReady(false);
     }

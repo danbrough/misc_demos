@@ -124,14 +124,19 @@ import java.util.TreeMap;
     }
 
     @Override
-    protected void onStreamChanged(Format[] formats, long offsetUs) throws ExoPlaybackException {
-        super.onStreamChanged(formats, offsetUs);
+    protected void onStreamChanged(Format[] formats, long startPositionUs, long offsetUs) throws ExoPlaybackException {
+        super.onStreamChanged(formats, startPositionUs, offsetUs);
         mIsTypeAndChannelAdvertised = new boolean[128];
     }
 
     @Override
     protected synchronized void onPositionReset(long positionUs, boolean joining) {
         flush();
+    }
+
+    @Override
+    public String getName() {
+        return "TextRenderer";
     }
 
     @Override

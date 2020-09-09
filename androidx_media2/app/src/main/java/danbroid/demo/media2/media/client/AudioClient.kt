@@ -32,6 +32,12 @@ class AudioClient(context: Context) {
   private val _connected = MutableLiveData<Boolean>(false)
   val connected: LiveData<Boolean> = _connected
 
+  private val _hasNext = MutableLiveData<Boolean>(false)
+  val hasNext: LiveData<Boolean> = _hasNext
+
+  private val _hasPrevious = MutableLiveData<Boolean>(false)
+  val hasPrevious: LiveData<Boolean> = _hasPrevious
+
   protected val controllerCallback = ControllerCallback()
 
   protected val mainExecutor = getMainExecutor(context)//Executors.newSingleThreadExecutor()
@@ -68,6 +74,7 @@ class AudioClient(context: Context) {
 
 
   fun togglePause() {
+    log.debug("togglePause() state: ${mediaController.playerState.playerState}")
     if (mediaController.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
       mediaController.pause()
     } else {
@@ -82,7 +89,7 @@ class AudioClient(context: Context) {
 
   fun play() {
     log.trace("play() state:${mediaController.playerState.playerState} buffState:${mediaController.bufferingState.buffState}")
-    if (mediaController.playerState != SessionPlayer.PLAYER_STATE_PLAYING) {
+    if (mediaController.playerState != SessionPlayer.PLAYER_STATE_PLAYING || mediaController.bufferingState == SessionPlayer.BUFFERING_STATE_BUFFERING_AND_PLAYABLE) {
       log.trace("calling mediaController.play()")
       mediaController.play()
     }
@@ -121,7 +128,7 @@ class AudioClient(context: Context) {
       controller: MediaController,
       info: MediaController.PlaybackInfo
     ) {
-      log.warn("onPlaybackInfoChanged(): $info")
+      log.debug("onPlaybackInfoChanged(): $info")
     }
 
     override fun onAllowedCommandsChanged(
@@ -135,11 +142,22 @@ class AudioClient(context: Context) {
     }
 
     override fun onPlaybackCompleted(controller: MediaController) {
-      log.trace("onPlaybackCompleted()")
+      log.debug("onPlaybackCompleted()")
     }
 
     override fun onPlaylistMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
-      log.trace("onPlaylistMetadataChanged() $metadata")
+      log.debug("onPlaylistMetadataChanged() $metadata")
+    }
+
+    override fun onPlaylistChanged(
+      controller: MediaController,
+      list: MutableList<MediaItem>?,
+      metadata: MediaMetadata?
+    ) {
+      val state = controller.playerState
+      log.debug("onPlaylistChanged() size:${list?.size} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex} $metadata")
+      _hasNext.value = controller.nextMediaItemIndex != -1
+      _hasPrevious.value = controller.previousMediaItemIndex != -1
     }
 
     override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
@@ -149,33 +167,37 @@ class AudioClient(context: Context) {
     override fun onBufferingStateChanged(controller: MediaController, item: MediaItem, state: Int) {
       log.debug("onBufferingStateChanged() ${state.buffState}")
       if (state == SessionPlayer.BUFFERING_STATE_BUFFERING_AND_PLAYABLE) {
-        _pauseEnabled.value = false
         play()
       }
     }
 
     override fun onPlayerStateChanged(controller: MediaController, state: Int) {
-      log.debug("onPlayerStateChanged() ${state.playerState}")
+      log.debug("onPlayerStateChanged() ${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex}")
       _pauseEnabled.value = state == SessionPlayer.PLAYER_STATE_PLAYING
+
+    }
+
+    override fun onTracksChanged(
+      controller: MediaController,
+      tracks: MutableList<SessionPlayer.TrackInfo>
+    ) {
+      val state = controller.playerState
+      log.debug("onTracksChanged() tracks:${tracks} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex}")
+      _hasNext.value = controller.nextMediaItemIndex != -1
+      _hasPrevious.value = controller.previousMediaItemIndex != -1
     }
 
     override fun onConnected(controller: MediaController, allowedCommands: SessionCommandGroup) {
-      log.warn("onConnected()")
+      log.debug("onConnected()")
       _connected.value = true
     }
 
     override fun onDisconnected(controller: MediaController) {
-      log.warn("onDisconnected()")
+      log.debug("onDisconnected()")
       _connected.value = false
     }
 
-    override fun onPlaylistChanged(
-      controller: MediaController,
-      list: MutableList<MediaItem>?,
-      metadata: MediaMetadata?
-    ) {
-      log.warn("onPlaylistChanged() size: ${list?.size}")
-    }
+
   }
 }
 

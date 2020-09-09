@@ -47,6 +47,15 @@ class ControlsFragment : BottomSheetDialogFragment() {
       log.trace("pauseEnabled: $it")
       btn_play_pause.setImageResource(if (it) R.drawable.ic_media_pause_light else R.drawable.ic_media_play_light)
     }
+
+    model.client.hasNext.observe(viewLifecycleOwner) {
+      btn_next.visibility = if (it) View.VISIBLE else View.INVISIBLE
+    }
+
+
+    model.client.hasPrevious.observe(viewLifecycleOwner) {
+      btn_prev.visibility = if (it) View.VISIBLE else View.INVISIBLE
+    }
   }
 
   override fun onAttach(context: Context) {
