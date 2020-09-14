@@ -1,8 +1,6 @@
 # AndroidX Media2 Demo
 
-De-repackaged androidx.media2.player into a androidx.media2.customplayer package that uses
-com.google.android.exoplayer2 rather than androidx.media2.exoplayer
+Demo of integrating an exoplayer distribution with the androidx.media2.session API.
 
-Fixed metadata updates in flac/mp3 and icy-streams.
 
 

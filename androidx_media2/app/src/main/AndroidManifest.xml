@@ -36,11 +36,7 @@
         </activity>
 
 
-        <service android:name=".media.AudioService">
-            <intent-filter>
-                <action android:name="androidx.media2.session.MediaLibraryService" />
-            </intent-filter>
-        </service>
+
 
     </application>
 

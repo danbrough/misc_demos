@@ -11,7 +11,7 @@ buildscript {
   }
 
   repositories {
-    mavenLocal()
+    //mavenLocal()
     google()
     mavenCentral()
     jcenter()
@@ -29,6 +29,7 @@ subprojects {
     google()
     jcenter()
     mavenCentral()
+    maven("https://h1.danbrough.org/maven/")
     maven("https://jitpack.io")
   }
   /*configurations.all {

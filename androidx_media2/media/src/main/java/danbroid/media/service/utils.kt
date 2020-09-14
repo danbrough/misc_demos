@@ -1,4 +1,4 @@
-package danbroid.demo.media2.media
+package danbroid.media.service
 
 import androidx.media2.common.SessionPlayer
 import androidx.media2.common.SessionPlayer.*

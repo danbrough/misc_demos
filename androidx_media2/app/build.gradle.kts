@@ -12,9 +12,10 @@ android {
 
 
   compileSdkVersion(ProjectVersions.SDK_VERSION)
+  ndkVersion = "21.3.6528147"
 
   defaultConfig {
-    buildToolsVersion("30.0.2")
+    //buildToolsVersion("30.0.2")
 
     minSdkVersion(ProjectVersions.MIN_SDK_VERSION)
     targetSdkVersion(ProjectVersions.SDK_VERSION)
@@ -64,7 +65,7 @@ tasks.withType<Test> {
 
 dependencies {
 
-  //implementation(project(":media"))
+  implementation(project(":media"))
   implementation(AndroidX.lifecycle.runtimeKtx)
   implementation(AndroidX.lifecycle.liveDataKtx)
   implementation(AndroidX.lifecycle.viewModelKtx)
@@ -78,17 +79,11 @@ dependencies {
 
   implementation(Google.android.material)
 
-  val media_version = "1.1.0-alpha01"
   //implementation("androidx.media2:media2-exoplayer:$media_version")
   //implementation("androidx.media2:media2-player:$media_version")
-  implementation("androidx.media2:media2-session:$media_version")
-  implementation("androidx.media2:media2-common:$media_version")
+  implementation(AndroidX.media2.session)
+  implementation("com.google.guava:guava:_")
 
-  implementation("com.google.guava:guava:29.0-android")
-
-
-  api(AndroidX.concurrent.futures)
-  //implementation("com.github.danbrough.exoplayer:extension-media2:2.12.0-dan02")
 
   //implementation(Libs.slf4j_android)
   implementation("org.slf4j:slf4j-api:_")
@@ -101,35 +96,8 @@ dependencies {
   implementation ("com.mikepenz:fontawesome-typeface:5.9.0.0-kotlin")
   implementation("com.mikepenz:community-material-typeface:5.3.45.1-kotlin")*/
 
-  val exo_vanilla = false
-  val exo_version = if (exo_vanilla) "2.11.8" else "2.12.0-dan08"//"2.11.8-dan02" //else //
-  val exo_package =
-    if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
 
 
-  if (exo_vanilla) {
-
-    implementation("$exo_package:exoplayer-core:$exo_version")
-    implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
-    implementation("$exo_package:exoplayer-ui:$exo_version")
-    implementation("$exo_package:exoplayer-hls:$exo_version")
-    implementation("$exo_package:extension-cast:$exo_version")
-  } else {
-
-    implementation("$exo_package:exoplayer-core:$exo_version")
-    implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
-    //implementation("$exo_package:library-ui:$exo_version")
-    implementation("$exo_package:exoplayer-hls:$exo_version")
-
-
-    // implementation("$exo_package:extension-mediasession:$exo_version")
-    //implementation("$exo_package:extension-okhttp:$exo_version")
-    implementation("$exo_package:extension-ffmpeg:$exo_version")
-
-    implementation("$exo_package:extension-cast:$exo_version")
-   /*implementation("$exo_package:extension-opus:$exo_version")
-    implementation("$exo_package:extension-flac:$exo_version")*/
-  }
 
   implementation(Square.okHttp3.okHttp)
 

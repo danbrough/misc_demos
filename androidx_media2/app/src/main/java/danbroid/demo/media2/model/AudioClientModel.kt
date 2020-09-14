@@ -3,7 +3,7 @@ package danbroid.demo.media2.model
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import danbroid.demo.media2.media.client.AudioClient
+import danbroid.media.service.AudioClient
 
 class AudioClientModel(app: Application) : AndroidViewModel(app) {
   val context: Context = app

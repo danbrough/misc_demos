@@ -1,4 +1,4 @@
-package danbroid.demo.media2.media.client
+package danbroid.media.service
 
 import android.content.Context
 import androidx.core.content.ContextCompat.getMainExecutor
@@ -7,24 +7,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
-import androidx.media2.customplayer.MediaPlayer
+import androidx.media2.common.SubtitleData
 import androidx.media2.session.MediaBrowser
 import androidx.media2.session.MediaController
 import androidx.media2.session.MediaSessionManager
 import androidx.media2.session.SessionCommandGroup
 import com.google.common.util.concurrent.ListenableFuture
-import danbroid.demo.media2.media.AudioService
-import danbroid.demo.media2.media.buffState
-import danbroid.demo.media2.media.playerState
 
 
 class AudioClient(context: Context) {
 
-  val context = context.applicationContext
-
-  init {
-    log.error("Created AudioClient")
-  }
 
   private val _pauseEnabled = MutableLiveData<Boolean>()
   val pauseEnabled: LiveData<Boolean> = _pauseEnabled
@@ -62,7 +54,7 @@ class AudioClient(context: Context) {
 
     mediaController.addPlaylistItem(Integer.MAX_VALUE, uri).then {
       log.debug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
-      if (mediaController.playerState != MediaPlayer.PLAYER_STATE_PLAYING) {
+      if (mediaController.playerState != SessionPlayer.PLAYER_STATE_PLAYING) {
         log.debug("skipping to start of playlist")
         mediaController.skipToPlaylistItem(0).then {
           play()
@@ -75,17 +67,13 @@ class AudioClient(context: Context) {
 
   fun togglePause() {
     log.debug("togglePause() state: ${mediaController.playerState.playerState}")
-    if (mediaController.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
+    if (mediaController.playerState == SessionPlayer.PLAYER_STATE_PLAYING) {
       mediaController.pause()
     } else {
       mediaController.play()
     }
   }
 
-  fun state() {
-    log.info("buf: ${mediaController.bufferingState.buffState} state: ${mediaController.playerState.playerState}")
-    //mediaController.adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_PLAY_SOUND)
-  }
 
   fun play() {
     log.trace("play() state:${mediaController.playerState.playerState} buffState:${mediaController.bufferingState.buffState}")
@@ -131,16 +119,6 @@ class AudioClient(context: Context) {
       log.debug("onPlaybackInfoChanged(): $info")
     }
 
-    override fun onAllowedCommandsChanged(
-      controller: MediaController,
-      commands: SessionCommandGroup
-    ) {
-      log.debug("onAllowedCommandsChanged() $commands")
-      commands.commands.forEach {
-        log.debug("allowed command: $it")
-      }
-    }
-
     override fun onPlaybackCompleted(controller: MediaController) {
       log.debug("onPlaybackCompleted()")
     }
@@ -156,8 +134,7 @@ class AudioClient(context: Context) {
     ) {
       val state = controller.playerState
       log.debug("onPlaylistChanged() size:${list?.size} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex} $metadata")
-      _hasNext.value = controller.nextMediaItemIndex != -1
-      _hasPrevious.value = controller.previousMediaItemIndex != -1
+
     }
 
     override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
@@ -172,9 +149,21 @@ class AudioClient(context: Context) {
     }
 
     override fun onPlayerStateChanged(controller: MediaController, state: Int) {
-      log.debug("onPlayerStateChanged() ${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex}")
-      _pauseEnabled.value = state == SessionPlayer.PLAYER_STATE_PLAYING
+      super.onPlayerStateChanged(controller, state)
+      log.debug("onPlayerStateChanged() state:$state = ${state.playerState}")
+      val pauseEnabled =
+        (state == SessionPlayer.PLAYER_STATE_PLAYING)
+      log.debug("pauseEnabled: ${pauseEnabled}")
+      _pauseEnabled.postValue(pauseEnabled)
+    }
 
+    override fun onSubtitleData(
+      controller: MediaController,
+      item: MediaItem,
+      track: SessionPlayer.TrackInfo,
+      data: SubtitleData
+    ) {
+      log.debug("onSubtitleData() $track data: $data")
     }
 
     override fun onTracksChanged(
