@@ -37,10 +37,8 @@ import androidx.media.AudioAttributesCompat;
 import androidx.media2.common.MediaItem;
 import androidx.media2.common.SessionPlayer.TrackInfo;
 import androidx.media2.common.SubtitleData;
-import com.google.android.exoplayer2.Player;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.android.exoplayer2.Player;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -55,12 +53,12 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * An implementation of {@link MediaPlayer2} based on a repackaged version of ExoPlayer.
  */
-@SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
-/* package */ public final class ExoPlayerMediaPlayer2Impl extends MediaPlayer2
+@SuppressLint("RestrictedApi")
+public final class ExoPlayerMediaPlayer2Impl extends MediaPlayer2
         implements ExoPlayerWrapper.Listener {
 
     private static final String TAG = "ExoPlayerMediaPlayer2";
-    private static final Logger log = LoggerFactory.getLogger(ExoPlayerMediaPlayer2Impl.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExoPlayerMediaPlayer2Impl.class);
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     final ExoPlayerWrapper mPlayer;
@@ -149,6 +147,7 @@ import java.util.concurrent.RejectedExecutionException;
             mTaskHandler.post(task);
         }
     }
+
 
     @Override
     public void setEventCallback(@NonNull Executor executor, @NonNull EventCallback eventCallback) {
@@ -250,7 +249,6 @@ import java.util.concurrent.RejectedExecutionException;
 
     @Override
     public Object play() {
-        log.trace("play()");
         return addTask(new Task(CALL_COMPLETED_PLAY, false) {
             @Override
             void process() {

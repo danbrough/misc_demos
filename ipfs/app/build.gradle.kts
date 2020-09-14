@@ -67,7 +67,7 @@ dependencies {
   implementation(Kotlin.stdlib.jdk8)
   implementation("commons-io:commons-io:2.7")
 
-  implementation("ipfs.gomobile:core:0.8.0-dan01@aar")
+  implementation("ipfs.gomobile:core:0.8.0-dan03@aar")
 
 
   //implementation(Libs.slf4j)

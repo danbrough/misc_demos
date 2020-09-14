@@ -38,6 +38,7 @@ import androidx.media2.common.SubtitleData;
 import androidx.media2.common.UriMediaItem;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
@@ -56,6 +57,7 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -63,9 +65,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -84,11 +83,10 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
  * {@link MediaPlayer2} API. {@link #getLooper()} returns the looper on which all other method calls
  * must be made.
  */
-@SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
-/* package */ public final class ExoPlayerWrapper {
+@SuppressLint("RestrictedApi")
+public final class ExoPlayerWrapper {
 
     private static final String TAG = "ExoPlayerWrapper";
-    private static final Logger log = LoggerFactory.getLogger(ExoPlayerWrapper.class);
 
     /** Listener for player wrapper events. */
     public interface Listener {
@@ -206,13 +204,11 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     }
 
     public void prepare() {
-        log.trace("prepare()");
         Preconditions.checkState(!mPrepared);
         mMediaItemQueue.preparePlayer();
     }
 
     public void play() {
-        log.trace("play()");
         mNewlyPrepared = false;
         if (mPlayer.getPlaybackState() == Player.STATE_ENDED) {
             mPlayer.seekTo(0);
@@ -221,7 +217,6 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     }
 
     public void pause() {
-        log.trace("pause()");
         mNewlyPrepared = false;
         mPlayer.setPlayWhenReady(false);
     }
@@ -440,11 +435,15 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
         mAudioSink = new DefaultAudioSink(
                 AudioCapabilities.getCapabilities(mContext), new AudioProcessor[0]);
         TextRenderer textRenderer = new TextRenderer(listener);
-        RenderersFactory renderersFactory = new RenderersFactory(mContext, mAudioSink,
-                textRenderer);
-        mTrackSelector = new TrackSelector(mContext,textRenderer);
+        /*RenderersFactory renderersFactory = new RenderersFactory(mContext, mAudioSink,
+                textRenderer);*/
+        DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(mContext);
+        renderersFactory.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER);
+  //      mTrackSelector = new TrackSelector(textRenderer);
+       DefaultTrackSelector mTrackSelector2 = new DefaultTrackSelector(mContext);
         mPlayer = new SimpleExoPlayer.Builder(mContext, renderersFactory)
-                .setTrackSelector(mTrackSelector.getPlayerTrackSelector())
+                //.setTrackSelector(mTrackSelector.getPlayerTrackSelector())
+                .setTrackSelector(mTrackSelector2)
                 .setBandwidthMeter(mBandwidthMeter)
                 .setLooper(mLooper)
                 .build();
@@ -600,7 +599,7 @@ import static androidx.media2.customplayer.MediaPlayer2.MEDIA_ERROR_UNKNOWN;
     void handleMetadata(Metadata metadata) {
         int length = metadata.length();
         for (int i = 0; i < length; i++) {
-            Metadata.Entry entry =  metadata.get(i);
+             Metadata.Entry entry =  metadata.get(i);
             if (entry instanceof ByteArrayFrame) {
                 ByteArrayFrame byteArrayFrame = (ByteArrayFrame) entry;
                 mListener.onTimedMetadata(

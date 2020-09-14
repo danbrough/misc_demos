@@ -16,8 +16,6 @@
 
 package androidx.media2.customplayer;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY;
-
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.DeniedByServerException;
@@ -43,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executor;
+
+import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
 /**
  * MediaPlayer2 class can be used to control playback of audio/video files and streams.
@@ -222,7 +222,7 @@ import java.util.concurrent.Executor;
  * MediaPlayer2 objects on a thread that has its own running Looper. This can be done on the main UI
  * thread, which has a Looper.</p>
  */
-/* package */ public abstract class MediaPlayer2 {
+public abstract class MediaPlayer2 {
 
     /**
      * Create a MediaPlayer2 object.

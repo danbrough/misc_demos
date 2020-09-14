@@ -26,26 +26,28 @@ var _ipfs: IPFS? = null
 private val log = LoggerFactory.getLogger("danbroid.demo.ipfs.content")
 
 suspend fun MenuActionContext.runCommand(cmd: suspend (IPFS) -> Unit) =
-    withContext(Dispatchers.IO) {
-      log.info("runCommand() $cmd")
-      val ipfs = _ipfs ?: IPFS(context).also {
-        _ipfs = it
-      }
-      if (!ipfs.isStarted) {
-        log.debug("starting ipfs..")
-        ipfs.start()
-        log.debug("ipfs started")
-      }
+  withContext(Dispatchers.IO) {
+    log.info("runCommand() $cmd")
+    val ipfs = _ipfs ?: IPFS(context).also {
+      it.enableNamesysPubsub()
+      it.enablePubsubExperiment()
+      _ipfs = it
+    }
+    if (!ipfs.isStarted) {
+      log.debug("starting ipfs..")
+      ipfs.start()
+      log.debug("ipfs started")
+    }
 
-      try {
-        cmd.invoke(ipfs)
-      } catch (err: Exception) {
-        log.error(err.message, err)
-        withContext(Dispatchers.Main) {
-          Toast.makeText(context, err.message, Toast.LENGTH_SHORT).show()
-        }
+    try {
+      cmd.invoke(ipfs)
+    } catch (err: Exception) {
+      log.error(err.message, err)
+      withContext(Dispatchers.Main) {
+        Toast.makeText(context, err.message, Toast.LENGTH_SHORT).show()
       }
     }
+  }
 
 
 val rootContent: MenuItemBuilder by lazy {
@@ -98,20 +100,31 @@ val rootContent: MenuItemBuilder by lazy {
     }
 
     menu {
+      title = "Test 3 - TCP Pubsub"
+      onClick = {
+        withContext(Dispatchers.IO) {
+          val api = LocalIPFS()
+          api.pubSub.sub("poiqwe098123") {
+            log.info("DATA: $it")
+          }
+        }
+      }
+    }
+    menu {
       title = "Config 1"
       onClick = {
         runCommand { ipfs ->
           val config = ipfs.config.toString(1)
           File(
-              context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS),
-              "libipfs.so"
+            context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS),
+            "libipfs.so"
           ).setExecutable(true)
 
           File(
-              context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS),
-              "config.txt"
+            context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS),
+            "config.txt"
           )
-              .writeText(config)
+            .writeText(config)
           log.debug("config: $config")
           val swarm = ipfs.config.getJSONObject("Swarm")
           log.info("swarm: ${swarm.toString(1)}")
@@ -124,14 +137,14 @@ val rootContent: MenuItemBuilder by lazy {
       onClick = {
         runCommand { ipfs ->
           ipfs.newRequest("cat")
-              .withArgument("/ipns/QmfBFfV72Rw9Vm9wWr2HFARydNWt4ap2xvU8j7Uw2xzzDR").send()
-              .also {
-                log.debug("received: ${it.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
+            .withArgument("/ipns/QmfBFfV72Rw9Vm9wWr2HFARydNWt4ap2xvU8j7Uw2xzzDR").send()
+            .also {
+              log.debug("received: ${it.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
               }
+            }
         }
       }
     }
@@ -145,34 +158,34 @@ val rootContent: MenuItemBuilder by lazy {
           f.writeText(msg)
 
           ipfs.newRequest("files/write").withArgument("/data/1.txt")
-              .withOption("create", true)
-              .withOption("parents", true)
+            .withOption("create", true)
+            .withOption("parents", true)
 
 
 //            .withHeader("Content-type", "text/plain")
 //            .withHeader("Content-Disposition","form-data; name=\"file\"; filename=\"message.txt\"")
 
-              .withHeader(
-                  "Content-Type",
-                  "multipart/form-data; boundary=-------BOUNDARY"
-              )
-              .withBody(
-                  """---------BOUNDARY
+            .withHeader(
+              "Content-Type",
+              "multipart/form-data; boundary=-------BOUNDARY"
+            )
+            .withBody(
+              """---------BOUNDARY
 Content-Disposition: form-data; name="file"
 Content-Type: text/plain
 
 $msg
 
 ---------BOUNDARY--"""
-              )
+            )
 
-              .send().also {
-                log.debug("received: ${it?.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it?.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
+            .send().also {
+              log.debug("received: ${it?.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it?.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
               }
+            }
         }
       }
     }
@@ -184,17 +197,17 @@ $msg
         runCommand { ipfs ->
 
           ipfs.newRequest("files/stat").withArgument("/data")
-              .send().also {
-                it ?: return@also
-                val data = JSONObject(it.decodeToString())
-                dataID = data.getString("Hash")
-                log.debug("hash: $dataID")
-                log.debug("received: ${it.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
+            .send().also {
+              it ?: return@also
+              val data = JSONObject(it.decodeToString())
+              dataID = data.getString("Hash")
+              log.debug("hash: $dataID")
+              log.debug("received: ${it.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
               }
+            }
         }
       }
     }
@@ -206,13 +219,13 @@ $msg
 
           dataID ?: return@runCommand
           ipfs.newRequest("name/publish").withArgument(dataID!!)
-              .send().also {
-                log.debug("received: ${it.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
+            .send().also {
+              log.debug("received: ${it.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
               }
+            }
         }
       }
     }
@@ -226,26 +239,26 @@ $msg
 
         runCommand { ipfs ->
           ipfs.newRequest("swarm/connect")
-              .withArgument("/ip4/216.189.156.39/tcp/4001/p2p/QmfBFfV72Rw9Vm9wWr2HFARydNWt4ap2xvU8j7Uw2xzzDR")
-              .send()?.also {
-                log.debug("received: ${it.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
-              } ?: log.error("cmd returned null")
+            .withArgument("/ip4/216.189.156.39/tcp/4001/p2p/QmfBFfV72Rw9Vm9wWr2HFARydNWt4ap2xvU8j7Uw2xzzDR")
+            .send()?.also {
+              log.debug("received: ${it.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
+              }
+            } ?: log.error("cmd returned null")
         }
 
         runCommand { ipfs ->
           ipfs.newRequest("swarm/connect")
-              .withArgument("/ip4/192.168.1.2/tcp/4001/p2p/QmSUVX7in38z9DkJUZJd8Ko9SCoktLW8YV91RqPDjEtVwT")
-              .send()?.also {
-                log.debug("received: ${it.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
-              } ?: log.error("cmd returned null")
+            .withArgument("/ip4/192.168.1.2/tcp/4001/p2p/QmSUVX7in38z9DkJUZJd8Ko9SCoktLW8YV91RqPDjEtVwT")
+            .send()?.also {
+              log.debug("received: ${it.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
+              }
+            } ?: log.error("cmd returned null")
         }
 
       }
@@ -257,13 +270,13 @@ $msg
 
         runCommand { ipfs ->
           ipfs.newRequest("swarm/addrs")
-              .send()?.also {
-                log.debug("received: ${it.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
-              } ?: log.error("cmd returned null")
+            .send()?.also {
+              log.debug("received: ${it.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
+              }
+            } ?: log.error("cmd returned null")
         }
       }
     }
@@ -274,15 +287,14 @@ $msg
 
 
         runCommand { ipfs ->
-          ipfs.newRequest("pubsub/sub").send()
-/*          ipfs.newRequest("pubsub/sub").withArgument("poiqwe098123")
+          ipfs.newRequest("pubsub/sub").withArgument("poiqwe098123")
             .send()?.also {
 
               log.debug("received: ${it.decodeToString()}")
               withContext(Dispatchers.Main) {
                 Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT).show()
               }
-            } ?: log.error("cmd returned null")*/
+            } ?: log.error("cmd returned null")
         }
       }
     }
@@ -293,14 +305,14 @@ $msg
 
         runCommand { ipfs ->
           ipfs.newRequest("pubsub/pub").withArgument("poiqwe098123")
-              .withArgument("Hello!")
-              .send()?.also {
-                log.debug("received: ${it.decodeToString()}")
-                withContext(Dispatchers.Main) {
-                  Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
-                      .show()
-                }
-              } ?: log.error("cmd returned null")
+            .withArgument("Hello at ${Date()}!")
+            .send()?.also {
+              log.debug("received: ${it.decodeToString()}")
+              withContext(Dispatchers.Main) {
+                Toast.makeText(context, it.decodeToString(), Toast.LENGTH_SHORT)
+                  .show()
+              }
+            } ?: log.error("cmd returned null")
         }
       }
     }
@@ -311,15 +323,15 @@ $msg
 
         runCommand { ipfs ->
           httpClient.newCall(
-              Request.Builder().url("http://192.168.1.2/config.json").build()
+            Request.Builder().url("http://192.168.1.2/config.json").build()
           )
-              .execute().body?.also {
-                log.debug("got config")
-                File(ipfs.repoAbsolutePath, "config").writeText(it.string())
+            .execute().body?.also {
+              log.debug("got config")
+              File(ipfs.repoAbsolutePath, "config").writeText(it.string())
 
 
-                ipfs.restart()
-              }
+              ipfs.restart()
+            }
         }
       }
     }

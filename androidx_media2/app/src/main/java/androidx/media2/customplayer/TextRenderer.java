@@ -42,8 +42,12 @@ import java.util.TreeMap;
  *
  * <p>The decoding process implemented here should match NuPlayer2CCDecoder.cpp in the framework.
  */
-@SuppressLint("RestrictedApi") // TODO(b/68398926): Remove once RestrictedApi checks are fixed.
-/* package */ class TextRenderer extends BaseRenderer {
+public class TextRenderer extends BaseRenderer {
+
+    @Override
+    public String getName() {
+        return "TextRenderer";
+    }
 
     /** Interface for text renderer outputs. */
     public interface Output {
@@ -125,18 +129,13 @@ import java.util.TreeMap;
 
     @Override
     protected void onStreamChanged(Format[] formats, long startPositionUs, long offsetUs) throws ExoPlaybackException {
-        super.onStreamChanged(formats, startPositionUs, offsetUs);
+        super.onStreamChanged(formats,startPositionUs, offsetUs);
         mIsTypeAndChannelAdvertised = new boolean[128];
     }
 
     @Override
     protected synchronized void onPositionReset(long positionUs, boolean joining) {
         flush();
-    }
-
-    @Override
-    public String getName() {
-        return "TextRenderer";
     }
 
     @Override
@@ -314,7 +313,7 @@ import java.util.TreeMap;
             if (timeUs < ccTimeUs) {
                 break;
             }
-            byte[] ccData = Preconditions.checkNotNull(mCcMap.get(ccTimeUs));
+            @SuppressLint("RestrictedApi") byte[] ccData = Preconditions.checkNotNull(mCcMap.get(ccTimeUs));
             displayTimeUs = ccTimeUs;
             int offset = data.length;
             data = Arrays.copyOf(data, offset + ccData.length);

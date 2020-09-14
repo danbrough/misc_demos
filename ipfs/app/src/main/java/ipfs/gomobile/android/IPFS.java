@@ -1,23 +1,20 @@
 package ipfs.gomobile.android;
 
 import android.content.Context;
-
 import androidx.annotation.NonNull;
-
-import org.apache.commons.io.FilenameUtils;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Objects;
-
-import core.Config;
-import core.Core;
-import core.Node;
-import core.Repo;
-import core.Shell;
-import core.SockManager;
+import org.apache.commons.io.FilenameUtils;
+import org.json.JSONObject;
 
 // Import gomobile-ipfs core
+import core.Core;
+import core.Config;
+import core.Repo;
+import core.Node;
+import core.Shell;
+import core.SockManager;
 
 /**
 * IPFS is a class that wraps a go-ipfs node and its shell over UDS.
@@ -163,15 +160,14 @@ public class IPFS {
         try {
             openRepoIfClosed();
             node = Core.newNode(repo);
-           // node.serveUnixSocketAPI(absSockPath);
-            node.serveConfigAPI();
-            node.serveTCPAPI("4002");
+            //node.serveUnixSocketAPI(absSockPath);
+            node.serveTCPAPI("5001");
         } catch (Exception e) {
             throw new NodeStartException("Node start failed", e);
         }
 
         //shell = Core.newUDSShell(absSockPath);
-        shell = Core.newTCPShell("4002");
+        shell = Core.newTCPShell("5001");
     }
 
     /**
@@ -201,6 +197,36 @@ public class IPFS {
     synchronized public void restart() throws NodeStopException {
         stop();
         try { start(); } catch(NodeStartException ignore) { /* Should never happen */ }
+    }
+
+    /**
+    * Instantiate the ipfs node with the experimental pubsub feature enabled.
+    *
+    * @throws ExtraOptionException If enable the extra option failed
+    * @see <a href="https://github.com/ipfs/go-ipfs/blob/master/docs/experimental-features.md#ipfs-pubsub">Experimental features of IPFS</a>
+    */
+    synchronized public void enablePubsubExperiment() throws ExtraOptionException {
+        try {
+            openRepoIfClosed();
+            repo.enablePubsubExperiment();
+        } catch (Exception e) {
+            throw new ExtraOptionException("Enable pubsub experiment failed", e);
+        }
+    }
+
+    /**
+    * Enable IPNS record distribution through pubsub; enables pubsub.
+    *
+    * @throws ExtraOptionException If enable the extra option failed
+    * @see <a href="https://github.com/ipfs/go-ipfs/blob/master/docs/experimental-features.md#ipns-pubsub">Experimental features of IPFS</a>
+    */
+    synchronized public void enableNamesysPubsub() throws ExtraOptionException {
+        try {
+            openRepoIfClosed();
+            repo.enableNamesysPubsub();
+        } catch (Exception e) {
+            throw new ExtraOptionException("Enable namesys pubsub failed", e);
+        }
     }
 
     /**
@@ -338,8 +364,11 @@ public class IPFS {
         }
     }
 
-
     // Exceptions
+    public static class ExtraOptionException extends Exception {
+        ExtraOptionException(String message, Throwable err) { super(message, err); }
+    }
+
     public static class ConfigCreationException extends Exception {
         ConfigCreationException(String message, Throwable err) { super(message, err); }
     }

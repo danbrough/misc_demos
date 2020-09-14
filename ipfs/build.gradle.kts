@@ -2,7 +2,7 @@ buildscript {
 
   dependencies {
     //classpath("com.android.tools.build:gradle:4.2.0-alpha08")
-    classpath("com.android.tools.build:gradle:4.1.0-rc01")
+    classpath("com.android.tools.build:gradle:4.1.0-rc02")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
     classpath(AndroidX.navigation.safeArgsGradlePlugin)
   }
@@ -19,7 +19,7 @@ buildscript {
       setUrl("https://dl.bintray.com/kotlin/kotlin-eap")
     }*/
 
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+
 
   }
 

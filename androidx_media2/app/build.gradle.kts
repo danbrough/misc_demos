@@ -102,9 +102,10 @@ dependencies {
   implementation("com.mikepenz:community-material-typeface:5.3.45.1-kotlin")*/
 
   val exo_vanilla = false
-  val exo_version = if (exo_vanilla) "2.11.8" else "2.12.0-dan05"// "2.11.8-dan02"
+  val exo_version = if (exo_vanilla) "2.11.8" else "2.12.0-dan08"//"2.11.8-dan02" //else //
   val exo_package =
     if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
+
 
   if (exo_vanilla) {
 
@@ -117,15 +118,17 @@ dependencies {
 
     implementation("$exo_package:exoplayer-core:$exo_version")
     implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
-    implementation("$exo_package:exoplayer-ui:$exo_version")
+    //implementation("$exo_package:library-ui:$exo_version")
     implementation("$exo_package:exoplayer-hls:$exo_version")
 
 
     // implementation("$exo_package:extension-mediasession:$exo_version")
     //implementation("$exo_package:extension-okhttp:$exo_version")
+    implementation("$exo_package:extension-ffmpeg:$exo_version")
+
     implementation("$exo_package:extension-cast:$exo_version")
-   // implementation("$exo_package:extension-opus:$exo_version")
-    implementation("$exo_package:extension-flac:$exo_version")
+   /*implementation("$exo_package:extension-opus:$exo_version")
+    implementation("$exo_package:extension-flac:$exo_version")*/
   }
 
   implementation(Square.okHttp3.okHttp)

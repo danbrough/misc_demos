@@ -59,22 +59,22 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
         mTextRenderer = textRenderer;
     }
 
+
     @Override
     public Renderer[] createRenderers(Handler eventHandler, VideoRendererEventListener videoRendererEventListener, AudioRendererEventListener audioRendererEventListener, TextOutput textRendererOutput, MetadataOutput metadataRendererOutput) {
-
         return new Renderer[]{
                 new MediaCodecVideoRenderer(
                         mContext,
                         MediaCodecSelector.DEFAULT,
                         DEFAULT_ALLOWED_VIDEO_JOINING_TIME_MS,
-                        /* playClearSamplesWithoutKeys= */ false,
+                        /* playClearSamplesWithoutKeys= */ true,
                         eventHandler,
                         videoRendererEventListener,
                         MAX_DROPPED_VIDEO_FRAME_COUNT_TO_NOTIFY),
                 new MediaCodecAudioRenderer(
                         mContext,
                         MediaCodecSelector.DEFAULT,
-                        /* playClearSamplesWithoutKeys= */ false,
+                        /* playClearSamplesWithoutKeys= */ true,
                         eventHandler,
                         audioRendererEventListener,
                         mAudioSink),
@@ -83,7 +83,7 @@ import com.google.android.exoplayer2.video.VideoRendererEventListener;
                         metadataRendererOutput,
                         eventHandler.getLooper(),
                         com.google.android.exoplayer2.metadata.MetadataDecoderFactory.DEFAULT)
-                // new Id3MetadataDecoderFactory())
+                //new Id3MetadataDecoderFactory())
         };
     }
 
