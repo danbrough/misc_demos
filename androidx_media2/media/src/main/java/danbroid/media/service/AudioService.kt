@@ -3,6 +3,7 @@ package danbroid.media.service
 import android.content.ComponentName
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Handler
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
@@ -12,6 +13,7 @@ import androidx.media2.session.MediaLibraryService
 import androidx.media2.session.MediaSession
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayerLibraryInfo
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
@@ -20,6 +22,8 @@ import com.google.android.exoplayer2.metadata.flac.VorbisComment
 import com.google.android.exoplayer2.metadata.id3.TextInformationFrame
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.upstream.BandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 
 class AudioService : MediaLibraryService() {
 
@@ -59,9 +63,30 @@ class AudioService : MediaLibraryService() {
       this,
       renderersFactory
     )
+      .setBandwidthMeter(
+        DefaultBandwidthMeter.Builder(this)
+          .build().also {
+            it.addEventListener(Handler(), object : BandwidthMeter.EventListener {
+              override fun onBandwidthSample(
+                elapsedMs: Int,
+                bytesTransferred: Long,
+                bitrateEstimate: Long
+              ) {
+                log.warn("onBandwidth() $bytesTransferred bitrate:$bitrateEstimate")
+              }
+
+            })
+          }
+      )
       .build()
 
     player = SessionPlayerConnector(exoPlayer)
+    exoPlayer.addListener(object : Player.EventListener {
+      override fun onIsLoadingChanged(isLoading: Boolean) {
+        log.info("onIsLoadingChanged() $isLoading")
+      }
+
+    })
 
 
 
