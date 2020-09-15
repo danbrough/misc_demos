@@ -73,6 +73,8 @@ dependencies {
     implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
     implementation("$exo_package:exoplayer-ui:$exo_version")
     implementation("$exo_package:exoplayer-hls:$exo_version")
+    implementation("$exo_package:exoplayer-dash:$exo_version")
+
     implementation("$exo_package:exoplayer-media2:$exo_version")
 
     implementation("$exo_package:extension-cast:$exo_version")
@@ -82,6 +84,8 @@ dependencies {
     implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
     implementation("$exo_package:exoplayer-ui:$exo_version")
     implementation("$exo_package:exoplayer-hls:$exo_version")
+    implementation("$exo_package:exoplayer-dash:$exo_version")
+
     implementation("$exo_package:extension-media2:$exo_version")
 
 

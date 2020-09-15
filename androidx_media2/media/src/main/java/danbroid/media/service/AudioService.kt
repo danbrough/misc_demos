@@ -16,6 +16,8 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
 import com.google.android.exoplayer2.metadata.Metadata
+import com.google.android.exoplayer2.metadata.flac.VorbisComment
+import com.google.android.exoplayer2.metadata.id3.TextInformationFrame
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 
@@ -61,6 +63,8 @@ class AudioService : MediaLibraryService() {
 
     player = SessionPlayerConnector(exoPlayer)
 
+
+
     player.setAudioAttributes(
       AudioAttributesCompat.Builder()
         .setUsage(AudioAttributesCompat.USAGE_MEDIA)
@@ -74,18 +78,104 @@ class AudioService : MediaLibraryService() {
         trackGroups: TrackGroupArray,
         trackSelections: TrackSelectionArray
       ) {
-        log.error("onTracksChanged()")
+        log.warn("onTracksChanged()")
         for (n in 0 until trackGroups.length) {
           for (m in 0 until trackGroups[n].length) {
-            trackGroups[n].getFormat(m).also {
-              log.error("trackMetadata:$n ${it.metadata}")
+
+            trackGroups[n].getFormat(m).also { format ->
+              val metadata = format.metadata
+              val currentMetadata = player.currentMediaItem?.metadata
+              log.error("bitrate: ${format.bitrate}")
+              log.error("trackMetadata:$n cls:${format::class.java} ${metadata}")
+              log.error("currentMetadata: ${currentMetadata}")
+
+              var title: String? = null
+
+              if (metadata != null) {
+                (0 until metadata.length()).forEach {
+                  val entry = metadata.get(it)
+                  log.error("entry: ${entry} cls: ${entry::class.java}")
+                  when (entry) {
+                    is VorbisComment -> {
+                      log.error("VORBIS COMMENT: ${entry.key}:=<${entry.value}>")
+                      when (entry.key) {
+                        "Title" -> {
+                          title = entry.value
+                        }
+                      }
+                    }
+                    is TextInformationFrame -> {
+                      log.error("ID3 COMMENT: ${entry.id}:=<${entry.value}>")
+                      when (entry.id) {
+                        "TIT2" -> {
+                          title = entry.value
+                        }
+                        "TALB" -> {
+                          val album = entry.value
+                        }
+                      }
+                    }
+                  }
+                }
+
+                if (currentMetadata != null && title != null) {
+                  val oldTitle =
+                    currentMetadata.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
+                  if (oldTitle != title) {
+                    val newMetadata = MediaMetadata.Builder(currentMetadata).also {
+                      it.putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title)
+                    }.build()
+                    log.error("updating playlist metadata with title:$title")
+
+                    player.currentMediaItem?.metadata = newMetadata
+                    player.updatePlaylistMetadata(newMetadata)
+                  }
+                }
+              }
+
             }
           }
         }
       }
 
       override fun onMetadata(eventTime: AnalyticsListener.EventTime, metadata: Metadata) {
-        log.error("onMetadata() $metadata")
+        log.warn("onMetadata() $metadata")
+        val currentMetadata = player.currentMediaItem?.metadata
+        val oldMetadata = TrackMetadata(currentMetadata)
+        val newMetadata = metadata.toTrackMetadata(currentMetadata)
+        if (oldMetadata != newMetadata) {
+          log.error("UPDATING currentItems metadata with: $newMetadata")
+          newMetadata.toMediaMetadata().also {
+            player.currentMediaItem?.metadata = it
+            player.updatePlaylistMetadata(it)
+          }
+
+        }
+
+        /*   (0 until metadata.length()).forEach {
+             metadata[it].also { entry ->
+               log.error("entry: cls:${entry::class.java} $it: format:${entry.wrappedMetadataFormat}")
+
+
+               if (entry is IcyInfo) {
+                 log.error("TITLE: ${entry.title} URL: ${entry.url}")
+                 val md = player.currentMediaItem?.metadata
+                 log.error("EXISTING METADATA: $md")
+                 if (md != null) {
+                   val newMetadata = MediaMetadata.Builder(md).also {
+                     it.putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, entry.title)
+                   }.build()
+                   player.updatePlaylistMetadata(newMetadata)
+                 }
+
+
+               }
+             }
+           }
+           player.playlistMetadata?.also { entry ->
+             log.error("current data: $entry")
+           }*/
+
       }
 
       override fun onBandwidthEstimate(

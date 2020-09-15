@@ -27,6 +27,12 @@ class AudioClient(context: Context) {
   private val _hasNext = MutableLiveData<Boolean>(false)
   val hasNext: LiveData<Boolean> = _hasNext
 
+  private val _currentItem = MutableLiveData<MediaItem?>(null)
+  val currentItem: LiveData<MediaItem?> = _currentItem
+
+  private val _metadata = MutableLiveData<MediaMetadata?>(null)
+  val metadata: LiveData<MediaMetadata?> = _metadata
+
   private val _hasPrevious = MutableLiveData<Boolean>(false)
   val hasPrevious: LiveData<Boolean> = _hasPrevious
 
@@ -125,6 +131,7 @@ class AudioClient(context: Context) {
 
     override fun onPlaylistMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
       log.debug("onPlaylistMetadataChanged() $metadata")
+      _metadata.value = metadata
     }
 
     override fun onPlaylistChanged(
@@ -134,11 +141,21 @@ class AudioClient(context: Context) {
     ) {
       val state = controller.playerState
       log.debug("onPlaylistChanged() size:${list?.size} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex} $metadata")
+      _hasNext.value = controller.nextMediaItemIndex != -1
+      _hasPrevious.value = controller.previousMediaItemIndex != -1
+    }
 
+    override fun onTrackSelected(controller: MediaController, trackInfo: SessionPlayer.TrackInfo) {
+      log.warn("onTrackSelected() ${controller.currentMediaItem?.metadata}")
     }
 
     override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
-      log.debug("item: $item")
+      log.warn("onCurrentMediaItemChanged(): $item metadata: ${item?.metadata}")
+      _currentItem.value = item
+      _metadata.value = item?.metadata
+
+      _hasNext.value = controller.nextMediaItemIndex != -1
+      _hasPrevious.value = controller.previousMediaItemIndex != -1
     }
 
     override fun onBufferingStateChanged(controller: MediaController, item: MediaItem, state: Int) {
@@ -154,7 +171,7 @@ class AudioClient(context: Context) {
       val pauseEnabled =
         (state == SessionPlayer.PLAYER_STATE_PLAYING)
       log.debug("pauseEnabled: ${pauseEnabled}")
-      _pauseEnabled.postValue(pauseEnabled)
+      _pauseEnabled.value = pauseEnabled
     }
 
     override fun onSubtitleData(
@@ -172,8 +189,7 @@ class AudioClient(context: Context) {
     ) {
       val state = controller.playerState
       log.debug("onTracksChanged() tracks:${tracks} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex}")
-      _hasNext.value = controller.nextMediaItemIndex != -1
-      _hasPrevious.value = controller.previousMediaItemIndex != -1
+
     }
 
     override fun onConnected(controller: MediaController, allowedCommands: SessionCommandGroup) {

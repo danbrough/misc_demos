@@ -2,6 +2,7 @@ package danbroid.demo.media2.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.MediaMetadata
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -45,16 +46,25 @@ class ControlsFragment : BottomSheetDialogFragment() {
 
     model.client.pauseEnabled.observe(viewLifecycleOwner) {
       log.trace("pauseEnabled: $it")
-      btn_play_pause.setImageResource(if (it) R.drawable.ic_media_pause_light else R.drawable.ic_media_play_light)
+      btn_play_pause.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
     }
 
     model.client.hasNext.observe(viewLifecycleOwner) {
       btn_next.visibility = if (it) View.VISIBLE else View.INVISIBLE
     }
 
-
     model.client.hasPrevious.observe(viewLifecycleOwner) {
       btn_prev.visibility = if (it) View.VISIBLE else View.INVISIBLE
+    }
+
+    model.client.metadata.observe(viewLifecycleOwner) {
+      it?.also {
+        title.text = it.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
+        log.trace("updated title to ${title.text}")
+      } ?: run {
+        title.text = ""
+      }
+
     }
   }
 

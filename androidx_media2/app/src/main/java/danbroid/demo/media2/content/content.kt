@@ -35,7 +35,19 @@ val rootContent: MenuItemBuilder =
       }
     }
 
+    menu {
+      title = "Radio ShE"
+      onClick = {
+        audioClient.playUri("http://colostreaming.com:8094")
+      }
+    }
 
+    menu {
+      title = "NZ Metal"
+      onClick = {
+        audioClient.playUri("http://curiosity.shoutca.st:9073/stream")
+      }
+    }
 
     menu {
       title = "U80s"
