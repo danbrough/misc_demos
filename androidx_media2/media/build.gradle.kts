@@ -1,6 +1,7 @@
 plugins {
   id("com.android.library")
-  id("kotlin-android")
+  kotlin("android")
+  kotlin("kapt")
 }
 
 android {
@@ -62,21 +63,26 @@ tasks.withType<Test> {
 
 dependencies {
   api("org.slf4j:slf4j-api:_")
+
   implementation(AndroidX.coreKtx)
   implementation(Kotlin.stdlib.jdk8)
+  implementation(AndroidX.annotation)
   implementation(AndroidX.lifecycle.liveDataKtx)
 
-  //implementation(AndroidX.media2.session)
- implementation(AndroidX.media2.common)
+  implementation(AndroidX.media2.session)
+//  implementation(project(":session"))
+
+  implementation(AndroidX.media2.common)
   //implementation(AndroidX.media2.player)
-  implementation(project(":session"))
   //implementation(project(":exomedia2"))
 
   api(AndroidX.concurrent.futures)
   //api(AndroidX.media2.exoplayer)
   implementation(Google.android.material)
   implementation("com.google.guava:guava:_")
-
+  implementation("com.github.danbrough.androidutils:misc:_")
+  api("com.github.bumptech.glide:glide:_")
+  kapt("com.github.bumptech.glide:compiler:_")
   val exo_vanilla = false
   val exo_package =
     if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
@@ -101,7 +107,7 @@ dependencies {
     implementation("$exo_package:exoplayer-dash:$exo_version")
 
 
-    implementation(project(":exomedia2"))
+    //implementation(project(":exomedia2"))
     // implementation("$exo_package:extension-mediasession:$exo_version")
     //implementation("$exo_package:extension-okhttp:$exo_version")
     // implementation("$exo_package:extension-ffmpeg:$exo_version")
@@ -109,6 +115,7 @@ dependencies {
 /*    implementation("$exo_package:extension-media2:$exo_version"){
       exclude(group="androidx.media2")
     }*/
+    implementation("$exo_package:extension-media2:$exo_version")
     implementation("$exo_package:extension-cast:$exo_version")
     implementation("$exo_package:extension-opus:$exo_version")
     implementation("$exo_package:extension-flac:$exo_version")

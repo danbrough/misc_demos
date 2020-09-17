@@ -700,13 +700,6 @@ public final class SessionPlayerConnector extends SessionPlayer {
     }
 
     @Override
-    public void updateNotification() {
-      log.trace("updateNotification() NOT IMPLEMENTED");
-      /*notifySessionPlayerCallback(
-          callback -> callback.onPlayerStateChanged(SessionPlayerConnector.this, state));*/
-    }
-
-    @Override
     public void onBufferingStarted(MediaItem mediaItem) {
       setBufferingState(mediaItem, BUFFERING_STATE_BUFFERING_AND_STARVED);
     }
@@ -746,6 +739,7 @@ public final class SessionPlayerConnector extends SessionPlayer {
             callback.onSeekCompleted(SessionPlayerConnector.this, currentPosition);
           });
     }
+
 
     @Override
     public void onPlaybackEnded() {
@@ -790,5 +784,11 @@ public final class SessionPlayerConnector extends SessionPlayer {
           callback ->
               callback.onAudioAttributesChanged(SessionPlayerConnector.this, audioAttributes));
     }
+  }
+
+  public void updateNotification() {
+    log.error("updateNotification() NOT IMPLEMENTED");
+      /*notifySessionPlayerCallback(
+          callback -> callback.onPlayerStateChanged(SessionPlayerConnector.this, state));*/
   }
 }

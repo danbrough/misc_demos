@@ -45,7 +45,7 @@ import static android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP;
  * Provides default media notification for {@link MediaSessionService}, and set the service as
  * foreground/background according to the player state.
  */
-/* package */ class MediaNotificationHandler extends
+public class MediaNotificationHandler extends
     MediaSession.SessionCallback.ForegroundServiceEventCallback {
   private static final int NOTIFICATION_ID = 1001;
   private static final String NOTIFICATION_CHANNEL_ID = "default_channel_id";
@@ -154,13 +154,17 @@ import static android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP;
         mServiceInstance, NOTIFICATION_CHANNEL_ID);
 
     // TODO: Filter actions when SessionPlayer#getSupportedActions() is introduced.
-    builder.addAction(mSkipToPrevAction);
+    if (session.getPlayer().getPreviousMediaItemIndex() != -1)
+      builder.addAction(mSkipToPrevAction);
+
     if (session.getPlayer().getPlayerState() == SessionPlayer.PLAYER_STATE_PLAYING) {
       builder.addAction(mPauseAction);
     } else {
       builder.addAction(mPlayAction);
     }
-    builder.addAction(mSkipToNextAction);
+
+    if (session.getPlayer().getNextMediaItemIndex() != -1)
+      builder.addAction(mSkipToNextAction);
 
     // Set metadata info in the notification.
     if (session.getPlayer().getCurrentMediaItem() != null) {

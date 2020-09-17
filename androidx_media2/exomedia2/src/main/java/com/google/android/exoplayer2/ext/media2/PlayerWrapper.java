@@ -74,7 +74,6 @@ public final class PlayerWrapper {
      */
     void onSeekCompleted();
 
-    void updateNotification();
 
     /**
      * Called when the player rebuffers.
@@ -501,7 +500,6 @@ public final class PlayerWrapper {
 
   private void handlePositionDiscontinuity(@Player.DiscontinuityReason int reason) {
     log.trace("handlePostionDiscontinuity(): " + reason);
-    listener.updateNotification();
     int currentWindowIndex = getCurrentMediaItemIndex();
     if (this.currentWindowIndex != currentWindowIndex) {
       this.currentWindowIndex = currentWindowIndex;
