@@ -21,6 +21,10 @@ android {
 
   }
 
+  buildFeatures {
+    aidl = true
+  }
+
   buildTypes {
 
     getByName("release") {
@@ -40,6 +44,8 @@ android {
   kotlinOptions {
     jvmTarget = "1.8"
   }
+
+
 }
 
 tasks.withType<Test> {
@@ -56,11 +62,20 @@ tasks.withType<Test> {
 
 dependencies {
   api("org.slf4j:slf4j-api:_")
-  api(AndroidX.media2.session)
-  api(AndroidX.media2.common)
+  implementation(AndroidX.coreKtx)
+  implementation(Kotlin.stdlib.jdk8)
+  implementation(AndroidX.lifecycle.liveDataKtx)
 
+  //implementation(AndroidX.media2.session)
+ implementation(AndroidX.media2.common)
+  //implementation(AndroidX.media2.player)
+  implementation(project(":session"))
+  //implementation(project(":exomedia2"))
+
+  api(AndroidX.concurrent.futures)
   //api(AndroidX.media2.exoplayer)
   implementation(Google.android.material)
+  implementation("com.google.guava:guava:_")
 
   val exo_vanilla = false
   val exo_package =
@@ -68,7 +83,6 @@ dependencies {
   val exo_version = if (exo_vanilla) "2.12.0" else "2.12.0-dan13"//"2.11.8-dan02"
 
   if (exo_vanilla) {
-
     implementation("$exo_package:exoplayer-core:$exo_version")
     implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
     implementation("$exo_package:exoplayer-ui:$exo_version")
@@ -86,27 +100,25 @@ dependencies {
     implementation("$exo_package:exoplayer-hls:$exo_version")
     implementation("$exo_package:exoplayer-dash:$exo_version")
 
-    implementation("$exo_package:extension-media2:$exo_version")
 
-
+    implementation(project(":exomedia2"))
     // implementation("$exo_package:extension-mediasession:$exo_version")
     //implementation("$exo_package:extension-okhttp:$exo_version")
     // implementation("$exo_package:extension-ffmpeg:$exo_version")
     // implementation("$exo_package:extension-ffmpeg:$exo_version")
+/*    implementation("$exo_package:extension-media2:$exo_version"){
+      exclude(group="androidx.media2")
+    }*/
     implementation("$exo_package:extension-cast:$exo_version")
     implementation("$exo_package:extension-opus:$exo_version")
     implementation("$exo_package:extension-flac:$exo_version")
   }
-  implementation("com.google.guava:guava:_")
 
 
-  api(AndroidX.concurrent.futures)
-  api(AndroidX.media2.common)
   //implementation("com.github.danbrough.exoplayer:extension-media2:2.12.0-dan02")
 
-  implementation("org.jetbrains.kotlin:kotlin-stdlib:_")
-  implementation("androidx.core:core-ktx:_")
-  implementation("androidx.appcompat:appcompat:_")
+
+  //implementation("androidx.appcompat:appcompat:_")
   testImplementation("junit:junit:_")
   androidTestImplementation("androidx.test.ext:junit:_")
   androidTestImplementation("androidx.test.espresso:espresso-core:_")

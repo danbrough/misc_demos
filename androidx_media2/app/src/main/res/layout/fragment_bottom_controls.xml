@@ -9,62 +9,74 @@
     android:gravity="center_vertical|left"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorAccent" />
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="2dp"
+      android:background="?colorAccent" />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/buttons"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/btn_prev"
-            style="@style/BottomControlButton"
-            app:srcCompat="@drawable/ic_skip_previous" />
-        <!--
-                <item name="backgroundTint">@color/colorPrimaryLight</item>
-        <item name="android:background">?selectableItemBackground</item>
-        <item name="android:tint">?colorAccent</item>
-        -->
+      <ImageButton
+          android:id="@+id/btn_prev"
+          style="@style/BottomControlButton"
+          app:srcCompat="@drawable/ic_skip_previous" />
+      <!--
+              <item name="backgroundTint">@color/colorPrimaryLight</item>
+      <item name="android:background">?selectableItemBackground</item>
+      <item name="android:tint">?colorAccent</item>
+      -->
 
-        <ImageButton
-            android:id="@+id/btn_play_pause"
-            style="@style/BottomControlButton"
-            app:srcCompat="@drawable/ic_pause" />
+      <ImageButton
+          android:id="@+id/btn_play_pause"
+          style="@style/BottomControlButton"
+          app:srcCompat="@drawable/ic_pause" />
 
-        <ImageButton
-            android:id="@+id/btn_next"
-            style="@style/BottomControlButton"
-            app:srcCompat="@drawable/ic_skip_next" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/title"
-                style="?textAppearanceHeadline1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sample Title"
-                android:theme="@style/TextAppearance.AppCompat.Inverse"
-                tools:ignore="HardcodedText" />
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+      <ImageButton
+          android:id="@+id/btn_next"
+          style="@style/BottomControlButton"
+          app:srcCompat="@drawable/ic_skip_next" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+      <TextView
+          android:id="@+id/title"
+          style="?textAppearanceHeadline1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Sample Title"
+          android:theme="@style/TextAppearance.AppCompat.Inverse"
+          tools:ignore="HardcodedText" />
+
+      <TextView
+          android:id="@+id/subtitle"
+          android:textAppearance="?android:textAppearanceSmallInverse"
+          android:textSize="12sp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Sample Title"
+         />
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+  </LinearLayout>
 
 </LinearLayout>

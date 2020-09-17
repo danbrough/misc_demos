@@ -43,8 +43,7 @@ android {
   }
 
   composeOptions {
-    kotlinCompilerExtensionVersion = "1.0.0-alpha01"
-    kotlinCompilerVersion = "1.4.0"
+    kotlinCompilerExtensionVersion = "1.0.0-alpha02"
   }
 }
 
@@ -62,12 +61,27 @@ tasks.withType<Test> {
 
 
 dependencies {
-  val compose_version = "1.0.0-alpha01"
 
-  implementation("androidx.compose.ui:ui:$compose_version")
-  implementation("androidx.compose.material:material:$compose_version")
-  implementation("androidx.ui:ui-tooling:$compose_version")
 
+  implementation("androidx.compose.ui:ui:_")
+  implementation("androidx.compose.material:material:_")
+  implementation(AndroidX.ui.tooling)
+
+
+  // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+  implementation("androidx.compose.foundation:foundation:_")
+  // Material Design
+  implementation("androidx.compose.material:material:_")
+  // Material design icons
+  implementation("androidx.compose.material:material-icons-core:_")
+  implementation("androidx.compose.material:material-icons-extended:_")
+  // Integration with observables
+  implementation("androidx.compose.runtime:runtime-livedata:_")
+  //implementation 'androidx.compose.runtime:runtime-rxjava2:$compose_version'
+  implementation("dev.chrisbanes.accompanist:accompanist-coil:0.2.1")
+
+  // UI Tests
+  androidTestImplementation(AndroidX.ui.test)
 
   //implementation(project(":domain"))
   implementation(AndroidX.lifecycle.runtimeKtx)

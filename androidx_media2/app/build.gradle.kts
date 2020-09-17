@@ -26,7 +26,7 @@ android {
     consumerProguardFiles("consumer-rules.pro")
 
     vectorDrawables {
-      useSupportLibrary = true
+      useSupportLibrary = false
     }
   }
 
@@ -76,12 +76,12 @@ dependencies {
   implementation(AndroidX.navigation.uiKtx)
   implementation(AndroidX.constraintLayout)
   implementation(AndroidX.preferenceKtx)
-
+  implementation(AndroidX.media2.common)
+  implementation(AndroidX.concurrent.futures)
   implementation(Google.android.material)
 
   //implementation("androidx.media2:media2-exoplayer:$media_version")
   //implementation("androidx.media2:media2-player:$media_version")
-  implementation(AndroidX.media2.session)
   implementation("com.google.guava:guava:_")
 
 

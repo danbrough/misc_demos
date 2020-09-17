@@ -26,45 +26,51 @@ class ControlsFragment : BottomSheetDialogFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     log.debug("onViewCreated()")
     super.onViewCreated(view, savedInstanceState)
-
+    val audioClient = model.client
     btn_play_pause.setOnClickListener {
-      model.client.togglePause()
+      audioClient.togglePause()
     }
 
 
     btn_prev.setOnClickListener {
-      model.client.skipToPrev()
+      audioClient.skipToPrev()
     }
 
     btn_next.setOnClickListener {
-      model.client.skipToNext()
+      audioClient.skipToNext()
     }
 
-    model.client.connected.observe(viewLifecycleOwner) {
+
+
+    audioClient.connected.observe(viewLifecycleOwner) {
       log.trace("connected $it")
     }
 
-    model.client.pauseEnabled.observe(viewLifecycleOwner) {
+    audioClient.pauseEnabled.observe(viewLifecycleOwner) {
       log.trace("pauseEnabled: $it")
       btn_play_pause.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
     }
 
-    model.client.hasNext.observe(viewLifecycleOwner) {
+    audioClient.hasNext.observe(viewLifecycleOwner) {
       btn_next.visibility = if (it) View.VISIBLE else View.INVISIBLE
     }
 
-    model.client.hasPrevious.observe(viewLifecycleOwner) {
+    audioClient.hasPrevious.observe(viewLifecycleOwner) {
       btn_prev.visibility = if (it) View.VISIBLE else View.INVISIBLE
     }
 
-    model.client.metadata.observe(viewLifecycleOwner) {
+    audioClient.metadata.observe(viewLifecycleOwner) {
       it?.also {
         title.text = it.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
-        log.trace("updated title to ${title.text}")
+        subtitle.text = it.getText(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
       } ?: run {
         title.text = ""
+        subtitle.text = ""
       }
+    }
 
+    audioClient.currentItem.observe(viewLifecycleOwner) {
+      buttons.visibility = if (it != null) View.VISIBLE else View.GONE
     }
   }
 
