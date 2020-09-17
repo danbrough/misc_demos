@@ -5,43 +5,51 @@ val testTracks = testData {
   item {
     id = "http://colostreaming.com:8094"
     title = "Radio SHE"
+    subtitle = "Some cheesy rock station from florida"
   }
 
   item {
     id = "http://curiosity.shoutca.st:9073/stream"
     title = "NZ Metal"
+    subtitle = "Its heavy metal!!!"
   }
 
   item {
     title = "U80s"
     id = "http://ice4.somafm.com/u80s-256-mp3"
+    subtitle = "Underground 80's SOMAFM"
   }
 
   item {
     title = "RNZ"
     id = "http://radionz-ice.streamguys.com/National_aac128"
+    subtitle = "National Radio New Zealand"
   }
 
   item {
     title = "Opus Test"
     id = "https://h1.danbrough.org/guitar/improv/improv1.opus"
+    subtitle = "Improv1 - Dan Brough"
   }
 
   item {
     title = "Flac Test"
     id = "https://h1.danbrough.org/guitar/improv/improv2.flac"
+    subtitle = "Improv2 - Dan Brough"
   }
 
 
   item {
     title = "MP3 Test"
     id = "https://h1.danbrough.org/guitar/improv/improv3.mp3"
+    subtitle = "Improv3 - Dan Brough"
   }
 
 
   item {
     title = "Ogg Test"
     id = "https://h1.danbrough.org/guitar/improv/improv4.ogg"
+    subtitle = "Improv4 - Dan Brough"
   }
 
   item {
