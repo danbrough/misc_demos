@@ -37,6 +37,6 @@ DependenciesSetup.bootstrapRefreshVersionsAndDependencies(settings)
 
 include ":app"
 include ':media'*/
-include(":app", ":media",":session",":exomedia2")
+include(":app", ":media")
 rootProject.name = "media2_demo"
 
