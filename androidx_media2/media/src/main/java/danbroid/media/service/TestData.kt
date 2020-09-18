@@ -6,24 +6,29 @@ val testTracks = testData {
     id = "http://colostreaming.com:8094"
     title = "Radio SHE"
     subtitle = "Some cheesy rock station from florida"
+    imageURI = "http://shemiamiradio.com/graphics/WSHE-she-radio-logo.png"
+
   }
 
   item {
     id = "http://curiosity.shoutca.st:9073/stream"
     title = "NZ Metal"
     subtitle = "Its heavy metal!!!"
+    imageURI = "https://h1.danbrough.org/nzrp/metalradio.png"
   }
 
   item {
     title = "U80s"
     id = "http://ice4.somafm.com/u80s-256-mp3"
     subtitle = "Underground 80's SOMAFM"
+    imageURI = "https://api.somafm.com/img/u80s-120.png"
   }
 
   item {
     title = "RNZ"
     id = "http://radionz-ice.streamguys.com/National_aac128"
     subtitle = "National Radio New Zealand"
+    imageURI = "https://www.rnz.co.nz/brand-images/rnz-national.jpg"
   }
 
   item {

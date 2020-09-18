@@ -62,8 +62,7 @@ class AudioClient(context: Context) {
     mediaController.addPlaylistItem(Integer.MAX_VALUE, uri).then {
       log.debug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
       if (mediaController.playerState != SessionPlayer.PLAYER_STATE_PLAYING) {
-        log.debug("skipping to start of playlist")
-        mediaController.skipToPlaylistItem(0)
+        mediaController.play()
       }
     }
 
