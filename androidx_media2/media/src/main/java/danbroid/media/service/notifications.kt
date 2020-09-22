@@ -15,12 +15,10 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.util.NotificationUtil
 import danbroid.media.R
 
-object Config {
+class Config(context: Context) : danbroid.util.context.Singleton<Context>(context) {
 
 
   object Notifications {
-
-    val channelID: String = "AudioServiceChannel"
 
     var notificationID = 1438293
 
@@ -41,12 +39,12 @@ object Config {
     var notificationIconHeight = 128
   }
 
+
 }
 
 
 fun createNotificationManager(
   service: AudioService,
-  channelID: String = Config.Notifications.channelID,
   notificationID: Int = Config.Notifications.notificationID,
   notificationListener: PlayerNotificationManager.NotificationListener
 ): PlayerNotificationManager {
@@ -54,14 +52,18 @@ fun createNotificationManager(
 
   NotificationUtil.createNotificationChannel(
     service.applicationContext,
-    channelID,
+    service.getString(R.string.notification_channel_id),
     R.string.notification_channel_name,
     R.string.notification_description,
     NotificationUtil.IMPORTANCE_LOW
   )
 
   return object : PlayerNotificationManager(
-    service, channelID, notificationID, PlayerDescriptionAdapter(service), notificationListener
+    service,
+    service.getString(R.string.notification_channel_id),
+    notificationID,
+    PlayerDescriptionAdapter(service),
+    notificationListener
   ) {
     override fun createNotification(
       player: Player,
@@ -85,15 +87,11 @@ fun createNotificationManager(
     if (Config.Notifications.notificationColour != 0) {
       setColor(Config.Notifications.notificationColour)
     }
-//    setColor(R.color.testColour.toResourceColour(service.applicationContext))
 
     setUseNavigationActionsInCompactView(true)
-    /*setControlDispatcher(DefaultControlDispatcher().also {
 
-    })
-    */
     setControlDispatcher(DefaultControlDispatcher(0L, 0L))
-    setUseChronometer(true)
+    //setUseChronometer(true)
     setColorized(true)
     // setUseStopAction(true)
   }
@@ -109,7 +107,8 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
 
   val iconUtils = IconUtils(context)
 
-  val currentItem: Any? = null
+  val currentItem: MediaMetadata?
+    get() = service.player.currentMediaItem?.metadata
 
   override fun createCurrentContentIntent(player: Player) =
     service.packageManager?.getLaunchIntentForPackage(service.packageName)?.let { sessionIntent ->
@@ -126,10 +125,10 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
   override fun getCurrentContentText(player: Player): CharSequence? {
     return service.player.currentMediaItem?.metadata?.getText(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
   }
-
+/*
   override fun getCurrentSubText(player: Player): CharSequence? {
     return super.getCurrentSubText(player)
-  }
+  }*/
 
   val defaultIcon: Bitmap by lazy {
     iconUtils.drawableToBitmapIcon(Config.Notifications.defaultNotificationIcon)

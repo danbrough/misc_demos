@@ -3,8 +3,8 @@ package danbroid.media.service
 import android.app.Notification
 import android.content.ComponentName
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Handler
+import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
@@ -134,25 +134,27 @@ class AudioService : MediaLibraryService() {
       DefaultRenderersFactory(this).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
     val renderersFactory = defaultRenderersFactory
 
-    exoPlayer = SimpleExoPlayer.Builder(
-      this,
-      renderersFactory
-    )
-      .setBandwidthMeter(
-        DefaultBandwidthMeter.Builder(this)
-          .build().also {
-            it.addEventListener(Handler(), object : BandwidthMeter.EventListener {
-              override fun onBandwidthSample(
-                elapsedMs: Int,
-                bytesTransferred: Long,
-                bitrateEstimate: Long
-              ) {
-                log.warn("onBandwidth() $bytesTransferred bitrate:$bitrateEstimate")
-              }
+    val bwMeter = DefaultBandwidthMeter.Builder(this)
+      .setResetOnNetworkTypeChange(true)
+      .build().also {
+        it.addEventListener(
+          Handler(Looper.getMainLooper()),
+          object : BandwidthMeter.EventListener {
 
-            })
-          }
-      )
+            override fun onBandwidthSample(
+              elapsedMs: Int,
+              bytesTransferred: Long,
+              bitrateEstimate: Long
+            ) {
+              log.warn("onBandwidth() $bytesTransferred bitrate:$bitrateEstimate")
+            }
+
+          })
+      }
+
+    exoPlayer = SimpleExoPlayer.Builder(this, renderersFactory)
+      .setHandleAudioBecomingNoisy(true)
+      .setBandwidthMeter(bwMeter)
       .build()
 
     player = SessionPlayerConnector(exoPlayer)
@@ -179,23 +181,23 @@ class AudioService : MediaLibraryService() {
           ongoing: Boolean
         ) {
           log.warn("onNotificationPosted() ongoing:$ongoing")
-    /*      if (ongoing) {
-            if (!foreground) {
-              //log.warn("starting foreground ..")
-              ContextCompat.startForegroundService(
-                service.applicationContext,
-                Intent(service.applicationContext, service.javaClass)
-              )
-              service.startForeground(notificationId, notification)
-              foreground = true
-            }
-          } else {
-            if (foreground) {
-              log.warn("stopping foreground ..")
-              service.stopForeground(false)
-              foreground = false
-            }
-          }*/
+          /*      if (ongoing) {
+                  if (!foreground) {
+                    //log.warn("starting foreground ..")
+                    ContextCompat.startForegroundService(
+                      service.applicationContext,
+                      Intent(service.applicationContext, service.javaClass)
+                    )
+                    service.startForeground(notificationId, notification)
+                    foreground = true
+                  }
+                } else {
+                  if (foreground) {
+                    log.warn("stopping foreground ..")
+                    service.stopForeground(false)
+                    foreground = false
+                  }
+                }*/
         }
       })
 
@@ -203,7 +205,7 @@ class AudioService : MediaLibraryService() {
 
     if (true) exoPlayer.addAnalyticsListener(ExoAnalyticsListener())
 
-    if (false)
+    if (true)
       exoPlayer.addListener(
         object : Player.EventListener {
 
@@ -288,22 +290,7 @@ class AudioService : MediaLibraryService() {
       return UriMediaItem.Builder(mediaId.toUri())
         .setStartPosition(0L).setEndPosition(-1L)
         .setMetadata(
-          MediaMetadata.Builder()
-            .putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1)
-            .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, mediaId)
-            .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, trackMetadata.title)
-            .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, trackMetadata.subtitle)
-            .putString(MediaMetadata.METADATA_KEY_ARTIST, trackMetadata.subtitle)
-
-            .putBitmap(
-              MediaMetadata.METADATA_KEY_DISPLAY_ICON,
-              BitmapFactory.decodeResource(
-                resources,
-                danbroid.media.R.drawable.ic_dialog_close_light
-              )
-            )
-            .putString(MediaMetadata.METADATA_KEY_MEDIA_URI, mediaId)
-            .build()
+          trackMetadata.toMediaMetadata().putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1).build()
         )
         .build()
     }
@@ -324,6 +311,7 @@ class AudioService : MediaLibraryService() {
     }
   }
 
+
   inner class ExoAnalyticsListener :
     com.google.android.exoplayer2.analytics.AnalyticsListener {
     override fun onBandwidthEstimate(
@@ -335,6 +323,7 @@ class AudioService : MediaLibraryService() {
       log.error("loadTime: $totalLoadTimeMs totalBytesLoaded:$totalBytesLoaded bitrateEstimate:$bitrateEstimate")
     }
 
+
     override fun onMetadata(eventTime: AnalyticsListener.EventTime, metadata: Metadata) {
       log.warn("onMetadata() $metadata")
       val currentMetadata = player.currentMediaItem!!.metadata!!
@@ -342,7 +331,7 @@ class AudioService : MediaLibraryService() {
       val newMetadata = metadata.toTrackMetadata(currentMetadata)
       if (oldMetadata != newMetadata) {
         log.error("UPDATING currentItems metadata with: $newMetadata")
-        newMetadata.toMediaMetadata().also {
+        newMetadata.toMediaMetadata().build().also {
           player.currentMediaItem?.metadata = it
           player.updatePlaylistMetadata(it)
           /*          player.updatePlaylistMetadata(it).addListener({

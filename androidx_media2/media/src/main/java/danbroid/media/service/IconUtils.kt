@@ -8,12 +8,12 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.media2.common.MediaMetadata
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import danbroid.util.resource.resolveDrawableURI
-import java.io.IOException
 
 class IconUtils(
   val context: Context,
@@ -25,68 +25,56 @@ class IconUtils(
   }
 
 
-  @Throws(IOException::class)
   fun loadIcon(
-    iconUri: String,
-    defaultIcon: Bitmap? = null,
-    callback: ((Bitmap) -> Unit)? = null
-  ): Bitmap? {
-
-
-    iconUri.resolveDrawableURI(context).also {
-      if (it != 0) return drawableToBitmapIcon(it)
-    }
-
-    if (callback != null)
-      Glide.with(context).asBitmap().load(iconUri).diskCacheStrategy(DiskCacheStrategy.DATA)
-        //.transform(RoundedCorners(iconCornerRadius))
-        .into(object : CustomTarget<Bitmap>(
-          Config.Notifications.notificationIconWidth,
-          Config.Notifications.notificationIconHeight
-        ) {
-          override fun onLoadCleared(placeholder: Drawable?) = Unit
-
-          override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-            callback.invoke(resource)
-          }
-        })
-
-
-    return defaultIcon
-  }
-
-
-  fun loadIcon(
-    mediaItem: Any?,
+    metadata: MediaMetadata?,
     defaultIcon: Bitmap? = null,
     callback: (Bitmap) -> Unit
   ): Bitmap? {
-    log.trace("loadImage() $mediaItem")
+    log.trace("loadIcon() $metadata")
 
-/*
-    mediaItem ?: let {
-      log.error("mediaItem is null")
+    metadata ?: let {
+      log.error("metadata is null")
       return defaultIcon
     }
 
-
-    mediaItem.extras?.also {
-      if (it is Bitmap) return it
+    metadata.extras?.getParcelable<Bitmap>(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {
+      log.trace("found cached bitmap")
+      return it
     }
 
-    val imageURI = mediaItem.imageURI
+    metadata.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)?.also {
+      log.trace("found existing display icon bitmap")
+      return it
+    }
 
-    if (imageURI == null) {
-      mediaItem.extras = defaultIcon
+    val imageURI = metadata.getString(MediaMetadata.METADATA_KEY_ART_URI) ?: metadata.getString(
+      MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI
+    ) ?: run {
+      log.trace("no METADATA_KEY_ART_URI or METADATA_KEY_DISPLAY_ICON_URI returning defaultIcon ")
       return defaultIcon
     }
 
+    log.trace("imageURI: $imageURI")
 
-    mediaItem.extras = loadIcon(imageURI, defaultIcon) {
-      mediaItem.extras = it
-      callback.invoke(it)
+    imageURI.resolveDrawableURI(context).also {
+      if (it != 0) return drawableToBitmapIcon(it)
     }
-*/
+
+    Glide.with(context).asBitmap().load(imageURI).diskCacheStrategy(DiskCacheStrategy.DATA)
+      //.transform(RoundedCorners(iconCornerRadius))
+      .into(object : CustomTarget<Bitmap>(
+        Config.Notifications.notificationIconWidth,
+        Config.Notifications.notificationIconHeight
+      ) {
+        override fun onLoadCleared(placeholder: Drawable?) = Unit
+
+        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+          metadata.extras!!.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, resource)
+          callback.invoke(resource)
+        }
+      })
+
+
 
     return defaultIcon
   }

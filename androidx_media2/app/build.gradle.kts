@@ -90,6 +90,7 @@ dependencies {
   //implementation(Libs.slf4j)
   implementation("com.github.danbrough.androidutils:menu:_")
   implementation("com.github.danbrough.androidutils:slf4j:_")
+  implementation("com.github.danbrough.androidutils:misc:_")
 
 /*  implementation("com.mikepenz:iconics-core:5.0.3")
   implementation("com.mikepenz:iconics-views:5.0.3")
