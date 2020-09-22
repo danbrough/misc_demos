@@ -57,9 +57,9 @@ class AudioService : MediaLibraryService() {
 
     log.info("created player: $player")
     session =
-      MediaLibrarySession.Builder(this, player, callbackExecutor, sessionCallback)
-        .setId("session")
-        .build()
+        MediaLibrarySession.Builder(this, player, callbackExecutor, sessionCallback)
+            .setId("session")
+            .build()
 
 
 /*    notificationHandler = javaClass.superclass.superclass.getDeclaredField("mImpl").let {
@@ -73,10 +73,10 @@ class AudioService : MediaLibraryService() {
     }*/
 
     player.setAudioAttributes(
-      AudioAttributesCompat.Builder()
-        .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-        .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
-        .build()
+        AudioAttributesCompat.Builder()
+            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+            .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
+            .build()
     )
 
     player.registerPlayerCallback(callbackExecutor, object : SessionPlayer.PlayerCallback() {
@@ -105,8 +105,8 @@ class AudioService : MediaLibraryService() {
       }
 
       override fun onTracksChanged(
-        player: SessionPlayer,
-        tracks: MutableList<SessionPlayer.TrackInfo>
+          player: SessionPlayer,
+          tracks: MutableList<SessionPlayer.TrackInfo>
       ) {
         log.warn("onTracksChanged()")
       }
@@ -131,75 +131,76 @@ class AudioService : MediaLibraryService() {
 
 
     val defaultRenderersFactory =
-      DefaultRenderersFactory(this).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+        DefaultRenderersFactory(this).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
     val renderersFactory = defaultRenderersFactory
 
     val bwMeter = DefaultBandwidthMeter.Builder(this)
-      .setResetOnNetworkTypeChange(true)
-      .build().also {
-        it.addEventListener(
-          Handler(Looper.getMainLooper()),
-          object : BandwidthMeter.EventListener {
+        .setResetOnNetworkTypeChange(true)
+        .build().also {
+          it.addEventListener(
+              Handler(Looper.getMainLooper()),
+              object : BandwidthMeter.EventListener {
 
-            override fun onBandwidthSample(
-              elapsedMs: Int,
-              bytesTransferred: Long,
-              bitrateEstimate: Long
-            ) {
-              log.warn("onBandwidth() $bytesTransferred bitrate:$bitrateEstimate")
-            }
+                override fun onBandwidthSample(
+                    elapsedMs: Int,
+                    bytesTransferred: Long,
+                    bitrateEstimate: Long
+                ) {
+                  log.warn("onBandwidth() $bytesTransferred bitrate:$bitrateEstimate")
+                }
 
-          })
-      }
+              })
+        }
 
     exoPlayer = SimpleExoPlayer.Builder(this, renderersFactory)
-      .setHandleAudioBecomingNoisy(true)
-      .setBandwidthMeter(bwMeter)
-      .build()
+        .setHandleAudioBecomingNoisy(true)
+        .setBandwidthMeter(bwMeter)
+        .build()
 
     player = SessionPlayerConnector(exoPlayer)
+    var foreground = false
     notificationManager =
-      createNotificationManager(this, notificationListener = object : NotificationListener {
-        override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
-          log.warn("onNotificationCancelled() byUser:$dismissedByUser")
-          //
-          /*if (dismissedByUser)
-            stopPlayback()
-          else {
-            if (foreground) {
-              log.warn("stopping foreground ..")
-              service.stopForeground(true)
-              foreground = false
+        createNotificationManager(this, notificationListener = object : NotificationListener {
+
+          override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
+            log.warn("onNotificationCancelled() byUser:$dismissedByUser")
+            if (dismissedByUser) {
+              log.warn("SHOULD STOP PLAYBACK")
+            } else {
+              if (foreground) {
+                log.warn("stopping foreground ..")
+                stopForeground(true)
+                foreground = false
+              }
             }
-          }*/
-        }
+          }
 
 
-        override fun onNotificationPosted(
-          notificationId: Int,
-          notification: Notification,
-          ongoing: Boolean
-        ) {
-          log.warn("onNotificationPosted() ongoing:$ongoing")
-          /*      if (ongoing) {
-                  if (!foreground) {
-                    //log.warn("starting foreground ..")
-                    ContextCompat.startForegroundService(
-                      service.applicationContext,
-                      Intent(service.applicationContext, service.javaClass)
-                    )
-                    service.startForeground(notificationId, notification)
-                    foreground = true
-                  }
-                } else {
-                  if (foreground) {
-                    log.warn("stopping foreground ..")
-                    service.stopForeground(false)
-                    foreground = false
-                  }
-                }*/
-        }
-      })
+          override fun onNotificationPosted(
+              notificationId: Int,
+              notification: Notification,
+              ongoing: Boolean
+          ) {
+            log.warn("onNotificationPosted() ongoing:$ongoing")
+            if (ongoing) {
+              if (!foreground) {
+                //log.warn("starting foreground ..")
+                ContextCompat.startForegroundService(
+                    applicationContext,
+                    Intent(applicationContext, javaClass)
+                )
+                startForeground(notificationId, notification)
+                foreground = true
+              }
+            } else {
+              if (foreground) {
+                log.warn("stopping foreground ..")
+                stopForeground(false)
+                foreground = false
+              }
+            }
+          }
+        })
 
     notificationManager.setPlayer(exoPlayer)
 
@@ -207,32 +208,32 @@ class AudioService : MediaLibraryService() {
 
     if (true)
       exoPlayer.addListener(
-        object : Player.EventListener {
+          object : Player.EventListener {
 
-          override fun onPlayWhenReadyChanged(
-            playWhenReady: Boolean, @Player.PlayWhenReadyChangeReason
-            reason: Int
-          ) {
-            super.onPlayWhenReadyChanged(playWhenReady, reason)
-            log.info("onPlayWhenReadyChanged(): ready:$playWhenReady} reason:$reason : ${reason.playWhenReadyChangeReason}")
-          }
+            override fun onPlayWhenReadyChanged(
+                playWhenReady: Boolean, @Player.PlayWhenReadyChangeReason
+                reason: Int
+            ) {
+              super.onPlayWhenReadyChanged(playWhenReady, reason)
+              log.info("onPlayWhenReadyChanged(): ready:$playWhenReady} reason:$reason : ${reason.playWhenReadyChangeReason}")
+            }
 
-          override fun onPlaybackStateChanged(@Player.State state: Int) {
-            super.onPlaybackStateChanged(state)
-            log.info("onPlaybackStateChanged(): state:$state = ${state.exoPlayerState}")
-          }
+            override fun onPlaybackStateChanged(@Player.State state: Int) {
+              super.onPlaybackStateChanged(state)
+              log.info("onPlaybackStateChanged(): state:$state = ${state.exoPlayerState}")
+            }
 
-          override fun onIsLoadingChanged(isLoading: Boolean) {
-            log.info("onIsLoadingChanged() $isLoading")
-          }
-        })
+            override fun onIsLoadingChanged(isLoading: Boolean) {
+              log.info("onIsLoadingChanged() $isLoading")
+            }
+          })
 
 
     player.setAudioAttributes(
-      AudioAttributesCompat.Builder()
-        .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-        .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
-        .build()
+        AudioAttributesCompat.Builder()
+            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+            .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
+            .build()
     )
 
     return exoPlayer
@@ -255,9 +256,9 @@ class AudioService : MediaLibraryService() {
 
   inner class SessionCallback : MediaLibrarySession.MediaLibrarySessionCallback() {
     override fun onGetLibraryRoot(
-      session: MediaLibrarySession,
-      controller: MediaSession.ControllerInfo,
-      params: LibraryParams?
+        session: MediaLibrarySession,
+        controller: MediaSession.ControllerInfo,
+        params: LibraryParams?
     ): LibraryResult {
       log.error("onGetLibraryRoot()  params: ${params}")
       val root = super.onGetLibraryRoot(session, controller, params)
@@ -266,10 +267,10 @@ class AudioService : MediaLibraryService() {
     }
 
     override fun onSubscribe(
-      session: MediaLibrarySession,
-      controller: MediaSession.ControllerInfo,
-      parentId: String,
-      params: LibraryParams?
+        session: MediaLibrarySession,
+        controller: MediaSession.ControllerInfo,
+        parentId: String,
+        params: LibraryParams?
     ): Int {
       log.warn("onSubscribe() $parentId")
       return BaseResult.RESULT_SUCCESS
@@ -277,9 +278,9 @@ class AudioService : MediaLibraryService() {
 
 
     override fun onCreateMediaItem(
-      session: MediaSession,
-      controller: MediaSession.ControllerInfo,
-      mediaId: String
+        session: MediaSession,
+        controller: MediaSession.ControllerInfo,
+        mediaId: String
     ): MediaItem? {
       log.error("onCreateMediaItem() $mediaId")
 
@@ -288,17 +289,17 @@ class AudioService : MediaLibraryService() {
 
 
       return UriMediaItem.Builder(mediaId.toUri())
-        .setStartPosition(0L).setEndPosition(-1L)
-        .setMetadata(
-          trackMetadata.toMediaMetadata().putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1).build()
-        )
-        .build()
+          .setStartPosition(0L).setEndPosition(-1L)
+          .setMetadata(
+              trackMetadata.toMediaMetadata().putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1).build()
+          )
+          .build()
     }
 
     override fun onGetItem(
-      session: MediaLibrarySession,
-      controller: MediaSession.ControllerInfo,
-      mediaId: String
+        session: MediaLibrarySession,
+        controller: MediaSession.ControllerInfo,
+        mediaId: String
     ): LibraryResult {
       log.error("onGetItem() id: $mediaId")
       return super.onGetItem(session, controller, mediaId)
@@ -313,12 +314,12 @@ class AudioService : MediaLibraryService() {
 
 
   inner class ExoAnalyticsListener :
-    com.google.android.exoplayer2.analytics.AnalyticsListener {
+      com.google.android.exoplayer2.analytics.AnalyticsListener {
     override fun onBandwidthEstimate(
-      eventTime: AnalyticsListener.EventTime,
-      totalLoadTimeMs: Int,
-      totalBytesLoaded: Long,
-      bitrateEstimate: Long
+        eventTime: AnalyticsListener.EventTime,
+        totalLoadTimeMs: Int,
+        totalBytesLoaded: Long,
+        bitrateEstimate: Long
     ) {
       log.error("loadTime: $totalLoadTimeMs totalBytesLoaded:$totalBytesLoaded bitrateEstimate:$bitrateEstimate")
     }
@@ -334,6 +335,7 @@ class AudioService : MediaLibraryService() {
         newMetadata.toMediaMetadata().build().also {
           player.currentMediaItem?.metadata = it
           player.updatePlaylistMetadata(it)
+          notificationManager.invalidate()
           /*          player.updatePlaylistMetadata(it).addListener({
                       log.warn("UPDATED PLAYLIST METADATA")
                       log.trace("playlistMetadata_title: ${player.playlistMetadata?.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)}")
@@ -353,9 +355,9 @@ class AudioService : MediaLibraryService() {
     }
 
     override fun onTracksChanged(
-      eventTime: AnalyticsListener.EventTime,
-      trackGroups: TrackGroupArray,
-      trackSelections: TrackSelectionArray
+        eventTime: AnalyticsListener.EventTime,
+        trackGroups: TrackGroupArray,
+        trackSelections: TrackSelectionArray
     ) {
       log.warn("onTracksChanged()")
       for (n in 0 until trackGroups.length) {
@@ -398,7 +400,7 @@ class AudioService : MediaLibraryService() {
 
               if (currentMetadata != null && title != null) {
                 val oldTitle =
-                  currentMetadata.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
+                    currentMetadata.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
                 if (oldTitle != title) {
                   val newMetadata = MediaMetadata.Builder(currentMetadata).also {
                     it.putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title)

@@ -23,7 +23,7 @@ class Config(context: Context) : danbroid.util.context.Singleton<Context>(contex
     var notificationID = 1438293
 
     @DrawableRes
-    var statusBarIcon = R.drawable.ic_audiotrack_light
+    var statusBarIcon = R.drawable.ic_kiwi
 
     @ColorInt
     var notificationColour = 0
@@ -44,36 +44,36 @@ class Config(context: Context) : danbroid.util.context.Singleton<Context>(contex
 
 
 fun createNotificationManager(
-  service: AudioService,
-  notificationID: Int = Config.Notifications.notificationID,
-  notificationListener: PlayerNotificationManager.NotificationListener
+    service: AudioService,
+    notificationID: Int = Config.Notifications.notificationID,
+    notificationListener: PlayerNotificationManager.NotificationListener
 ): PlayerNotificationManager {
 
 
   NotificationUtil.createNotificationChannel(
-    service.applicationContext,
-    service.getString(R.string.notification_channel_id),
-    R.string.notification_channel_name,
-    R.string.notification_description,
-    NotificationUtil.IMPORTANCE_LOW
+      service.applicationContext,
+      service.getString(R.string.notification_channel_id),
+      R.string.notification_channel_name,
+      R.string.notification_description,
+      NotificationUtil.IMPORTANCE_LOW
   )
 
   return object : PlayerNotificationManager(
-    service,
-    service.getString(R.string.notification_channel_id),
-    notificationID,
-    PlayerDescriptionAdapter(service),
-    notificationListener
+      service,
+      service.getString(R.string.notification_channel_id),
+      notificationID,
+      PlayerDescriptionAdapter(service),
+      notificationListener
   ) {
     override fun createNotification(
-      player: Player,
-      builder: NotificationCompat.Builder?,
-      ongoing: Boolean,
-      largeIcon: Bitmap?
+        player: Player,
+        builder: NotificationCompat.Builder?,
+        ongoing: Boolean,
+        largeIcon: Bitmap?
     ): NotificationCompat.Builder? {
-      return super.createNotification(player, builder, ongoing, largeIcon)?.also {
-        it.setUsesChronometer(player.isCurrentWindowSeekable)
-        it.setShowWhen(player.isCurrentWindowSeekable)
+      return super.createNotification(player, builder, ongoing, largeIcon)?.apply {
+        setUsesChronometer(player.isCurrentWindowSeekable)
+        setShowWhen(player.isCurrentWindowSeekable)
       }
     }
 
@@ -83,17 +83,17 @@ fun createNotificationManager(
 
   }.apply {
     setSmallIcon(Config.Notifications.statusBarIcon)
+    setUseNavigationActionsInCompactView(true)
 
     if (Config.Notifications.notificationColour != 0) {
       setColor(Config.Notifications.notificationColour)
     }
 
-    setUseNavigationActionsInCompactView(true)
-
+    setUsePlayPauseActions(true)
     setControlDispatcher(DefaultControlDispatcher(0L, 0L))
     //setUseChronometer(true)
     setColorized(true)
-    // setUseStopAction(true)
+    setUseStopAction(false)
   }
 }
 
@@ -101,7 +101,7 @@ fun createNotificationManager(
 private val log = org.slf4j.LoggerFactory.getLogger(NotificationManager::class.java)
 
 private class PlayerDescriptionAdapter(val service: AudioService) :
-  PlayerNotificationManager.MediaDescriptionAdapter {
+    PlayerNotificationManager.MediaDescriptionAdapter {
 
   val context: Context = service
 
@@ -111,14 +111,14 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
     get() = service.player.currentMediaItem?.metadata
 
   override fun createCurrentContentIntent(player: Player) =
-    service.packageManager?.getLaunchIntentForPackage(service.packageName)?.let { sessionIntent ->
-      PendingIntent.getActivity(service, 0, sessionIntent, 0)
-    }
+      service.packageManager?.getLaunchIntentForPackage(service.packageName)?.let { sessionIntent ->
+        PendingIntent.getActivity(service, 0, sessionIntent, 0)
+      }
 
   override fun getCurrentContentTitle(player: Player): CharSequence {
     return service.player.currentMediaItem?.metadata?.let {
       it.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
-        ?: it.getText(MediaMetadata.METADATA_KEY_TITLE)
+          ?: it.getText(MediaMetadata.METADATA_KEY_TITLE)
     } ?: "Untitled"
   }
 
@@ -135,8 +135,8 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
   }
 
   override fun getCurrentLargeIcon(
-    player: Player,
-    callback: PlayerNotificationManager.BitmapCallback
+      player: Player,
+      callback: PlayerNotificationManager.BitmapCallback
   ) = iconUtils.loadIcon(currentItem, defaultIcon, callback::onBitmap)
 
 
