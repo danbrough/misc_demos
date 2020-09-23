@@ -1,13 +1,16 @@
 package danbroid.media.service
 
 
+import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.media2.common.MediaMetadata
 import com.google.android.exoplayer2.DefaultControlDispatcher
 import com.google.android.exoplayer2.Player
@@ -15,7 +18,7 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.util.NotificationUtil
 import danbroid.media.R
 
-class Config(context: Context) : danbroid.util.context.Singleton<Context>(context) {
+class Config {
 
 
   object Notifications {
@@ -23,7 +26,7 @@ class Config(context: Context) : danbroid.util.context.Singleton<Context>(contex
     var notificationID = 1438293
 
     @DrawableRes
-    var statusBarIcon = R.drawable.ic_kiwi
+    var statusBarIcon = R.drawable.ic_audiotrack_light
 
     @ColorInt
     var notificationColour = 0
@@ -42,13 +45,53 @@ class Config(context: Context) : danbroid.util.context.Singleton<Context>(contex
 
 }
 
+class NotificationListener(val service: AudioService) : PlayerNotificationManager.NotificationListener {
+  var serviceForeground = false
+
+  override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
+    log.warn("onNotificationCancelled() byUser:$dismissedByUser")
+    if (dismissedByUser) {
+      log.warn("SHOULD STOP PLAYBACK")
+    } else {
+      if (serviceForeground) {
+        log.warn("stopping foreground ..")
+        service.stopForeground(true)
+        serviceForeground = false
+      }
+    }
+  }
+
+  override fun onNotificationPosted(
+      notificationId: Int,
+      notification: Notification,
+      ongoing: Boolean
+  ) {
+    log.warn("onNotificationPosted() ongoing:$ongoing")
+    if (ongoing) {
+      if (!serviceForeground) {
+        //log.warn("starting foreground ..")
+        ContextCompat.startForegroundService(
+            service.applicationContext,
+            Intent(service.applicationContext, service.javaClass)
+        )
+        service.startForeground(notificationId, notification)
+        serviceForeground = true
+      }
+    } else {
+      if (serviceForeground) {
+        log.warn("stopping foreground ..")
+        service.stopForeground(false)
+        serviceForeground = false
+      }
+    }
+  }
+}
 
 fun createNotificationManager(
     service: AudioService,
     notificationID: Int = Config.Notifications.notificationID,
-    notificationListener: PlayerNotificationManager.NotificationListener
+    notificationListener: PlayerNotificationManager.NotificationListener = NotificationListener(service)
 ): PlayerNotificationManager {
-
 
   NotificationUtil.createNotificationChannel(
       service.applicationContext,

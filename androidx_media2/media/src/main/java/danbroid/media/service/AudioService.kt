@@ -45,14 +45,10 @@ class AudioService : MediaLibraryService() {
     log.info("onCreate()")
     super.onCreate()
 
-
     log.debug("PLAYER VERSION: ${ExoPlayerLibraryInfo.VERSION_SLASHY}")
-
 
     callbackExecutor = ContextCompat.getMainExecutor(this)
 
-
-    //player = androidx.media2.player.MediaPlayer(this)
     createExternalExoPlayer()
 
     log.info("created player: $player")
@@ -60,17 +56,6 @@ class AudioService : MediaLibraryService() {
         MediaLibrarySession.Builder(this, player, callbackExecutor, sessionCallback)
             .setId("session")
             .build()
-
-
-/*    notificationHandler = javaClass.superclass.superclass.getDeclaredField("mImpl").let {
-      it.isAccessible = true
-      it.get(this).let { impl ->
-        impl.javaClass.superclass.getDeclaredField("mNotificationHandler").let {
-          it.isAccessible = true
-          it.get(impl)
-        }
-      }
-    }*/
 
     player.setAudioAttributes(
         AudioAttributesCompat.Builder()

@@ -5,8 +5,8 @@
     android:id="@+id/bottom_controls"
     android:layout_width="match_parent"
     android:layout_height="52dp"
-    android:background="?colorPrimary"
-    android:gravity="center_vertical|left"
+    android:layout_margin="0dp"
+    android:gravity="center_vertical|start"
     android:orientation="vertical">
 
   <FrameLayout
@@ -16,7 +16,8 @@
 
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
+      android:background="?colorPrimary"
       android:orientation="horizontal">
 
     <LinearLayout

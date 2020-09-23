@@ -15,9 +15,9 @@ import kotlinx.android.synthetic.main.fragment_bottom_controls.*
 
 class ControlsFragment : BottomSheetDialogFragment() {
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
   ) = inflater.inflate(R.layout.fragment_bottom_controls, container, false)
 
   val model by activityViewModels<AudioClientModel>()
@@ -40,7 +40,7 @@ class ControlsFragment : BottomSheetDialogFragment() {
       audioClient.skipToNext()
     }
 
-
+    progress_bar.visibility = View.GONE
 
     audioClient.connected.observe(viewLifecycleOwner) {
       log.trace("connected $it")

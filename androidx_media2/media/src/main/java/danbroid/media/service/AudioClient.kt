@@ -15,7 +15,7 @@ import androidx.media2.session.SessionCommandGroup
 import com.google.common.util.concurrent.ListenableFuture
 
 
-class AudioClient(context: Context) {
+open class AudioClient(context: Context) {
 
 
   private val _pauseEnabled = MutableLiveData<Boolean>(false)
@@ -43,29 +43,25 @@ class AudioClient(context: Context) {
   val mediaController: MediaBrowser = let {
 
     val sessionManager = MediaSessionManager.getInstance(context)
-    log.debug("got sessionManager: $sessionManager")
     val serviceToken = sessionManager.sessionServiceTokens.first {
       it.serviceName == AudioService::class.qualifiedName
     }
 
     MediaBrowser.Builder(context)
-      .setControllerCallback(mainExecutor, controllerCallback)
-      .setSessionToken(serviceToken)
-      .build()
+        .setControllerCallback(mainExecutor, controllerCallback)
+        .setSessionToken(serviceToken)
+        .build()
   }
 
 
   fun playUri(uri: String) {
     log.trace("playUri() $uri")
-
-
     mediaController.addPlaylistItem(Integer.MAX_VALUE, uri).then {
       log.debug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
       if (mediaController.playerState != SessionPlayer.PLAYER_STATE_PLAYING) {
         mediaController.play()
       }
     }
-
   }
 
 
@@ -78,25 +74,6 @@ class AudioClient(context: Context) {
     }
   }
 
-
-  fun callPlay() {
-    log.trace("callPlay() state:${mediaController.playerState.playerState} buffState:${mediaController.bufferingState.buffState}")
-    if (mediaController.playerState != SessionPlayer.PLAYER_STATE_PLAYING || mediaController.bufferingState == SessionPlayer.BUFFERING_STATE_BUFFERING_AND_PLAYABLE) {
-      log.trace("calling mediaController.play()")
-      mediaController.play()
-    }
-  }
-
-  fun test() {
-    log.debug("test()")
-    mediaController.playlistMetadata?.also {
-      log.info("metadata: $it")
-    }
-    mediaController.playlist?.forEach {
-      log.debug("playlistItem: $it")
-    }
-  }
-
   fun skipToNext() {
     mediaController.skipToNextPlaylistItem()
   }
@@ -106,15 +83,15 @@ class AudioClient(context: Context) {
   }
 
   private fun <T> ListenableFuture<T>.then(job: (T) -> Unit) =
-    addListener({
-      job.invoke(get())
-    }, mainExecutor)
+      addListener({
+        job.invoke(get())
+      }, mainExecutor)
 
   protected inner class ControllerCallback : MediaBrowser.BrowserCallback() {
 
     override fun onPlaybackInfoChanged(
-      controller: MediaController,
-      info: MediaController.PlaybackInfo
+        controller: MediaController,
+        info: MediaController.PlaybackInfo
     ) {
       log.info("onPlaybackInfoChanged(): $info")
     }
@@ -129,9 +106,9 @@ class AudioClient(context: Context) {
     }
 
     override fun onPlaylistChanged(
-      controller: MediaController,
-      list: MutableList<MediaItem>?,
-      metadata: MediaMetadata?
+        controller: MediaController,
+        list: MutableList<MediaItem>?,
+        metadata: MediaMetadata?
     ) {
       val state = controller.playerState
       log.info("onPlaylistChanged() size:${list?.size} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex} $metadata")
@@ -163,23 +140,23 @@ class AudioClient(context: Context) {
       super.onPlayerStateChanged(controller, state)
       log.info("onPlayerStateChanged() state:$state = ${state.playerState}")
       val pauseEnabled =
-        (state == SessionPlayer.PLAYER_STATE_PLAYING)
+          (state == SessionPlayer.PLAYER_STATE_PLAYING)
       log.debug("pauseEnabled: ${pauseEnabled}")
       _pauseEnabled.value = pauseEnabled
     }
 
     override fun onSubtitleData(
-      controller: MediaController,
-      item: MediaItem,
-      track: SessionPlayer.TrackInfo,
-      data: SubtitleData
+        controller: MediaController,
+        item: MediaItem,
+        track: SessionPlayer.TrackInfo,
+        data: SubtitleData
     ) {
       log.info("onSubtitleData() $track data: $data")
     }
 
     override fun onTracksChanged(
-      controller: MediaController,
-      tracks: MutableList<SessionPlayer.TrackInfo>
+        controller: MediaController,
+        tracks: MutableList<SessionPlayer.TrackInfo>
     ) {
       val state = controller.playerState
       log.info("onTracksChanged() tracks:${tracks} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex}")
@@ -189,6 +166,9 @@ class AudioClient(context: Context) {
     override fun onConnected(controller: MediaController, allowedCommands: SessionCommandGroup) {
       log.info("onConnected()")
       _connected.value = true
+      _currentItem.value = controller.currentMediaItem
+      _metadata.value = controller.currentMediaItem?.metadata
+
     }
 
     override fun onDisconnected(controller: MediaController) {
