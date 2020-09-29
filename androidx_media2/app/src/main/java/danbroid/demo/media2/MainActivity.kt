@@ -3,21 +3,17 @@ package danbroid.demo.media2
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import danbroid.demo.media2.content.rootContent
-import danbroid.demo.media2.model.AudioClientModel
 import danbroid.util.menu.ui.MenuImplementation
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_bottom_controls.*
+
 
 class MainActivity : AppCompatActivity() {
+
 
   init {
     MenuImplementation.rootContent = {
@@ -31,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     log.info("onCreate()")
+
     super.onCreate(savedInstanceState)
 
     setContentView(R.layout.activity_main)
