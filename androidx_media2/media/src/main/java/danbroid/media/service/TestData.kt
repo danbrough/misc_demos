@@ -32,6 +32,13 @@ val testTracks = testData {
   }
 
   item {
+    title = "The Rock"
+    id = "http://livestream.mediaworks.nz/radio_origin/rock_128kbps/playlist.m3u8"
+    subtitle = "the rock"
+    imageURI = "https://ipfs.io/ipfs/QmZGbcdnLgexhMjt73PfvpGXL9d2kRiJiaQDhiCbCct63Q/therock.png"
+  }
+
+  item {
     title = "Opus Test"
     id = "https://h1.danbrough.org/guitar/improv/improv1.opus"
     subtitle = "Improv1 - Dan Brough"

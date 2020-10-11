@@ -4,13 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import danbroid.demo.media2.content.rootContent
+import danbroid.util.menu.navigation.createMenuGraph
 import danbroid.util.menu.ui.MenuImplementation
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,8 +21,8 @@ class MainActivity : AppCompatActivity() {
   }
 
 
-  protected val navController: NavController
-    get() = findNavController(R.id.nav_host_fragment)
+  protected val navHostFragment: NavHostFragment
+    get() = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
   override fun onCreate(savedInstanceState: Bundle?) {
     log.info("onCreate()")
@@ -32,8 +31,10 @@ class MainActivity : AppCompatActivity() {
 
     setContentView(R.layout.activity_main)
     setSupportActionBar(toolbar)
-
-    setupActionBarWithNavController(navController)
+    navHostFragment.navController.apply {
+      createMenuGraph()
+      setupActionBarWithNavController(this)
+    }
 
     log.warn("intent $intent")
     log.warn("data:${intent?.data}")
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     super.onNewIntent(intent)
   }
 
-  override fun onSupportNavigateUp() = navController.navigateUp() || super.onSupportNavigateUp()
+  override fun onSupportNavigateUp() = navHostFragment.navController.navigateUp() || super.onSupportNavigateUp()
 
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
