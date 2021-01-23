@@ -1,0 +1,1 @@
+/home/dan/workspace/android/composetest/buildSrc/build/classes/kotlin/main/Libs.class

@@ -1,16 +1,13 @@
-import de.fayard.dependencies.bootstrapRefreshVersionsAndDependencies
+
+import de.fayard.refreshVersions.bootstrapRefreshVersions
 
 buildscript {
-  repositories { gradlePluginPortal() }
-  dependencies.classpath("de.fayard:dependencies:+")
+    repositories { gradlePluginPortal() }
+    dependencies.classpath("de.fayard.refreshVersions:refreshVersions:0.9.7")
 }
 
+bootstrapRefreshVersions()
 
-bootstrapRefreshVersionsAndDependencies()
 
+rootProject.name = "Compose Test"
 include(":app")
-
-rootProject.name = "compose_demo"
-
-//include(":menu")
-//project(":menu").projectDir = file("../androidutils/menu")

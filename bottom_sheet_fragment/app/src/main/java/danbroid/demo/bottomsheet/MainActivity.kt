@@ -3,26 +3,29 @@ package danbroid.demo.bottomsheet
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import danbroid.demo.bottomsheet.content.rootContent
-import danbroid.util.menu.ui.MenuImplementation
+import danbroid.util.menu.MenuActivity
+import danbroid.util.menu.MenuItemBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : MenuActivity(R.layout.activity_main) {
 
-  init {
-    MenuImplementation.rootContent = {
-      rootContent
-    }
+
+  val rootContent by lazy {
+    rootContent(this)
   }
 
   protected val navController: NavController
     get() = findNavController(R.id.nav_host_fragment)
+
+  override fun createNavGraph(navController: NavController): NavGraph? = null
+
+  override fun getRootMenu(): MenuItemBuilder = rootContent
 
   override fun onCreate(savedInstanceState: Bundle?) {
     log.info("onCreate()")
@@ -41,10 +44,10 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  override fun onNewIntent(intent: Intent?) {
+  override fun onNewIntent(intent: Intent) {
     log.warn("onNewIntent!() $intent")
-    log.warn("data:${intent?.data}")
-    log.warn("extras:${intent?.extras}")
+    log.warn("data:${intent.data}")
+    log.warn("extras:${intent.extras}")
 
     super.onNewIntent(intent)
   }
