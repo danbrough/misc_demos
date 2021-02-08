@@ -42,7 +42,6 @@ android {
 
   composeOptions {
     kotlinCompilerExtensionVersion = Libs.compose_version
-    kotlinCompilerVersion = "1.4.21"
   }
 }
 
@@ -53,7 +52,7 @@ dependencies {
   implementation(Google.android.material)
   implementation(AndroidX.compose.ui)
   implementation(AndroidX.compose.material)
-  implementation("androidx.compose.runtime:runtime-livedata:1.0.0-alpha10")
+  implementation(AndroidX.compose.runtime.liveData)
 
   implementation("androidx.compose.ui:ui-tooling:_")
   implementation(AndroidX.lifecycle.runtimeKtx)
