@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 30
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 30
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    configurations {
+        javadocDeps
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues true
+    }
+}
+
+dependencies {
+    implementation ("org.maplibre.gl:android-sdk:_")
+
+    /*implementation dependenciesList.mapboxMapSdk
+    javadocDeps dependenciesList.mapboxMapSdk
+    testImplementation dependenciesList.kotlin
+    testImplementation dependenciesList.mockk
+    testImplementation dependenciesList.junit*/
+}
+
+/*
+apply from: "${rootDir}/gradle/javadoc.gradle"
+apply from: "${rootDir}/gradle/publish.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"*/

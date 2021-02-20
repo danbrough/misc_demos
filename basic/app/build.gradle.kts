@@ -2,6 +2,7 @@ plugins {
   id("com.android.application")
   kotlin("android")
   kotlin("kapt")
+  id("dagger.hilt.android.plugin")
 }
 
 
@@ -10,15 +11,19 @@ android {
   compileSdkVersion(ProjectVersions.SDK_VERSION)
 
   defaultConfig {
-    minSdkVersion(21)
+    minSdkVersion(ProjectVersions.MIN_SDK_VERSION)
     targetSdkVersion(ProjectVersions.SDK_VERSION)
     versionCode = ProjectVersions.BUILD_VERSION
     versionName = ProjectVersions.VERSION_NAME
     multiDexEnabled = true
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
+    buildConfigField("String", "URI_SCHEME", "\"${Danbroid.URI_SCHEME}\"")
   }
 
+  kapt {
+    correctErrorTypes = true
+  }
 
   compileOptions {
     sourceCompatibility = ProjectVersions.JAVA_VERSION
@@ -92,16 +97,20 @@ dependencies {
   testImplementation(Testing.junit4)
   testImplementation("ch.qos.logback:logback-core:_")
   testImplementation("ch.qos.logback:logback-classic:_")
+
+
+  kapt(Google.dagger.hilt.android.compiler)
+  implementation(Google.dagger.hilt.android)
+
   //testImplementation("org.mockito:mockito-core:2.28.2")
 
 //  implementation("com.mikepenz:iconics-core:_")
   implementation(AndroidX.appCompat)
 
   implementation("com.mikepenz:iconics-core:_@aar")
-
   implementation("com.mikepenz:fontawesome-typeface:_@aar")
   implementation("com.mikepenz:google-material-typeface:_@aar")
-
+  implementation("com.mikepenz:material-design-iconic-typeface:_@aar")
   implementation("org.jetbrains.kotlin:kotlin-reflect:_")
   //implementation("com.mikepenz:material-design-iconic-typeface:2.2.0.7-kotlin")
   //implementation("com.mikepenz:fontawesome-typeface:5.9.0.1-kotlin@aar")
@@ -150,6 +159,16 @@ dependencies {
     }*/
   }
   testImplementation("ch.qos.logback:logback-core:_")
+
+  testImplementation("com.google.truth:truth:_")
+  testImplementation(Testing.junit4)
+
+  testImplementation(Testing.roboElectric)
+  testImplementation("androidx.core:core:_")
+  // TODO(bcorso): This multidex dep shouldn't be required -- it's a dep for the generated code.
+  testImplementation("androidx.multidex:multidex:_")
+  testImplementation("com.google.dagger:hilt-android-testing:_")
+  kaptTest("com.google.dagger:hilt-android-compiler:_")
 }
 
 

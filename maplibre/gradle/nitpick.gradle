@@ -1,0 +1,36 @@
+apply from: "${rootDir}/gradle/dependencies.gradle"
+
+task nitpick {
+    doLast {
+        println "Running android nitpick script"
+        verifyAnnotationCodeGeneration()
+    }
+}
+
+private def verifyAnnotationCodeGeneration() {
+    println "Verify generated annotation plugin code:"
+    exec {
+        workingDir = "${rootDir}"
+        commandLine "make", "generate-annotation-code"
+    }
+    checkDirectoryForChanges("app/src/androidTest/java/com/mapbox/mapboxsdk/plugins/annotation")
+    checkDirectoryForChanges("plugin-annotation/src/test/java/com/mapbox/mapboxsdk/plugins/annotation")
+    checkDirectoryForChanges("plugin-annotation/src/main/java/com/mapbox/mapboxsdk/plugins/annotation")
+}
+
+private checkDirectoryForChanges(dir) {
+    new ByteArrayOutputStream().withStream { os ->
+        exec {
+            workingDir = "${rootDir}"
+            commandLine "git", "status", dir
+            standardOutput = os
+        }
+        def result = os.toString()
+        if (!result.toString().contains("nothing to commit")) {
+            throw new RuntimeException("Running 'git status' after 'make generate-annotation-code' "
+                    + "has resulted in changes.\nPlease rerun the 'make generate-annotation-code' "
+                    + "command locally and commit any changes to make this verification succeed."
+            )
+        }
+    }
+}
