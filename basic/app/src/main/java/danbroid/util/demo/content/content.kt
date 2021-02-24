@@ -1,12 +1,9 @@
 package danbroid.util.demo.content
 
 import android.content.Context
-import android.widget.Toast
-import androidx.fragment.app.viewModels
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
 import danbroid.util.demo.DemoNavGraph
 import danbroid.util.demo.R
-import danbroid.util.demo.TestModel
 import danbroid.util.demo.URI_CONTENT_PREFIX
 import danbroid.util.menu.Icons
 import danbroid.util.menu.MenuItemBuilder
@@ -30,10 +27,6 @@ fun rootContent(context: Context) = context.rootMenu<MenuItemBuilder> {
     title = "Test1"
     onClick = {
       log.info("clicked Test1")
-      val model: TestModel by fragment.viewModels()
-      Toast.makeText(context, "Long click handled: count:${model.count}", Toast.LENGTH_SHORT).show()
-      model.count++
-      proceed()
     }
 
     menu {

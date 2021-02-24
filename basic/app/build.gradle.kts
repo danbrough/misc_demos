@@ -2,7 +2,6 @@ plugins {
   id("com.android.application")
   kotlin("android")
   kotlin("kapt")
-  id("dagger.hilt.android.plugin")
 }
 
 
@@ -167,8 +166,7 @@ dependencies {
   testImplementation("androidx.core:core:_")
   // TODO(bcorso): This multidex dep shouldn't be required -- it's a dep for the generated code.
   testImplementation("androidx.multidex:multidex:_")
-  testImplementation("com.google.dagger:hilt-android-testing:_")
-  kaptTest("com.google.dagger:hilt-android-compiler:_")
+
 }
 
 

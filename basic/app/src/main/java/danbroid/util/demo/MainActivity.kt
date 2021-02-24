@@ -1,38 +1,18 @@
 package danbroid.util.demo
 
-import android.os.Bundle
 import androidx.navigation.NavController
-import dagger.hilt.android.AndroidEntryPoint
 import danbroid.util.demo.content.rootContent
-import javax.inject.Inject
+import danbroid.util.menu.MenuActivity
+import danbroid.util.menu.MenuItemBuilder
 
-@AndroidEntryPoint
 class MainActivity : MenuActivity() {
-  @Model
-  @Inject
-  @JvmField
-  var model: String? = null
 
-  @UserName
-  @Inject
-  @JvmField
-  var name: String? = null
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    log.info("onCreate() model:$model name:$name")
-  }
-
-  private val rootContent by lazy {
+  private val menuContent by lazy {
     rootContent(this)
   }
 
-  override fun getRootMenu() = rootContent
-
-  override fun createNavGraph(navController: NavController) =
-      navController.createDemoNavGraph(this)
+  override fun createNavGraph(navController: NavController) = navController.createDemoNavGraph(this)
+  override fun getRootMenu(): MenuItemBuilder = menuContent
 
 
 }
-
-private val log = org.slf4j.LoggerFactory.getLogger(MainActivity::class.java)

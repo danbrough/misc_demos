@@ -10,12 +10,11 @@ buildscript {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
     classpath("org.jetbrains.dokka:dokka-gradle-plugin:_")
     classpath(Google.dagger.hilt.android.gradlePlugin)
-    //classpath(AndroidX.navigation.safeArgsGradlePlugin)
   }
 
   repositories {
     google()
-    jcenter()
+    mavenCentral()
   }
 }
 
@@ -26,11 +25,12 @@ apply("project.gradle.kts")
 
 allprojects {
   repositories {
-    maven("https://dl.bintray.com/maplibre/maplibre-gl-native")
     maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev")
     google()
-    jcenter()
+    mavenCentral()
     maven("https://jitpack.io")
+    maven("https://dl.bintray.com/maplibre/maplibre-gl-native")
+
   }
 
   tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {

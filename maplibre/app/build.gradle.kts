@@ -18,7 +18,13 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
     buildConfigField("String", "URI_SCHEME", "\"${Danbroid.URI_SCHEME}\"")
+   
+    val maptilerApiKey = project.properties.get("MAPTILER_API_KEY")?.toString()
+    resValue("string", "maptilerApiKey", maptilerApiKey!!)
+    resValue("string", "mapboxToken", project.properties.get("MAPBOX_TEST_TOKEN")?.toString()!!)
   }
+
+
 
   kapt {
     correctErrorTypes = true
@@ -31,15 +37,12 @@ android {
 
   buildFeatures {
     dataBinding = false
-    viewBinding = true
-
   }
 
   kotlinOptions {
     jvmTarget = "1.8"
     //freeCompilerArgs = listOf("-Xjsr305=strict")
-    freeCompilerArgs = mutableListOf("-Xopt-in=kotlin.ExperimentalStdlibApi",
-        "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi").also {
+    freeCompilerArgs = mutableListOf("-Xopt-in=kotlin.ExperimentalStdlibApi").also {
       it.addAll(freeCompilerArgs)
     }
   }
@@ -94,21 +97,28 @@ tasks.withType<Test> {
 
 
 dependencies {
+  implementation("org.maplibre.gl:android-sdk:_")
+  implementation("org.mapsforge:vtm-android:_")
+  implementation("org.mapsforge:vtm-http:_")
+  implementation("org.mapsforge:vtm-gdx:_")
+  implementation("org.mapsforge:vtm-mvt:_")
+  implementation("org.mapsforge:vtm-extras:_")
 
+  //implementation(Square.okHttp3)
 
   testImplementation(Testing.junit4)
   testImplementation("ch.qos.logback:logback-core:_")
   testImplementation("ch.qos.logback:logback-classic:_")
 
 
+  kapt(Google.dagger.hilt.android.compiler)
+  implementation(Google.dagger.hilt.android)
+
   //testImplementation("org.mockito:mockito-core:2.28.2")
 
 //  implementation("com.mikepenz:iconics-core:_")
   implementation(AndroidX.appCompat)
-  implementation("org.maplibre.gl:android-sdk:_")
-  implementation("com.mapbox.mapboxsdk:mapbox-sdk-turf:_")
-  implementation(project(":plugin-scalebar"))
-  implementation(project(":plugin-annotation"))
+
   implementation("com.mikepenz:iconics-core:_@aar")
   implementation("com.mikepenz:fontawesome-typeface:_@aar")
   implementation("com.mikepenz:google-material-typeface:_@aar")
@@ -138,6 +148,7 @@ dependencies {
   implementation(AndroidX.lifecycle.viewModelKtx)
   implementation(AndroidX.lifecycle.runtimeKtx)
   implementation(AndroidX.navigation.fragmentKtx)
+  implementation(AndroidX.navigation.commonKtx)
   implementation(AndroidX.navigation.uiKtx)
   implementation(AndroidX.recyclerView)
 
@@ -169,8 +180,7 @@ dependencies {
   testImplementation("androidx.core:core:_")
   // TODO(bcorso): This multidex dep shouldn't be required -- it's a dep for the generated code.
   testImplementation("androidx.multidex:multidex:_")
-  testImplementation("com.google.dagger:hilt-android-testing:_")
-  kaptTest("com.google.dagger:hilt-android-compiler:_")
+
 }
 
 

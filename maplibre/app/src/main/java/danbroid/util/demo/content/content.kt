@@ -1,9 +1,11 @@
 package danbroid.util.demo.content
 
 import android.content.Context
+import android.content.Intent
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
 import danbroid.util.demo.DemoNavGraph
 import danbroid.util.demo.R
+import danbroid.util.demo.SimpleMapActivity
 import danbroid.util.demo.URI_CONTENT_PREFIX
 import danbroid.util.menu.Icons
 import danbroid.util.menu.MenuItemBuilder
@@ -24,9 +26,9 @@ fun rootContent(context: Context) = context.rootMenu<MenuItemBuilder> {
 
 
   menu {
-    title = "Test1"
+    title = "Simple Map Activity"
     onClick = {
-      log.info("clicked Test1")
+      context.startActivity(Intent(context, SimpleMapActivity::class.java))
     }
 
     menu {
@@ -34,6 +36,24 @@ fun rootContent(context: Context) = context.rootMenu<MenuItemBuilder> {
       id = DemoNavGraph.deep_link.test
     }
   }
+
+  menu {
+    title = "Map Fragment"
+    id = DemoNavGraph.deep_link.map
+    icon = Icons.iconicsIcon(GoogleMaterial.Icon.gmd_map)
+  }
+
+  menu {
+    title = "OSM Map Fragment"
+    onClick = {
+      findNavController().navigate(DemoNavGraph.dest.osm_map)
+    }
+    icon = Icons.iconicsIcon(GoogleMaterial.Icon.gmd_map)
+  }
+
+  mapTilerDemos()
+
+  vtmDemos()
 
 
   menu {
