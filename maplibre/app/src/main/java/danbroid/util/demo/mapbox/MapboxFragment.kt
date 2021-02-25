@@ -1,90 +1,53 @@
 package danbroid.util.demo.mapbox
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
+import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.lifecycleScope
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
+import com.mapbox.mapboxsdk.utils.BitmapUtils
 import danbroid.util.demo.R
 import danbroid.util.demo.utils.MapConstants
-import danbroid.util.demo.utils.initMapBox
 import danbroid.util.demo.utils.setLocation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-open class MapboxFragment : Fragment(R.layout.fragment_map) {
 
-  protected lateinit var mapView: MapView
-  protected lateinit var mapBoxMap: MapboxMap
-  protected open val requireApiKey = true
-
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    requireContext().initMapBox(requireApiKey)
-    return super.onCreateView(inflater, container, savedInstanceState)
+class MapboxFragment : MapboxViewFragment() {
+  companion object {
+    const val ID_IMAGE_MARKER = "marker"
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    log.debug("onViewCreated()")
+  override fun onMapReady() {
+    mapboxMap.setLocation(MapConstants.LATLNG_HOME)
+    val style = Style.Builder().fromUri(Style.MAPBOX_STREETS)
+        .withImage(ID_IMAGE_MARKER, BitmapUtils.getDrawableFromRes(requireContext(), R.drawable.ic_place, ResourcesCompat.getColor(resources, R.color.colorAccent, requireContext().theme))!!)
 
+    mapboxMap.setStyle(style, ::configureStyle)
+  }
 
+  private fun configureStyle(style: Style) {
+    enableLocation(style)
 
-    mapView = view.findViewById(R.id.mapView)
-    mapView.onCreate(savedInstanceState)
-    mapView.getMapAsync {
-      mapBoxMap = it
-      onMapReady()
+    val symbolManager = SymbolManager(mapView, mapboxMap, style).apply {
+      iconAllowOverlap = true
+      iconIgnorePlacement = true
     }
+
+    val symbol = symbolManager.create(SymbolOptions()
+        .withLatLng(MapConstants.LATLNG_HOME)
+        .withIconImage(ID_IMAGE_MARKER)
+        .withIconSize(2.0f))
+
+    lifecycleScope.launch {
+      delay(2000)
+      log.debug("moving symbol")
+      symbol.latLng = LatLng(MapConstants.LATLNG_HOME.latitude + 0.004, MapConstants.LATLNG_HOME.longitude)
+      symbolManager.update(symbol)
+    }
+
   }
-
-  open fun onMapReady() {
-
-    mapBoxMap.setLocation(MapConstants.LATLNG_HOME)
-    mapBoxMap.setStyle(Style.MAPBOX_STREETS)
-  }
-
-  override fun onStart() {
-    log.trace("onStart()")
-    super.onStart()
-    mapView.onStart()
-  }
-
-  override fun onResume() {
-    log.trace("onResume()")
-    super.onResume()
-    mapView.onResume()
-  }
-
-  override fun onPause() {
-    log.trace("onPause()")
-    super.onPause()
-    mapView.onPause()
-  }
-
-  override fun onStop() {
-    log.trace("onStop()")
-    super.onStop()
-    mapView.onStop()
-  }
-
-  override fun onLowMemory() {
-    log.trace("onLowMemory()")
-    super.onLowMemory()
-    mapView.onLowMemory()
-  }
-
-  override fun onDestroy() {
-    log.trace("onDestroy()")
-    super.onDestroy()
-    mapView.onDestroy()
-  }
-
-  override fun onSaveInstanceState(outState: Bundle) {
-    log.trace("onSaveInstanceState()")
-    super.onSaveInstanceState(outState)
-    mapView.onSaveInstanceState(outState)
-  }
-
 }
 
 private val log = org.slf4j.LoggerFactory.getLogger(MapboxFragment::class.java)

@@ -6,7 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.activity
 import androidx.navigation.fragment.fragment
-import danbroid.util.demo.mapbox.MapboxSupportFragment
+import danbroid.util.demo.mapbox.MapboxFragment
 import danbroid.util.demo.mapbox.OsmMapFragment
 import danbroid.util.demo.maptiler.MapTilerDemo
 import danbroid.util.demo.maptiler.MaptilerDemoFragment
@@ -65,7 +65,7 @@ fun NavController.createDemoNavGraph(context: Context, builder: NavGraphBuilder.
         deepLink(DemoNavGraph.deep_link.home)
       }
 
-      fragment<MapboxSupportFragment>(DemoNavGraph.dest.map) {
+      fragment<MapboxFragment>(DemoNavGraph.dest.map) {
         label = "Map"
         deepLink(DemoNavGraph.deep_link.map)
       }

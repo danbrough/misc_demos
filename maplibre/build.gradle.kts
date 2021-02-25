@@ -28,8 +28,10 @@ allprojects {
     maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev")
     google()
     mavenCentral()
+    maven("https://mapbox.bintray.com/mapbox/")
     maven("https://jitpack.io")
     maven("https://dl.bintray.com/maplibre/maplibre-gl-native")
+    maven("https://h1.danbrough.org/maven")
 
   }
 
@@ -63,7 +65,7 @@ subprojects {
         jvmTarget = "1.8"
         languageVersion = "1.4"
         // freeCompilerArgs = listOf("-Xjvm-default=enable")
-        freeCompilerArgs += listOf(
+        freeCompilerArgs = freeCompilerArgs + listOf(
             //  "-Xopt-in=kotlinx.serialization.InternalSerializationApi",
             "-Xopt-in=kotlinx.serialization.InternalSerializationApi",
 
@@ -88,7 +90,7 @@ subprojects {
         }
 
 
-        lintOptions {
+        lint {
           isAbortOnError = false
         }
 

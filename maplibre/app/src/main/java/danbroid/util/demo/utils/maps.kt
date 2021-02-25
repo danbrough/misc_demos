@@ -9,12 +9,12 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.RasterLayer
 import com.mapbox.mapboxsdk.style.sources.RasterSource
 import com.mapbox.mapboxsdk.style.sources.TileSet
-import danbroid.util.demo.BuildConfig
+import danbroid.util.demo.R
 import danbroid.util.misc.SingletonHolder
 import org.slf4j.LoggerFactory
 
 object MapConstants {
-  val LATLNG_HOME = LatLng(-41.308618, 174.769413)
+  val LATLNG_HOME = LatLng(-41.309132, 174.769616)
 
   val StyleOSM: Style.Builder by lazy {
     val tileSet = TileSet(
@@ -53,7 +53,7 @@ private class MapBoxAPIWithKey(context: Context) {
     log.error("INIT MAP BOX API WITH KEY")
   }
 
-  val mapbox = Mapbox.getInstance(context, BuildConfig.MAPBOX_TEST_TOKEN)
+  val mapbox = Mapbox.getInstance(context, context.getString(R.string.mapboxToken))
 
 
   companion object : SingletonHolder<MapBoxAPIWithKey, Context>(::MapBoxAPIWithKey)

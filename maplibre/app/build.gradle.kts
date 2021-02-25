@@ -18,7 +18,7 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
     buildConfigField("String", "URI_SCHEME", "\"${Danbroid.URI_SCHEME}\"")
-   
+
     val maptilerApiKey = project.properties.get("MAPTILER_API_KEY")?.toString()
     resValue("string", "maptilerApiKey", maptilerApiKey!!)
     resValue("string", "mapboxToken", project.properties.get("MAPBOX_TEST_TOKEN")?.toString()!!)
@@ -56,7 +56,7 @@ android {
     }
   }
 
-  lintOptions {
+  lint {
     isAbortOnError = false
   }
 
@@ -104,6 +104,7 @@ dependencies {
   implementation("org.mapsforge:vtm-mvt:_")
   implementation("org.mapsforge:vtm-extras:_")
 
+  implementation("com.github.danbrough.maplibre-plugins-android:plugin-annotation:_")
   //implementation(Square.okHttp3)
 
   testImplementation(Testing.junit4)
