@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-  compileSdkVersion(30)
+  compileSdkVersion(ProjectVersions.SDK_VERSION)
 
   defaultConfig {
     // applicationId "danbroid.composetest"
-    minSdkVersion(23)
-    targetSdkVersion(30)
-    versionCode(1)
-    versionName("1.0")
+    minSdkVersion(ProjectVersions.MIN_SDK_VERSION)
+    targetSdkVersion(ProjectVersions.SDK_VERSION)
+    versionCode(ProjectVersions.BUILD_VERSION)
+    versionName(ProjectVersions.VERSION_NAME)
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -53,7 +53,7 @@ dependencies {
   implementation(AndroidX.compose.ui)
   implementation(AndroidX.compose.material)
   implementation(AndroidX.compose.runtime.liveData)
-
+  implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha03")
   implementation("androidx.compose.ui:ui-tooling:_")
   implementation(AndroidX.lifecycle.runtimeKtx)
   testImplementation(Testing.junit4)
@@ -63,5 +63,5 @@ dependencies {
   implementation("org.slf4j:slf4j-api:_")
   implementation("com.github.danbrough.androidutils:slf4j:_")
   implementation("com.github.danbrough.androidutils:menu:_")
-
+  implementation("androidx.activity:activity-compose:_")
 }

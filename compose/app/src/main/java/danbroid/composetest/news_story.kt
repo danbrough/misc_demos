@@ -1,5 +1,6 @@
 package danbroid.composetest
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -12,14 +13,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import danbroid.composetest.ui.theme.typography
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,22 +29,22 @@ import java.util.*
 @Preview(showBackground = true)
 @Composable
 fun NewsStory() {
-  val headerImg: ImageBitmap = imageResource(R.drawable.header)
+  val headerImg: Painter = painterResource(R.drawable.header)
 
   Column(modifier = Modifier.padding(16.dp)) {
     val imageModifier = Modifier
-      .preferredHeight(180.dp)
+      .height(180.dp)
       .fillMaxWidth().clip(shape = RoundedCornerShape(4.dp))
 
 
-    androidx.compose.foundation.Image(
-      bitmap = headerImg,
+    Image(
+      painterResource(R.drawable.header),
       "header image",
       modifier = imageModifier
     )
 
 
-    Spacer(Modifier.preferredHeight(16.dp))
+    Spacer(Modifier.height(16.dp))
 
     Text(
       "A day wandering through the sandhills " +
@@ -125,7 +126,6 @@ class TestModel : ViewModel() {
   val liveCounter = _liveCounter
 
 }
-
 
 
 @Composable

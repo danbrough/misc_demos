@@ -1,5 +1,5 @@
 object Libs {
-  const val compose_version = "1.0.0-alpha12"
+  const val compose_version = "1.0.0-beta02"
 
 }
 
