@@ -3,7 +3,7 @@ buildscript {
 
   dependencies {
     //classpath("com.android.tools.build:gradle:4.2.0-alpha09")
-    classpath("com.android.tools.build:gradle:4.1.0")
+    classpath("com.android.tools.build:gradle:7.0.0-alpha15")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
     classpath(AndroidX.navigation.safeArgsGradlePlugin)
 
@@ -14,7 +14,7 @@ buildscript {
     //mavenLocal()
     google()
     mavenCentral()
-    jcenter()
+   // jcenter()
   }
 
 }
@@ -27,7 +27,7 @@ subprojects {
   repositories {
     mavenLocal()
     google()
-    jcenter()
+   // jcenter()
     mavenCentral()
     maven("https://h1.danbrough.org/maven/")
     maven("https://jitpack.io")

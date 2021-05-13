@@ -65,9 +65,11 @@ class AudioService : MediaLibraryService() {
     )
 
     player.registerPlayerCallback(callbackExecutor, object : SessionPlayer.PlayerCallback() {
-      override fun onCurrentMediaItemChanged(player: SessionPlayer, item: MediaItem) {
+
+
+/*      override fun onCurrentMediaItemChanged(player: SessionPlayer, item: MediaItem) {
         log.warn("onCurrentMediaItemChanged() $item")
-      }
+      }*/
 
       override fun onPlaybackCompleted(player: SessionPlayer) {
         log.warn("onPlaybackCompleted()")

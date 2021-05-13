@@ -1,36 +1,35 @@
 package danbroid.demo.media2
 
-import android.content.Intent
-import android.os.Bundle
 import android.view.Menu
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.NavController
+import danbroid.demo.media2.content.URI_CONTENT_ROOT
 import danbroid.demo.media2.content.rootContent
-import danbroid.util.menu.navigation.createMenuGraph
-import danbroid.util.menu.ui.MenuImplementation
-import kotlinx.android.synthetic.main.activity_main.*
-
-class MainActivity : AppCompatActivity() {
+import danbroid.util.menu.MenuActivity
+import danbroid.util.menu.createMenuNavGraph
 
 
-  init {
-    MenuImplementation.rootContent = {
-      rootContent
-    }
+class MainActivity : MenuActivity() {
+
+
+  private val rootContent by lazy {
+    rootContent(this)
   }
 
+  override fun getRootMenu() = rootContent
 
-  protected val navHostFragment: NavHostFragment
-    get() = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+  override fun createNavGraph(navController: NavController) =
+      navController.createMenuNavGraph(this,defaultMenuID = URI_CONTENT_ROOT)
 
+
+
+/*
   override fun onCreate(savedInstanceState: Bundle?) {
     log.info("onCreate()")
 
     super.onCreate(savedInstanceState)
 
     setContentView(R.layout.activity_main)
-    setSupportActionBar(toolbar)
+    setSupportActionBar(findViewById(R.id.toolbar))
     navHostFragment.navController.apply {
       createMenuGraph()
       setupActionBarWithNavController(this)
@@ -44,15 +43,16 @@ class MainActivity : AppCompatActivity() {
       }
     }
   }
+*/
 
 
-  override fun onNewIntent(intent: Intent?) {
+/*  override fun onNewIntent(intent: Intent?) {
     log.warn("onNewIntent!() $intent")
     log.warn("data:${intent?.data}")
     log.warn("extras:${intent?.extras}")
 
     super.onNewIntent(intent)
-  }
+  }*/
 
   override fun onSupportNavigateUp() = navHostFragment.navController.navigateUp() || super.onSupportNavigateUp()
 

@@ -14,8 +14,8 @@ android {
     minSdkVersion(ProjectVersions.MIN_SDK_VERSION)
     targetSdkVersion(ProjectVersions.SDK_VERSION)
 
-    versionCode = ProjectVersions.BUILD_VERSION
-    versionName = ProjectVersions.VERSION_NAME
+    //versionCode = ProjectVersions.BUILD_VERSION
+    //versionName = ProjectVersions.VERSION_NAME
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
@@ -31,8 +31,8 @@ android {
     getByName("release") {
       isMinifyEnabled = true
       proguardFiles(
-        getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
+          getDefaultProguardFile("proguard-android-optimize.txt"),
+          "proguard-rules.pro"
       )
     }
 
@@ -64,7 +64,7 @@ tasks.withType<Test> {
 dependencies {
   api("org.slf4j:slf4j-api:_")
 
-  implementation(AndroidX.coreKtx)
+  // implementation(AndroidX.coreKtx)
   implementation(Kotlin.stdlib.jdk8)
   implementation(AndroidX.annotation)
   implementation(AndroidX.lifecycle.liveDataKtx)
@@ -75,17 +75,20 @@ dependencies {
   implementation(AndroidX.media2.common)
   //implementation(AndroidX.media2.player)
   //implementation(project(":exomedia2"))
+  implementation("androidx.core:core-ktx:_")
+
 
   api(AndroidX.concurrent.futures)
   //api(AndroidX.media2.exoplayer)
   implementation(Google.android.material)
   implementation("com.google.guava:guava:_")
   implementation("com.github.danbrough.androidutils:misc:_")
+  implementation("com.github.danbrough.androidutils:logging_core:_")
   api("com.github.bumptech.glide:glide:_")
   kapt("com.github.bumptech.glide:compiler:_")
   val exo_vanilla = false
   val exo_package =
-    if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
+      if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
   val exo_version = if (exo_vanilla) "2.12.0" else "2.12.0-dan17"//"2.11.8-dan02"
 
   if (exo_vanilla) {
