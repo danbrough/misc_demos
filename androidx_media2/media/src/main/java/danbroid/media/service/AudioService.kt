@@ -408,4 +408,4 @@ class AudioService : MediaLibraryService() {
 }
 
 
-private val log = org.slf4j.LoggerFactory.getLogger(AudioService::class.java)
+private val log = danbroid.logging.getLog(AudioService::class)

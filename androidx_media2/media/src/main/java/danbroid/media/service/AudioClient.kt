@@ -180,4 +180,5 @@ open class AudioClient(context: Context) {
   }
 }
 
-private val log = org.slf4j.LoggerFactory.getLogger(AudioClient::class.java)
+
+private val log = danbroid.logging.getLog(AudioClient::class)

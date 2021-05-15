@@ -141,7 +141,7 @@ fun createNotificationManager(
 }
 
 
-private val log = org.slf4j.LoggerFactory.getLogger(NotificationManager::class.java)
+private val log = danbroid.logging.getLog(NotificationManager::class)
 
 private class PlayerDescriptionAdapter(val service: AudioService) :
     PlayerNotificationManager.MediaDescriptionAdapter {

@@ -89,4 +89,4 @@ class ControlsFragment : BottomSheetDialogFragment() {
 
 }
 
-private val log = org.slf4j.LoggerFactory.getLogger(ControlsFragment::class.java)
+private val log = danbroid.logging.getLog(ControlsFragment::class)

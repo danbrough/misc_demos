@@ -102,5 +102,5 @@ class IconUtils(
   }
 }
 
-private val log = org.slf4j.LoggerFactory.getLogger(IconUtils::class.java)
+private val log = danbroid.logging.getLog(IconUtils::class)
 

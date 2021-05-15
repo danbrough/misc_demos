@@ -99,4 +99,4 @@ fun TestData.item(block: TrackMetadata.() -> Unit) = TrackMetadata("").also {
 fun loadTestData(id: String) = testTracks.testData.firstOrNull { it.id == id }
 
 
-private val log = org.slf4j.LoggerFactory.getLogger(TestData::class.java)
+private val log = danbroid.logging.getLog(TestData::class)

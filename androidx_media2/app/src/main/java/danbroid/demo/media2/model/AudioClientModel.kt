@@ -15,4 +15,4 @@ class AudioClientModel(app: Application) : AndroidViewModel(app) {
   }
 }
 
-private val log = org.slf4j.LoggerFactory.getLogger(AudioClientModel::class.java)
+private val log = danbroid.logging.getLog(AudioClientModel::class)

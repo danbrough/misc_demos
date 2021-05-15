@@ -71,6 +71,7 @@ dependencies {
   implementation(AndroidX.lifecycle.viewModelKtx)
   //implementation(AndroidX.coreKtx)
   implementation(Kotlin.stdlib.jdk8)
+  implementation(KotlinX.coroutines.android)
   implementation("androidx.core:core-ktx:_")
 
   implementation(AndroidX.navigation.fragmentKtx)
@@ -87,12 +88,12 @@ dependencies {
 
 
   //implementation(Libs.slf4j_android)
-  implementation("org.slf4j:slf4j-api:_")
   //implementation(Libs.slf4j)
   implementation("com.github.danbrough.androidutils:logging:_")
   implementation("com.github.danbrough.androidutils:menu:_")
   implementation("com.github.danbrough.androidutils:slf4j:_")
   implementation("com.github.danbrough.androidutils:misc:_")
+  androidTestImplementation("com.github.danbrough.androidutils:slf4j:_")
 
 /*  implementation("com.mikepenz:iconics-core:5.0.3")
   implementation("com.mikepenz:iconics-views:5.0.3")
@@ -111,8 +112,6 @@ dependencies {
   androidTestImplementation(AndroidX.test.core)
   androidTestImplementation(AndroidX.test.runner)
   androidTestImplementation(AndroidX.test.rules)
-
-  androidTestImplementation("com.github.danbrough.androidutils:slf4j:_")
 
 
 /*  testImplementation("ch.qos.logback:logback-classic:_")
