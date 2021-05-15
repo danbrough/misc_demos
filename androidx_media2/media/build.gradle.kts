@@ -68,10 +68,13 @@ dependencies {
   implementation(AndroidX.annotation)
   implementation(AndroidX.lifecycle.liveDataKtx)
 
+  implementation(AndroidX.media2.common)
   implementation(AndroidX.media2.session)
+  //implementation(AndroidX.media2.session)
 //  implementation(project(":session"))
 
-  implementation(AndroidX.media2.common)
+
+
   //implementation(AndroidX.media2.player)
   //implementation(project(":exomedia2"))
   implementation("androidx.core:core-ktx:_")
@@ -88,7 +91,7 @@ dependencies {
   val exo_vanilla = false
   val exo_package =
       if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
-  val exo_version = if (exo_vanilla) "2.12.0" else "2.13.3-dan05" // "2.12.0-dan17"//"2.11.8-dan02"
+  val exo_version = if (exo_vanilla) "2.12.0" else "2.14.0-dan01" // "2.12.0-dan17"//"2.11.8-dan02"
 
   if (exo_vanilla) {
     implementation("$exo_package:exoplayer-core:$exo_version")
