@@ -91,7 +91,7 @@ dependencies {
   val exo_vanilla = false
   val exo_package =
       if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
-  val exo_version = if (exo_vanilla) "2.12.0" else "2.14.0-dan01" // "2.12.0-dan17"//"2.11.8-dan02"
+  val exo_version = if (exo_vanilla) "2.12.0" else "2.14.1-dan01" // "2.12.0-dan17"//"2.11.8-dan02"
 
   if (exo_vanilla) {
     implementation("$exo_package:exoplayer-core:$exo_version")
