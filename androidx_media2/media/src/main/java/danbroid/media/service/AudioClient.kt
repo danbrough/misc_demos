@@ -2,8 +2,6 @@ package danbroid.media.service
 
 import android.content.Context
 import androidx.core.content.ContextCompat.getMainExecutor
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
@@ -13,27 +11,41 @@ import androidx.media2.session.MediaController
 import androidx.media2.session.MediaSessionManager
 import androidx.media2.session.SessionCommandGroup
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 open class AudioClient(context: Context) {
 
-  private val _pauseEnabled = MutableLiveData(false)
-  val pauseEnabled: LiveData<Boolean> = _pauseEnabled
+  enum class PlayerState {
+    IDLE, PAUSED, PLAYING, ERROR
+  }
 
-  private val _connected = MutableLiveData(false)
-  val connected: LiveData<Boolean> = _connected
+  enum class BufferingState {
+    UNKNOWN, BUFFERING_AND_PLAYABLE, BUFFERING_AND_STARVED, BUFFERING_COMPLETE;
+  }
 
-  private val _hasNext = MutableLiveData(false)
-  val hasNext: LiveData<Boolean> = _hasNext
 
-  private val _currentItem = MutableLiveData<MediaItem?>(null)
-  val currentItem: LiveData<MediaItem?> = _currentItem
+  data class QueueState(val hasPrevious: Boolean, val hasNext: Boolean, val playState: PlayerState)
 
-  private val _metadata = MutableLiveData<MediaMetadata?>(null)
-  val metadata: LiveData<MediaMetadata?> = _metadata
+  private val _queueState = MutableStateFlow(QueueState(false, false, PlayerState.IDLE))
+  val queueState: StateFlow<QueueState> = _queueState
 
-  private val _hasPrevious = MutableLiveData(false)
-  val hasPrevious: LiveData<Boolean> = _hasPrevious
+  private val _bufferingState = MutableStateFlow(BufferingState.UNKNOWN)
+  val bufferingState: StateFlow<BufferingState> = _bufferingState
+
+  private val _playState = MutableStateFlow(PlayerState.IDLE)
+  val playState: StateFlow<PlayerState> = _playState
+
+  private val _connected = MutableStateFlow(false)
+  val connected: StateFlow<Boolean> = _connected
+
+
+  private val _currentItem = MutableStateFlow<MediaItem?>(null)
+  val currentItem: StateFlow<MediaItem?> = _currentItem
+
+  private val _metadata = MutableStateFlow<MediaMetadata?>(null)
+  val metadata: StateFlow<MediaMetadata?> = _metadata
 
   protected val controllerCallback = ControllerCallback()
 
@@ -54,9 +66,10 @@ open class AudioClient(context: Context) {
 
 
   fun playUri(uri: String) {
-    log.trace("playUri() $uri")
+    log.info("playUri() $uri")
+
     mediaController.addPlaylistItem(Integer.MAX_VALUE, uri).then {
-      log.debug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
+      log.ddebug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
       if (mediaController.playerState != SessionPlayer.PLAYER_STATE_PLAYING) {
         mediaController.play()
       }
@@ -101,6 +114,8 @@ open class AudioClient(context: Context) {
 
     override fun onPlaylistMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
       log.debug("onPlaylistMetadataChanged() $metadata")
+      log.ddebug("keys: ${metadata?.keySet()?.joinToString(",")}")
+      log.ddebug("extra keys: ${metadata?.extras?.keySet()?.joinToString(",")}")
       _metadata.value = metadata
     }
 
@@ -111,37 +126,51 @@ open class AudioClient(context: Context) {
     ) {
       val state = controller.playerState
       log.info("onPlaylistChanged() size:${list?.size} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex} $metadata")
-      _hasNext.value = controller.nextMediaItemIndex != -1
-      _hasPrevious.value = controller.previousMediaItemIndex != -1
+      _queueState.value = _queueState.value.copy(
+          hasPrevious = controller.previousMediaItemIndex != -1,
+          hasNext = controller.nextMediaItemIndex != -1
+      )
     }
 
     override fun onTrackSelected(controller: MediaController, trackInfo: SessionPlayer.TrackInfo) {
       log.info("onTrackSelected() ${controller.currentMediaItem?.metadata}")
     }
 
-
     override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
       log.info("onCurrentMediaItemChanged(): $item metadata: ${item?.metadata}")
+
+      log.dtrace("keys: ${item?.metadata?.keySet()?.joinToString(",")}")
+      log.dtrace("extra keys: ${item?.metadata?.extras?.keySet()?.joinToString(",")}")
+
       _currentItem.value = item
       _metadata.value = item?.metadata
-      _hasNext.value = controller.nextMediaItemIndex != -1
-      _hasPrevious.value = controller.previousMediaItemIndex != -1
+      _queueState.value = _queueState.value.copy(
+          hasPrevious = controller.previousMediaItemIndex != -1,
+          hasNext = controller.nextMediaItemIndex != -1
+      )
     }
 
     override fun onBufferingStateChanged(controller: MediaController, item: MediaItem, state: Int) {
       log.info("onBufferingStateChanged() ${state.buffState}")
-      if (state == SessionPlayer.BUFFERING_STATE_BUFFERING_AND_PLAYABLE) {
 
+      _bufferingState.value = when (state) {
+        SessionPlayer.BUFFERING_STATE_UNKNOWN -> BufferingState.UNKNOWN
+        SessionPlayer.BUFFERING_STATE_BUFFERING_AND_PLAYABLE -> BufferingState.BUFFERING_AND_PLAYABLE
+        SessionPlayer.BUFFERING_STATE_BUFFERING_AND_STARVED -> BufferingState.BUFFERING_AND_STARVED
+        SessionPlayer.BUFFERING_STATE_COMPLETE -> BufferingState.BUFFERING_COMPLETE
+        else -> error("Unknown buffering state: $state")
       }
     }
 
     override fun onPlayerStateChanged(controller: MediaController, state: Int) {
-      super.onPlayerStateChanged(controller, state)
-      log.info("onPlayerStateChanged() state:$state = ${state.playerState}")
-      val pauseEnabled =
-          (state == SessionPlayer.PLAYER_STATE_PLAYING)
-      log.debug("pauseEnabled: ${pauseEnabled}")
-      _pauseEnabled.value = pauseEnabled
+      log.debug("onPlayerStateChanged() state:$state = ${state.playerState}")
+      _playState.value = when (state) {
+        SessionPlayer.PLAYER_STATE_IDLE -> PlayerState.IDLE
+        SessionPlayer.PLAYER_STATE_PLAYING -> PlayerState.PLAYING
+        SessionPlayer.PLAYER_STATE_ERROR -> PlayerState.ERROR
+        SessionPlayer.PLAYER_STATE_PAUSED -> PlayerState.PAUSED
+        else -> error("Unknown player state: $state")
+      }
     }
 
     override fun onSubtitleData(

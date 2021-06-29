@@ -24,19 +24,26 @@ fun rootContent(context: Context) = context.rootMenu<MenuItemBuilder> {
   id = URI_CONTENT_ROOT
   titleID = R.string.app_name
 
-  testTracks.testData.forEach { track ->
-    menu {
-      title = track.title
-      subtitle = track.subtitle
-      imageID = R.drawable.ic_music_note
-      imageURI = track.imageURI
+  onCreate = {
+    log.info("onCreate()")
 
-      onClick = {
-        audioClient.playUri(track.id)
+    testTracks.testData.forEach { track ->
+      log.info("track $track")
+      menu {
+        title = track.title
+        subtitle = track.subtitle
+        imageID = R.drawable.ic_music_note
+        imageURI = track.imageURI
+
+        onClick = {
+          audioClient.playUri(track.id)
+        }
       }
     }
   }
+
 }
 
+private val log = danbroid.logging.getLog("danbroid.demo.media2.content")
 
 

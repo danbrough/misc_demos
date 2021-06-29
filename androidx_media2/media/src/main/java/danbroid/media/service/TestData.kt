@@ -2,6 +2,31 @@ package danbroid.media.service
 
 
 val testTracks = testData {
+
+  /*
+  #EXTINF:-1, Soho UK
+http://sohoradiomusic.doughunt.co.uk:8000/320mp3
+
+
+#EXTINF:-1, Soho NYC
+http://sohoradioculture.doughunt.co.uk:8000/320mp3
+
+   */
+
+  item {
+    id = "http://sohoradioculture.doughunt.co.uk:8000/320mp3"
+    title = "Soho NYC"
+    subtitle = "Soho radio from NYC"
+    imageURI = "https://cloudflare-ipfs.com/ipns/k51qzi5uqu5dkfj7jtuefs73phqahshpa4nl7whcjntlq8v1yqi06fv6zjy3d3/media/soho_nyc.png"
+  }
+
+  item {
+    id = "http://sohoradiomusic.doughunt.co.uk:8000/320mp3"
+    title = "Soho UK"
+    subtitle = "Soho radio from London"
+    imageURI = "https://cloudflare-ipfs.com/ipns/k51qzi5uqu5dkfj7jtuefs73phqahshpa4nl7whcjntlq8v1yqi06fv6zjy3d3/media/soho_uk.png"
+  }
+
   item {
     id = "http://colostreaming.com:8094"
     title = "Radio SHE"

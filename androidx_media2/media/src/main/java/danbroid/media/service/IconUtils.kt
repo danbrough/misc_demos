@@ -88,7 +88,7 @@ class IconUtils(
       BITMAP_CONFIG
     )
 
-    log.trace("drawing bitmap ..")
+    log.dtrace("drawing bitmap ..")
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
 
