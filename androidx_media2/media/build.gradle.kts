@@ -68,11 +68,12 @@ dependencies {
   implementation(AndroidX.annotation)
   implementation(AndroidX.lifecycle.liveDataKtx)
 
-  implementation(AndroidX.media2.common)
-  implementation(AndroidX.media2.session)
+  implementation("androidx.media2:media2-common:_")
+  implementation("androidx.media2:media2-session:_")
+
+
   //implementation(AndroidX.media2.session)
 //  implementation(project(":session"))
-
 
 
   //implementation(AndroidX.media2.player)
@@ -88,11 +89,12 @@ dependencies {
   implementation("com.github.danbrough.androidutils:logging_core:_")
   api("com.github.bumptech.glide:glide:_")
   kapt("com.github.bumptech.glide:compiler:_")
+
+
+/*
   val exo_vanilla = false
   val exo_package =
       if (exo_vanilla) "com.google.android.exoplayer" else "com.github.danbrough.exoplayer"
-  val exo_version = if (exo_vanilla) "2.12.0" else "2.14.1-dan01" // "2.12.0-dan17"//"2.11.8-dan02"
-
   if (exo_vanilla) {
     implementation("$exo_package:exoplayer-core:$exo_version")
     implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
@@ -103,28 +105,19 @@ dependencies {
     implementation("$exo_package:exoplayer-media2:$exo_version")
 
     implementation("$exo_package:extension-cast:$exo_version")
-  } else {
+  } else {*/
 
-    implementation("$exo_package:exoplayer-core:$exo_version")
-    implementation("$exo_package:exoplayer-smoothstreaming:$exo_version")
-    implementation("$exo_package:exoplayer-ui:$exo_version")
-    implementation("$exo_package:exoplayer-hls:$exo_version")
-    implementation("$exo_package:exoplayer-dash:$exo_version")
+  implementation("com.github.danbrough.exoplayer:exoplayer-core:_")
+  implementation("com.github.danbrough.exoplayer:exoplayer-smoothstreaming:_")
+  implementation("com.github.danbrough.exoplayer:exoplayer-ui:_")
+  implementation("com.github.danbrough.exoplayer:exoplayer-hls:_")
+  implementation("com.github.danbrough.exoplayer:exoplayer-dash:_")
+  implementation("com.github.danbrough.exoplayer:extension-media2:_")
 
 
-    //implementation(project(":exomedia2"))
-    // implementation("$exo_package:extension-mediasession:$exo_version")
-    //implementation("$exo_package:extension-okhttp:$exo_version")
-    // implementation("$exo_package:extension-ffmpeg:$exo_version")
-    // implementation("$exo_package:extension-ffmpeg:$exo_version")
-/*    implementation("$exo_package:extension-media2:$exo_version"){
-      exclude(group="androidx.media2")
-    }*/
-    implementation("$exo_package:extension-media2:$exo_version")
-    implementation("$exo_package:extension-cast:$exo_version")
-    implementation("$exo_package:extension-opus:$exo_version")
-    implementation("$exo_package:extension-flac:$exo_version")
-  }
+  implementation("com.github.danbrough.exoplayer:extension-cast:_")
+  implementation("com.github.danbrough.exoplayer:extension-opus:_")
+  implementation("com.github.danbrough.exoplayer:extension-flac:_")
 
 
   //implementation("com.github.danbrough.exoplayer:extension-media2:2.12.0-dan02")

@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.ListenableFuture
 
 open class AudioClient(context: Context) {
 
-
   private val _pauseEnabled = MutableLiveData<Boolean>(false)
   val pauseEnabled: LiveData<Boolean> = _pauseEnabled
 

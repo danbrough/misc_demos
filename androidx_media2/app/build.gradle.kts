@@ -10,7 +10,8 @@ plugins {
 android {
 
   compileSdk = ProjectVersions.SDK_VERSION
-  ndkVersion = "21.3.6528147"
+  ndkVersion = ProjectVersions.NDK_VERSION
+  buildToolsVersion = ProjectVersions.BUILD_TOOLS_VERSION
 
   defaultConfig {
     //buildToolsVersion("30.0.2")
