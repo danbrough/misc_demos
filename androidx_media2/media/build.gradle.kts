@@ -107,17 +107,29 @@ dependencies {
     implementation("$exo_package:extension-cast:$exo_version")
   } else {*/
 
-  implementation("com.github.danbrough.exoplayer:exoplayer-core:_")
-  implementation("com.github.danbrough.exoplayer:exoplayer-smoothstreaming:_")
-  implementation("com.github.danbrough.exoplayer:exoplayer-ui:_")
-  implementation("com.github.danbrough.exoplayer:exoplayer-hls:_")
-  implementation("com.github.danbrough.exoplayer:exoplayer-dash:_")
-  implementation("com.github.danbrough.exoplayer:extension-media2:_")
+  val use_vanilla_exoplayer = false
+  if (use_vanilla_exoplayer) {
+/*    implementation("com.google.android.exoplayer:exoplayer-core:_")
+    implementation("com.google.android.exoplayer:exoplayer-smoothstreaming:_")
+    implementation("com.google.android.exoplayer:exoplayer-ui:_")
+    implementation("com.google.android.exoplayer:exoplayer-hls:_")
+    implementation("com.google.android.exoplayer:exoplayer-dash:_")*/
+    implementation("androidx.media2:media2-exoplayer:_")
+    implementation("com.google.android.exoplayer:extension-cast:_")
+
+  } else {
+    implementation("com.github.danbrough.exoplayer:exoplayer-core:_")
+    implementation("com.github.danbrough.exoplayer:exoplayer-smoothstreaming:_")
+    implementation("com.github.danbrough.exoplayer:exoplayer-ui:_")
+    implementation("com.github.danbrough.exoplayer:exoplayer-hls:_")
+    implementation("com.github.danbrough.exoplayer:exoplayer-dash:_")
+    implementation("com.github.danbrough.exoplayer:extension-media2:_")
 
 
-  implementation("com.github.danbrough.exoplayer:extension-cast:_")
-  implementation("com.github.danbrough.exoplayer:extension-opus:_")
-  implementation("com.github.danbrough.exoplayer:extension-flac:_")
+    implementation("com.github.danbrough.exoplayer:extension-cast:_")
+    implementation("com.github.danbrough.exoplayer:extension-opus:_")
+    implementation("com.github.danbrough.exoplayer:extension-flac:_")
+  }
 
 
   //implementation("com.github.danbrough.exoplayer:extension-media2:2.12.0-dan02")

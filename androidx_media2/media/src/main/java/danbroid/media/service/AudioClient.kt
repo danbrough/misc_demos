@@ -17,13 +17,13 @@ import com.google.common.util.concurrent.ListenableFuture
 
 open class AudioClient(context: Context) {
 
-  private val _pauseEnabled = MutableLiveData<Boolean>(false)
+  private val _pauseEnabled = MutableLiveData(false)
   val pauseEnabled: LiveData<Boolean> = _pauseEnabled
 
-  private val _connected = MutableLiveData<Boolean>(false)
+  private val _connected = MutableLiveData(false)
   val connected: LiveData<Boolean> = _connected
 
-  private val _hasNext = MutableLiveData<Boolean>(false)
+  private val _hasNext = MutableLiveData(false)
   val hasNext: LiveData<Boolean> = _hasNext
 
   private val _currentItem = MutableLiveData<MediaItem?>(null)
@@ -32,14 +32,14 @@ open class AudioClient(context: Context) {
   private val _metadata = MutableLiveData<MediaMetadata?>(null)
   val metadata: LiveData<MediaMetadata?> = _metadata
 
-  private val _hasPrevious = MutableLiveData<Boolean>(false)
+  private val _hasPrevious = MutableLiveData(false)
   val hasPrevious: LiveData<Boolean> = _hasPrevious
 
   protected val controllerCallback = ControllerCallback()
 
   protected val mainExecutor = getMainExecutor(context)//Executors.newSingleThreadExecutor()
 
-  val mediaController: MediaBrowser = let {
+  val mediaController: MediaBrowser = run {
 
     val sessionManager = MediaSessionManager.getInstance(context)
     val serviceToken = sessionManager.sessionServiceTokens.first {
