@@ -6,13 +6,13 @@ plugins {
 
 android {
 
-  // buildToolsVersion("30.0.2")
 
-  compileSdkVersion(ProjectVersions.SDK_VERSION)
+  compileSdk = ProjectVersions.SDK_VERSION
+  buildToolsVersion = ProjectVersions.BUILD_TOOLS_VERSION
 
   defaultConfig {
-    minSdkVersion(ProjectVersions.MIN_SDK_VERSION)
-    targetSdkVersion(ProjectVersions.SDK_VERSION)
+    minSdk = ProjectVersions.MIN_SDK_VERSION
+    targetSdk = ProjectVersions.SDK_VERSION
 
     //versionCode = ProjectVersions.BUILD_VERSION
     //versionName = ProjectVersions.VERSION_NAME
@@ -39,11 +39,11 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = ProjectVersions.JAVA_VERSION
+    targetCompatibility = ProjectVersions.JAVA_VERSION
   }
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
   }
 
 
@@ -84,7 +84,7 @@ dependencies {
   api(AndroidX.concurrent.futures)
   //api(AndroidX.media2.exoplayer)
   implementation(Google.android.material)
-  implementation("com.google.guava:guava:_")
+  // implementation("com.google.guava:guava:_")
   implementation("com.github.danbrough.androidutils:misc:_")
   implementation("com.github.danbrough.androidutils:logging_core:_")
   api("com.github.bumptech.glide:glide:_")
