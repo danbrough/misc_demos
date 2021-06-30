@@ -86,11 +86,9 @@ dependencies {
   //implementation("androidx.media2:media2-exoplayer:$media_version")
   //implementation("androidx.media2:media2-player:$media_version")
   //implementation("com.google.guava:guava:_")
-  implementation("androidx.palette:palette:_")
 
   implementation("com.github.danbrough.androidutils:logging:_")
   implementation("com.github.danbrough.androidutils:menu:_")
-  implementation("com.github.danbrough.androidutils:slf4j:_")
   implementation("com.github.danbrough.androidutils:misc:_")
 
 /*  implementation("com.mikepenz:iconics-core:5.0.3")

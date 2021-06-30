@@ -1,7 +1,7 @@
 package danbroid.media.service
 
 import android.content.Context
-import androidx.core.content.ContextCompat.getMainExecutor
+import androidx.core.content.ContextCompat
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
@@ -49,7 +49,8 @@ open class AudioClient(context: Context) {
 
   protected val controllerCallback = ControllerCallback()
 
-  protected val mainExecutor = getMainExecutor(context)//Executors.newSingleThreadExecutor()
+  protected val mainExecutor = ContextCompat.getMainExecutor(context)//Executors.newSingleThreadExecutor()
+ // protected val mainExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
 
   val mediaController: MediaBrowser = run {
 
@@ -58,6 +59,9 @@ open class AudioClient(context: Context) {
       it.serviceName == AudioService::class.qualifiedName
     }
 
+    log.derror("serviceToken: $serviceToken.")
+
+
     MediaBrowser.Builder(context)
         .setControllerCallback(mainExecutor, controllerCallback)
         .setSessionToken(serviceToken)
@@ -65,8 +69,29 @@ open class AudioClient(context: Context) {
   }
 
 
+
   fun playUri(uri: String) {
     log.info("playUri() $uri")
+
+
+    mediaController.playlist?.indexOfFirst {
+      it.metadata?.mediaId == uri
+    }?.also {
+      if (it != -1) {
+        if (it != mediaController.currentMediaItemIndex) {
+          log.dtrace("skipping to existing item $it")
+
+          mediaController.skipToPlaylistItem(it).then {
+            mediaController.play()
+          }
+        } else {
+          mediaController.play()
+        }
+        return
+      }
+    }
+
+    log.dinfo("adding to playlist")
 
     mediaController.addPlaylistItem(Integer.MAX_VALUE, uri).then {
       log.ddebug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
@@ -113,9 +138,9 @@ open class AudioClient(context: Context) {
     }
 
     override fun onPlaylistMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
-      log.debug("onPlaylistMetadataChanged() $metadata")
+      log.debug("onPlaylistMetadataChanged()")
       log.ddebug("keys: ${metadata?.keySet()?.joinToString(",")}")
-      log.ddebug("extra keys: ${metadata?.extras?.keySet()?.joinToString(",")}")
+      log.dinfo("extra keys: ${metadata?.extras?.keySet()?.joinToString(",")}")
       _metadata.value = metadata
     }
 
@@ -205,6 +230,11 @@ open class AudioClient(context: Context) {
     }
 
 
+  }
+
+  fun close(){
+    log.info("close()")
+    mediaController.close()
   }
 }
 

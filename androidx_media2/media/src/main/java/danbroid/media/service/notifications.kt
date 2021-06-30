@@ -7,12 +7,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.media2.common.MediaMetadata
-import com.google.android.exoplayer2.DefaultControlDispatcher
+import androidx.palette.graphics.Palette
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.util.NotificationUtil
@@ -47,6 +47,7 @@ class Config {
 
 class NotificationListener(val service: AudioService) : PlayerNotificationManager.NotificationListener {
   var serviceForeground = false
+
 
   override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
     log.warn("onNotificationCancelled() byUser:$dismissedByUser")
@@ -101,7 +102,21 @@ fun createNotificationManager(
       NotificationUtil.IMPORTANCE_LOW
   )
 
-  return object : PlayerNotificationManager(
+  return PlayerNotificationManager.Builder(service, notificationID,
+      service.getString(R.string.notification_channel_id),
+      PlayerDescriptionAdapter(service))
+      .setNotificationListener(notificationListener)
+      .setSmallIconResourceId(Config.Notifications.statusBarIcon)
+      .build().also {
+        it.setUseChronometer(true)
+        if (Config.Notifications.notificationColour != 0) {
+          it.setColor(Config.Notifications.notificationColour)
+        }
+        it.setUseNextActionInCompactView(true)
+        it.setUsePreviousActionInCompactView(true)
+      }
+
+/*  return object : PlayerNotificationManager(
       service,
       service.getString(R.string.notification_channel_id),
       notificationID,
@@ -126,7 +141,8 @@ fun createNotificationManager(
 
   }.apply {
     setSmallIcon(Config.Notifications.statusBarIcon)
-    setUseNavigationActionsInCompactView(true)
+    setUseNextActionInCompactView(true)
+    setUsePreviousActionInCompactView(true)
 
     if (Config.Notifications.notificationColour != 0) {
       setColor(Config.Notifications.notificationColour)
@@ -137,7 +153,7 @@ fun createNotificationManager(
     //setUseChronometer(true)
     setColorized(true)
     setUseStopAction(false)
-  }
+  }*/
 }
 
 
@@ -180,7 +196,26 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
   override fun getCurrentLargeIcon(
       player: Player,
       callback: PlayerNotificationManager.BitmapCallback
-  ) = iconUtils.loadIcon(currentItem, defaultIcon, callback::onBitmap)
+  ): Bitmap? {
+
+    return iconUtils.loadIcon(currentItem, defaultIcon) {
+      log.dwarn("BITMAP LOADED")
+      val extras = currentItem!!.extras!!
+      Palette.from(it).generate().also {
+        val darkColor = it.getDarkVibrantColor(Color.BLACK).also {
+          log.info("DARK VIBRANT: ${"%x".format(it)}")
+        }
+        val lightColor = it.getLightVibrantColor(Color.WHITE).also {
+          log.info("LIGHT VIBRANT: ${"%x".format(it)}")
+        }
+        extras!!.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, lightColor)
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, darkColor)
+      }
+      extras.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, it)
+      log.dtrace("updated metadata with icon")
+      callback.onBitmap(it)
+    }
+  }
 
 
 }

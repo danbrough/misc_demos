@@ -8,12 +8,12 @@ import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
-import androidx.media2.common.*
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
-import androidx.media2.session.LibraryResult
-import androidx.media2.session.MediaLibraryService
+import androidx.media2.common.SessionPlayer
+import androidx.media2.common.UriMediaItem
 import androidx.media2.session.MediaSession
+import androidx.media2.session.MediaSessionService
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
@@ -28,14 +28,14 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import java.util.concurrent.Executor
 
-class AudioService : MediaLibraryService() {
+class AudioService : MediaSessionService() {
 
   val sessionCallback = SessionCallback()
 
   lateinit var player: SessionPlayer
   lateinit var exoPlayer: SimpleExoPlayer
 
-  lateinit var session: MediaLibrarySession
+  lateinit var session: MediaSession
 
   private lateinit var callbackExecutor: Executor
   private lateinit var notificationManager: PlayerNotificationManager
@@ -44,7 +44,7 @@ class AudioService : MediaLibraryService() {
     log.info("onCreate()")
     super.onCreate()
 
-    log.info("PLAYER VERSION: ${ExoPlayerLibraryInfo.VERSION_SLASHY}")
+    log.info("ExoPlayerLibraryInfo.VERSION_SLASHY = ${ExoPlayerLibraryInfo.VERSION_SLASHY}")
 
     callbackExecutor = ContextCompat.getMainExecutor(this)
 
@@ -52,7 +52,8 @@ class AudioService : MediaLibraryService() {
 
     log.ddebug("created player: $player")
     session =
-        MediaLibrarySession.Builder(this, player, callbackExecutor, sessionCallback)
+        MediaSession.Builder(this, player)
+            .setSessionCallback(callbackExecutor, sessionCallback)
             .setId("session")
             .build()
 
@@ -62,6 +63,8 @@ class AudioService : MediaLibraryService() {
             .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
             .build()
     )
+
+
 
     player.registerPlayerCallback(callbackExecutor, object : SessionPlayer.PlayerCallback() {
 
@@ -145,6 +148,7 @@ class AudioService : MediaLibraryService() {
 
     player = SessionPlayerConnector(exoPlayer)
     var foreground = false
+
     notificationManager =
         createNotificationManager(this, notificationListener = object : NotificationListener {
 
@@ -195,26 +199,25 @@ class AudioService : MediaLibraryService() {
 
     exoPlayer.addListener(
         object : Player.Listener {
+          val listenerDebug = false
 
           override fun onMetadata(metadata: Metadata) {
-            log.debug("Listener.onMetadata() $metadata")
+            if (listenerDebug) log.debug("Listener.onMetadata() $metadata")
           }
 
           override fun onPlayWhenReadyChanged(
               playWhenReady: Boolean, @Player.PlayWhenReadyChangeReason
               reason: Int
           ) {
-            super.onPlayWhenReadyChanged(playWhenReady, reason)
-            log.debug("Listener.onPlayWhenReadyChanged(): ready:$playWhenReady} reason:$reason : ${reason.playWhenReadyChangeReason}")
+            if (listenerDebug) log.debug("Listener.onPlayWhenReadyChanged(): ready:$playWhenReady} reason:$reason : ${reason.playWhenReadyChangeReason}")
           }
 
           override fun onPlaybackStateChanged(@Player.State state: Int) {
-            super.onPlaybackStateChanged(state)
-            log.debug("Listener.onPlaybackStateChanged(): state:$state = ${state.exoPlayerState}")
+            if (listenerDebug) log.debug("Listener.onPlaybackStateChanged(): state:$state = ${state.exoPlayerState}")
           }
 
           override fun onIsLoadingChanged(isLoading: Boolean) {
-            log.debug("Listener.onIsLoadingChanged() $isLoading")
+            if (listenerDebug) log.debug("Listener.onIsLoadingChanged() $isLoading")
           }
         })
 
@@ -236,15 +239,18 @@ class AudioService : MediaLibraryService() {
 
 
   override fun onUpdateNotification(session: MediaSession): MediaNotification? {
+    log.ddebug("onUpdateNotification()")
     return null
   }
 
-  override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
-    log.info("onGetSession() controllerInfo: $controllerInfo")
+  override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
+    log.ddebug("onGetSession() controllerInfo: $controllerInfo")
     return session
   }
 
-  inner class SessionCallback : MediaLibrarySession.MediaLibrarySessionCallback() {
+  inner class SessionCallback : MediaSession.SessionCallback() {
+/*
+
     override fun onGetLibraryRoot(
         session: MediaLibrarySession,
         controller: MediaSession.ControllerInfo,
@@ -265,9 +271,10 @@ class AudioService : MediaLibraryService() {
       log.info("onSubscribe() $parentId")
       return BaseResult.RESULT_SUCCESS
     }
+*/
 
 
-    override fun onCreateMediaItem(
+/*    override fun onCreateMediaItem(
         session: MediaSession,
         controller: MediaSession.ControllerInfo,
         mediaId: String
@@ -293,6 +300,17 @@ class AudioService : MediaLibraryService() {
     ): LibraryResult {
       log.dtrace("onGetItem() id: $mediaId")
       return super.onGetItem(session, controller, mediaId)
+    }*/
+
+    override fun onCreateMediaItem(session: MediaSession, controller: MediaSession.ControllerInfo, mediaId: String): MediaItem? {
+      log.debug("onCreateMediaItem() $mediaId")
+
+      val trackMetadata = loadTestData(mediaId)
+      trackMetadata ?: return null
+      return UriMediaItem.Builder(mediaId.toUri())
+          .setStartPosition(0L).setEndPosition(-1L)
+          .setMetadata(trackMetadata.toMediaMetadata().putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1).build())
+          .build()
     }
 
     override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
@@ -394,7 +412,7 @@ class AudioService : MediaLibraryService() {
                   val newMetadata = MediaMetadata.Builder(currentMetadata).also {
                     it.putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title)
                   }.build()
-                  log.dtrace("ANALYTICS: updating playlist metadata with title:$title")
+                  log.dtrace("ANALYTICS: updating currentMediaItem metadata with title:$title")
 
                   player.currentMediaItem?.metadata = newMetadata
                   player.updatePlaylistMetadata(newMetadata)

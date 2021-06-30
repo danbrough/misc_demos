@@ -5,13 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media2.common.MediaMetadata
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import danbroid.demo.media2.R
 import danbroid.demo.media2.databinding.FragmentBottomControlsBinding
-import danbroid.demo.media2.model.AudioClientModel
+import danbroid.demo.media2.model.audioClientModel
 import danbroid.media.service.AudioClient
 import danbroid.media.service.TrackMetadata
 import kotlinx.coroutines.flow.collect
@@ -36,13 +35,12 @@ class ControlsFragment : BottomSheetDialogFragment() {
     _binding = null
   }
 
-  val model by activityViewModels<AudioClientModel>()
 
   @SuppressLint("ResourceType")
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     log.debug("onViewCreated()")
     super.onViewCreated(view, savedInstanceState)
-    val audioClient = model.client
+    val audioClient = audioClientModel.client
 
     binding.btnPlayPause.setOnClickListener {
       audioClient.togglePause()
@@ -81,6 +79,19 @@ class ControlsFragment : BottomSheetDialogFragment() {
       audioClient.metadata.collect {
         log.trace("metadata: $it")
         it?.also {
+          it.extras?.also {
+            if (it.containsKey(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR)) {
+              val darkColor = it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR)
+              log.info("FOUND DARK COLOR: %x".format(darkColor))
+              binding.title.setBackgroundColor(darkColor)
+            }
+
+            if (it.containsKey(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR)) {
+              val lightColor = it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR)
+              log.info("FOUND LIGHT COLOR: %x".format(lightColor))
+              binding.subtitle.setBackgroundColor(lightColor)
+            }
+          }
           it.getBitmap(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {
             log.error("FOUND BITMAP!!!!!!!!")
           }

@@ -90,6 +90,7 @@ dependencies {
   api("com.github.bumptech.glide:glide:_")
   kapt("com.github.bumptech.glide:compiler:_")
 
+  implementation("androidx.palette:palette:_")
 
 /*
   val exo_vanilla = false

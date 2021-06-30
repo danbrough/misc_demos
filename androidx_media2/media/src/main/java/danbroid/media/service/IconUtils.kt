@@ -16,8 +16,8 @@ import com.bumptech.glide.request.transition.Transition
 import danbroid.util.resource.resolveDrawableURI
 
 class IconUtils(
-  val context: Context,
-  @ColorInt val iconTint: Int = Config.Notifications.notificationIconTint
+    val context: Context,
+    @ColorInt val iconTint: Int = Config.Notifications.notificationIconTint
 ) {
 
   companion object {
@@ -26,11 +26,11 @@ class IconUtils(
 
 
   fun loadIcon(
-    metadata: MediaMetadata?,
-    defaultIcon: Bitmap? = null,
-    callback: (Bitmap) -> Unit
+      metadata: MediaMetadata?,
+      defaultIcon: Bitmap? = null,
+      callback: (Bitmap) -> Unit
   ): Bitmap? {
-    log.trace("loadIcon() $metadata")
+    //log.trace("loadIcon() $metadata")
 
     metadata ?: let {
       log.error("metadata is null")
@@ -38,7 +38,7 @@ class IconUtils(
     }
 
     metadata.extras?.getParcelable<Bitmap>(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {
-      log.trace("found cached bitmap")
+      //log.trace("found cached bitmap")
       return it
     }
 
@@ -48,31 +48,30 @@ class IconUtils(
     }
 
     val imageURI = metadata.getString(MediaMetadata.METADATA_KEY_ART_URI) ?: metadata.getString(
-      MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI
+        MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI
     ) ?: run {
       log.trace("no METADATA_KEY_ART_URI or METADATA_KEY_DISPLAY_ICON_URI returning defaultIcon ")
       return defaultIcon
     }
 
-    log.trace("imageURI: $imageURI")
+    log.trace("loading icon from imageURI: $imageURI")
 
     imageURI.resolveDrawableURI(context).also {
       if (it != 0) return drawableToBitmapIcon(it)
     }
 
     Glide.with(context).asBitmap().load(imageURI).diskCacheStrategy(DiskCacheStrategy.DATA)
-      //.transform(RoundedCorners(iconCornerRadius))
-      .into(object : CustomTarget<Bitmap>(
-        Config.Notifications.notificationIconWidth,
-        Config.Notifications.notificationIconHeight
-      ) {
-        override fun onLoadCleared(placeholder: Drawable?) = Unit
+        //.transform(RoundedCorners(iconCornerRadius))
+        .into(object : CustomTarget<Bitmap>(
+            Config.Notifications.notificationIconWidth,
+            Config.Notifications.notificationIconHeight
+        ) {
+          override fun onLoadCleared(placeholder: Drawable?) = Unit
 
-        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-          metadata.extras!!.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, resource)
-          callback.invoke(resource)
-        }
-      })
+          override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+            callback.invoke(resource)
+          }
+        })
 
 
 
@@ -83,9 +82,9 @@ class IconUtils(
     val drawable = ResourcesCompat.getDrawable(context.resources, resID, context.theme)!!
 
     val bitmap = Bitmap.createBitmap(
-      Config.Notifications.notificationIconWidth,
-      Config.Notifications.notificationIconHeight,
-      BITMAP_CONFIG
+        Config.Notifications.notificationIconWidth,
+        Config.Notifications.notificationIconHeight,
+        BITMAP_CONFIG
     )
 
     log.dtrace("drawing bitmap ..")
@@ -94,8 +93,8 @@ class IconUtils(
 
     if (iconTint != 0)
       DrawableCompat.setTint(
-        drawable,
-        iconTint
+          drawable,
+          iconTint
       )
     drawable.draw(canvas)
     return bitmap

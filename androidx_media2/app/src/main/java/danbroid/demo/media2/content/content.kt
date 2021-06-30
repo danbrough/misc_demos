@@ -3,6 +3,8 @@ package danbroid.demo.media2.content
 
 import android.content.Context
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import danbroid.demo.media2.R
 import danbroid.demo.media2.model.AudioClientModel
 import danbroid.media.service.AudioClient
@@ -17,7 +19,11 @@ const val URI_CONTENT_ROOT = "demo://content"
 
 
 private val MenuItemClickContext.audioClient: AudioClient
-  get() = fragment.activityViewModels<AudioClientModel>().value.client
+  get() = fragment.activityViewModels<AudioClientModel>() {
+    object: ViewModelProvider.NewInstanceFactory(){
+      override fun <T : ViewModel?> create(modelClass: Class<T>)= AudioClientModel(fragment.requireContext()) as T
+    }
+  }.value.client
 
 
 fun rootContent(context: Context) = context.rootMenu<MenuItemBuilder> {

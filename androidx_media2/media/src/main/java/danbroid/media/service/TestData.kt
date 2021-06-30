@@ -60,7 +60,7 @@ http://sohoradioculture.doughunt.co.uk:8000/320mp3
     title = "The Rock"
     id = "http://livestream.mediaworks.nz/radio_origin/rock_128kbps/playlist.m3u8"
     subtitle = "the rock"
-    imageURI = "https://ipfs.io/ipfs/QmZGbcdnLgexhMjt73PfvpGXL9d2kRiJiaQDhiCbCct63Q/therock.png"
+    imageURI = "https://cloudflare-ipfs.com/ipns/k51qzi5uqu5dkfj7jtuefs73phqahshpa4nl7whcjntlq8v1yqi06fv6zjy3d3/media/The%20Rock.png"
   }
 
   item {
