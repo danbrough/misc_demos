@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import danbroid.demo.media2.R
 import danbroid.demo.media2.model.AudioClientModel
-import danbroid.media.service.AudioClient
+import danbroid.media.client.AudioClient
 import danbroid.media.service.testTracks
 import danbroid.util.menu.MenuItemBuilder
 import danbroid.util.menu.MenuItemClickContext

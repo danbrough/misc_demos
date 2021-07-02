@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import danbroid.media.service.AudioClient
+import danbroid.media.client.AudioClient
 
 class AudioClientModel(context: Context) : ViewModel() {
 

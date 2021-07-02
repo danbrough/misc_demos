@@ -31,7 +31,7 @@ http://sohoradioculture.doughunt.co.uk:8000/320mp3
     id = "http://colostreaming.com:8094"
     title = "Radio SHE"
     subtitle = "Some cheesy rock station from florida"
-    imageURI = "http://shemiamiradio.com/graphics/WSHE-she-radio-logo.png"
+    imageURI = "https://k51qzi5uqu5dkfj7jtuefs73phqahshpa4nl7whcjntlq8v1yqi06fv6zjy3d3.ipns.bluelight.link/media/RadioSHE.png"
 
   }
 

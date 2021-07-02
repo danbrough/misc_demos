@@ -198,23 +198,38 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
       callback: PlayerNotificationManager.BitmapCallback
   ): Bitmap? {
 
-    return iconUtils.loadIcon(currentItem, defaultIcon) {
-      log.dwarn("BITMAP LOADED")
+    fun updateMetadata(bitmap: Bitmap) {
       val extras = currentItem!!.extras!!
-      Palette.from(it).generate().also {
-        val darkColor = it.getDarkVibrantColor(Color.BLACK).also {
+      if (bitmap != defaultIcon && !extras.containsKey(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)) {
+        log.dwarn("generating palette")
+
+        val palette = Palette.from(bitmap).generate()
+
+        val darkColor = palette.getDarkVibrantColor(Color.BLACK).also {
           log.info("DARK VIBRANT: ${"%x".format(it)}")
         }
-        val lightColor = it.getLightVibrantColor(Color.WHITE).also {
+
+        val lightColor = palette.getLightVibrantColor(Color.WHITE).also {
           log.info("LIGHT VIBRANT: ${"%x".format(it)}")
         }
-        extras!!.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, lightColor)
+
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, lightColor)
         extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, darkColor)
+        extras.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, bitmap)
+
+        log.dtrace("updatePlaylistMetadata with MEDIA_METADATA_KEY_CACHED_ICON")
+        service.player.updatePlaylistMetadata(currentItem)
       }
-      extras.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, it)
-      log.dtrace("updated metadata with icon")
+    }
+
+    val icon = iconUtils.loadIcon(currentItem, defaultIcon) {
+      updateMetadata(it)
       callback.onBitmap(it)
     }
+
+    if (icon != null) updateMetadata(icon)
+
+    return icon
   }
 
 

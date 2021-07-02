@@ -11,7 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import danbroid.demo.media2.R
 import danbroid.demo.media2.databinding.FragmentBottomControlsBinding
 import danbroid.demo.media2.model.audioClientModel
-import danbroid.media.service.AudioClient
+import danbroid.media.client.AudioClient
 import danbroid.media.service.TrackMetadata
 import kotlinx.coroutines.flow.collect
 
@@ -84,12 +84,14 @@ class ControlsFragment : BottomSheetDialogFragment() {
               val darkColor = it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR)
               log.info("FOUND DARK COLOR: %x".format(darkColor))
               binding.title.setBackgroundColor(darkColor)
+              binding.title.setTextColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR))
             }
 
             if (it.containsKey(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR)) {
               val lightColor = it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR)
               log.info("FOUND LIGHT COLOR: %x".format(lightColor))
               binding.subtitle.setBackgroundColor(lightColor)
+              binding.subtitle.setTextColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR))
             }
           }
           it.getBitmap(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {

@@ -41,21 +41,31 @@ class AudioService : MediaSessionService() {
   private lateinit var notificationManager: PlayerNotificationManager
 
   override fun onCreate() {
-    log.info("onCreate()")
+    log.derror("onCreate() hashCode:${hashCode()}")
     super.onCreate()
 
     log.info("ExoPlayerLibraryInfo.VERSION_SLASHY = ${ExoPlayerLibraryInfo.VERSION_SLASHY}")
 
     callbackExecutor = ContextCompat.getMainExecutor(this)
 
-    createExternalExoPlayer()
+    /**
+     * SessionPlayerConnector​(Player player)
+    Creates an instance using DefaultMediaItemConverter to convert between ExoPlayer and media2 MediaItems and DefaultControlDispatcher to dispatch player commands.
+    SessionPlayerConnector​(Player player, MediaItemConverter mediaItemConverter)
+     */
 
+
+    createExternalExoPlayer()
     log.ddebug("created player: $player")
+
     session =
         MediaSession.Builder(this, player)
             .setSessionCallback(callbackExecutor, sessionCallback)
-            .setId("session")
+           // .setId("danbroid.media.session")
             .build()
+
+//    addSession(session)
+
 
     player.setAudioAttributes(
         AudioAttributesCompat.Builder()
@@ -100,6 +110,17 @@ class AudioService : MediaSessionService() {
         log.warn("onTracksChanged()")
       }
     })
+  }
+
+  override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    log.dwarn("onStartCommand() hashCode:${hashCode()}")
+    super.onStartCommand(intent, flags, startId)
+    return START_STICKY
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    log.info("onDestroy() hashCode:${hashCode()}")
   }
 
   fun createExternalExoPlayer(): ExoPlayer {
@@ -174,11 +195,12 @@ class AudioService : MediaSessionService() {
             log.warn("onNotificationPosted() ongoing:$ongoing")
             if (ongoing) {
               if (!foreground) {
-                //log.warn("starting foreground ..")
-                ContextCompat.startForegroundService(
-                    applicationContext,
-                    Intent(applicationContext, javaClass)
-                )
+                log.warn("starting foreground ..")
+                // startForegroundService(Intent(applicationContext, javaClass))
+                ContextCompat.startForegroundService(this@AudioService, Intent(applicationContext, javaClass))
+                /*startForegroundService(
+                     Intent(applicationContext, javaClass)
+                 )*/
                 startForeground(notificationId, notification)
                 foreground = true
               }
@@ -239,7 +261,9 @@ class AudioService : MediaSessionService() {
 
 
   override fun onUpdateNotification(session: MediaSession): MediaNotification? {
-    log.ddebug("onUpdateNotification()")
+    log.derror("onUpdateNotification()")
+
+  //  super.onUpdateNotification(session)
     return null
   }
 

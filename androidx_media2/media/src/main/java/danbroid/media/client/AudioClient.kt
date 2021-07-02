@@ -1,4 +1,4 @@
-package danbroid.media.service
+package danbroid.media.client
 
 import android.content.Context
 import androidx.core.content.ContextCompat
@@ -11,6 +11,9 @@ import androidx.media2.session.MediaController
 import androidx.media2.session.MediaSessionManager
 import androidx.media2.session.SessionCommandGroup
 import com.google.common.util.concurrent.ListenableFuture
+import danbroid.media.service.AudioService
+import danbroid.media.service.buffState
+import danbroid.media.service.playerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -60,7 +63,6 @@ open class AudioClient(context: Context) {
     }
 
     log.derror("serviceToken: $serviceToken.")
-
 
     MediaBrowser.Builder(context)
         .setControllerCallback(mainExecutor, controllerCallback)
@@ -234,7 +236,7 @@ open class AudioClient(context: Context) {
 
   fun close(){
     log.info("close()")
-    mediaController.close()
+   mediaController.close()
   }
 }
 
