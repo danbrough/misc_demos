@@ -1,9 +1,14 @@
 package danbroid.demo.media2
 
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.view.Menu
 import androidx.navigation.NavController
 import danbroid.demo.media2.content.URI_CONTENT_ROOT
 import danbroid.demo.media2.content.rootContent
+import danbroid.media.service.AudioService
 import danbroid.util.menu.MenuActivity
 import danbroid.util.menu.createMenuNavGraph
 
@@ -18,9 +23,12 @@ class MainActivity : MenuActivity() {
   override fun getRootMenu() = rootContent
 
   override fun createNavGraph(navController: NavController) =
-      navController.createMenuNavGraph(this,defaultMenuID = URI_CONTENT_ROOT)
+      navController.createMenuNavGraph(this, defaultMenuID = URI_CONTENT_ROOT)
 
-
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    startService(Intent(applicationContext, AudioService::class.java))
+  }
 
 /*
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +68,49 @@ class MainActivity : MenuActivity() {
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
     // Inflate the menu; this adds items to the action bar if it is present.
     menuInflater.inflate(R.menu.menu_main, menu)
+
+    if (BuildConfig.DEBUG) {
+      menu.add("Check Services").setOnMenuItemClickListener {
+        log.derror("service running: ${isServiceRunning(this, AudioService::class.java.name)}")
+        true
+      }
+    }
     return true
+  }
+
+  companion object {
+
+    private fun isServiceRunning(context: Context, serviceName: String): Boolean {
+      var serviceRunning = false
+      val am = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+      val l = am.getRunningServices(50)
+      val i: Iterator<ActivityManager.RunningServiceInfo> = l.iterator()
+      while (i.hasNext()) {
+        val runningServiceInfo = i
+            .next()
+        if (runningServiceInfo.service.className == serviceName) {
+          serviceRunning = true
+          log.derror("service: $runningServiceInfo")
+          if (runningServiceInfo.foreground) {
+            //service run in foreground
+            log.info("$serviceName is in foreground")
+          }
+        }
+      }
+      return serviceRunning
+    }
+  }
+
+
+  override fun onPause() {
+    super.onPause()
+  }
+
+  override fun onStop() {
+    super.onStop()
+    log.dinfo("onStop()")
+    log.derror("service running: ${isServiceRunning(this, AudioService::class.java.name)}")
+
   }
 
 

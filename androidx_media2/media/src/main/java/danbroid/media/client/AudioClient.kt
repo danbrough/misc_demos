@@ -1,6 +1,7 @@
 package danbroid.media.client
 
 import android.content.Context
+import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
@@ -53,9 +54,14 @@ open class AudioClient(context: Context) {
   protected val controllerCallback = ControllerCallback()
 
   protected val mainExecutor = ContextCompat.getMainExecutor(context)//Executors.newSingleThreadExecutor()
- // protected val mainExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
+  // protected val mainExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
 
   val mediaController: MediaBrowser = run {
+
+
+    log.debug("starting service ..")
+    context.startService(Intent(context, AudioService::class.java))
+
 
     val sessionManager = MediaSessionManager.getInstance(context)
     val serviceToken = sessionManager.sessionServiceTokens.first {
@@ -69,7 +75,6 @@ open class AudioClient(context: Context) {
         .setSessionToken(serviceToken)
         .build()
   }
-
 
 
   fun playUri(uri: String) {
@@ -234,9 +239,9 @@ open class AudioClient(context: Context) {
 
   }
 
-  fun close(){
+  fun close() {
     log.info("close()")
-   mediaController.close()
+    //  mediaController.close()
   }
 }
 

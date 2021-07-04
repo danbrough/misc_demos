@@ -61,7 +61,7 @@ class AudioService : MediaSessionService() {
     session =
         MediaSession.Builder(this, player)
             .setSessionCallback(callbackExecutor, sessionCallback)
-           // .setId("danbroid.media.session")
+            // .setId("danbroid.media.session")
             .build()
 
 //    addSession(session)
@@ -197,7 +197,7 @@ class AudioService : MediaSessionService() {
               if (!foreground) {
                 log.warn("starting foreground ..")
                 // startForegroundService(Intent(applicationContext, javaClass))
-                ContextCompat.startForegroundService(this@AudioService, Intent(applicationContext, javaClass))
+                ContextCompat.startForegroundService(applicationContext, Intent(applicationContext, javaClass))
                 /*startForegroundService(
                      Intent(applicationContext, javaClass)
                  )*/
@@ -263,7 +263,7 @@ class AudioService : MediaSessionService() {
   override fun onUpdateNotification(session: MediaSession): MediaNotification? {
     log.derror("onUpdateNotification()")
 
-  //  super.onUpdateNotification(session)
+    //  super.onUpdateNotification(session)
     return null
   }
 
