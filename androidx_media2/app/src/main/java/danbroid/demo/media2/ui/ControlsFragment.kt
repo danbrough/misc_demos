@@ -51,6 +51,8 @@ class ControlsFragment : BottomSheetDialogFragment() {
     binding.color2.setBackgroundColor(0)
     binding.color3.setBackgroundColor(0)
     binding.color4.setBackgroundColor(0)
+    binding.color5.setBackgroundColor(0)
+    binding.color6.setBackgroundColor(0)
 
 
     binding.btnPlayPause.setOnClickListener {
@@ -101,6 +103,7 @@ class ControlsFragment : BottomSheetDialogFragment() {
               binding.color2.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, 0))
               binding.color3.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, 0))
               binding.color4.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, 0))
+              binding.color5.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, 0))
             }
           }
           it.getBitmap(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {

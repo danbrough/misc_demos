@@ -220,6 +220,9 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
         extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, darkColor)
         extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.WHITE))
         extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.BLACK))
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, palette.getDominantColor(Color.GREEN))
+
+
         extras.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, bitmap)
 
         log.dtrace("updatePlaylistMetadata with MEDIA_METADATA_KEY_CACHED_ICON")

@@ -89,6 +89,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:_")
   //implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:_")
   //implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:_")
+  implementation(AndroidX.paletteKtx)
 
   implementation(AndroidX.navigation.fragmentKtx)
   implementation(AndroidX.navigation.uiKtx)
