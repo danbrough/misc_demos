@@ -199,9 +199,10 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
   ): Bitmap? {
 
     fun updateMetadata(bitmap: Bitmap) {
-      val extras = currentItem!!.extras!!
+      val extras = currentItem?.extras ?: return
+
       if (bitmap != defaultIcon && !extras.containsKey(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)) {
-        log.dwarn("generating palette")
+        log.dwarn("generating palette............................................")
 
         val palette = Palette.from(bitmap).generate()
 
@@ -213,8 +214,12 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
           log.info("LIGHT VIBRANT: ${"%x".format(it)}")
         }
 
+
+
         extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, lightColor)
         extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, darkColor)
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.WHITE))
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.BLACK))
         extras.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, bitmap)
 
         log.dtrace("updatePlaylistMetadata with MEDIA_METADATA_KEY_CACHED_ICON")

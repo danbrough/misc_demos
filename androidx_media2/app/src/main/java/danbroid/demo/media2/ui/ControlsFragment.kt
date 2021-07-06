@@ -1,10 +1,12 @@
 package danbroid.demo.media2.ui
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorInt
 import androidx.lifecycle.lifecycleScope
 import androidx.media2.common.MediaMetadata
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -35,12 +37,21 @@ class ControlsFragment : BottomSheetDialogFragment() {
     _binding = null
   }
 
+  @ColorInt
+  private var textColor: Int = Color.WHITE
+
 
   @SuppressLint("ResourceType")
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     log.debug("onViewCreated()")
     super.onViewCreated(view, savedInstanceState)
     val audioClient = audioClientModel.client
+
+    binding.color1.setBackgroundColor(0)
+    binding.color2.setBackgroundColor(0)
+    binding.color3.setBackgroundColor(0)
+    binding.color4.setBackgroundColor(0)
+
 
     binding.btnPlayPause.setOnClickListener {
       audioClient.togglePause()
@@ -54,6 +65,8 @@ class ControlsFragment : BottomSheetDialogFragment() {
       audioClient.skipToNext()
     }
 
+    textColor = binding.title.currentTextColor
+
     binding.progressBar.visibility = View.GONE
 
     lifecycleScope.launchWhenResumed {
@@ -61,6 +74,8 @@ class ControlsFragment : BottomSheetDialogFragment() {
         log.trace("connected $it")
       }
     }
+
+
 
     lifecycleScope.launchWhenResumed {
       audioClient.queueState.collect {
@@ -80,18 +95,12 @@ class ControlsFragment : BottomSheetDialogFragment() {
         log.trace("metadata: $it")
         it?.also {
           it.extras?.also {
-            if (it.containsKey(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR)) {
-              val darkColor = it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR)
-              log.info("FOUND DARK COLOR: %x".format(darkColor))
-              binding.title.setBackgroundColor(darkColor)
-              binding.title.setTextColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR))
-            }
 
-            if (it.containsKey(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR)) {
-              val lightColor = it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR)
-              log.info("FOUND LIGHT COLOR: %x".format(lightColor))
-              binding.subtitle.setBackgroundColor(lightColor)
-              binding.subtitle.setTextColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR))
+            if (it.containsKey(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR)) {
+              binding.color1.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, 0))
+              binding.color2.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, 0))
+              binding.color3.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, 0))
+              binding.color4.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, 0))
             }
           }
           it.getBitmap(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {
@@ -109,9 +118,13 @@ class ControlsFragment : BottomSheetDialogFragment() {
     lifecycleScope.launchWhenResumed {
       audioClient.currentItem.collect { mediaItem ->
         log.warn("CURRENT ITEM: $mediaItem")
+        binding.color1.setBackgroundColor(0)
+        binding.color2.setBackgroundColor(0)
+        binding.color3.setBackgroundColor(0)
+        binding.color4.setBackgroundColor(0)
         binding.buttons.visibility = if (mediaItem != null) View.VISIBLE else View.GONE
         mediaItem?.metadata?.getBitmap(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {
-          log.warn("FOUND ICON!")
+          log.error("FOUND ICON!")
         }
       }
     }

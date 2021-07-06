@@ -1,21 +1,15 @@
 package danbroid.media.service
 
+import androidx.core.net.toUri
+import androidx.media2.common.MediaItem
+import androidx.media2.common.UriMediaItem
+
 const val ipfs_gateway = "https://cloudflare-ipfs.com"
 
 val testTracks = testData {
 
-  /*
-  #EXTINF:-1, Soho UK
-http://sohoradiomusic.doughunt.co.uk:8000/320mp3
-
-
-#EXTINF:-1, Soho NYC
-http://sohoradioculture.doughunt.co.uk:8000/320mp3
-
-   */
-
   item {
-    id = "http://sohoradioculture.doughunt.co.uk:8000/320mp3"
+    id = "http://sohoradioculture.doughunt.co.uk:8000/320mAp3"
     title = "Soho NYC"
     subtitle = "Soho radio from NYC"
     imageURI = "${ipfs_gateway}/ipns/k51qzi5uqu5dkfj7jtuefs73phqahshpa4nl7whcjntlq8v1yqi06fv6zjy3d3/media/soho_nyc.png"
@@ -124,5 +118,18 @@ fun TestData.item(block: TrackMetadata.() -> Unit) = TrackMetadata("").also {
 
 fun loadTestData(id: String) = testTracks.testData.firstOrNull { it.id == id }
 
+
+class TestDataLibrary : AudioLibrary {
+  override suspend fun loadItem(mediaID: String): MediaItem? =
+      testTracks.testData.firstOrNull {
+        it.id == mediaID
+      }?.let {
+        UriMediaItem.Builder(mediaID.toUri())
+            .setStartPosition(0L).setEndPosition(-1L)
+            .setMetadata(it.toMediaMetadata().build()).build()
+      }
+
+
+}
 
 private val log = danbroid.logging.getLog(TestData::class)

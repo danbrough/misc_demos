@@ -17,7 +17,6 @@
         tools:ignore="ExportedService">
       <intent-filter>
         <action android:name="androidx.media2.session.MediaSessionService" />
-        <!--<action android:name="androidx.media2.session.MediaLibraryService" />-->
         <action android:name="android.media.browse.MediaBrowserService" />
       </intent-filter>
     </service>

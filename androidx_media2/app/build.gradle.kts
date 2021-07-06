@@ -2,7 +2,9 @@ plugins {
   id("com.android.application")
   kotlin("android")
   kotlin("kapt")
-  id("androidx.navigation.safeargs.kotlin")
+  //kotlin("serialization")
+  kotlin("plugin.serialization")
+
 }
 
 
@@ -43,13 +45,23 @@ android {
 
 
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = ProjectVersions.KOTLIN_VERSION
   }
 
   kapt {
     correctErrorTypes = true
   }
 
+  kotlin.sourceSets.all {
+    setOf(
+        "kotlinx.serialization.ExperimentalSerializationApi",
+        //"kotlinx.coroutines.ExperimentalCoroutinesApi",
+        //"kotlinx.coroutines.FlowPreview",
+        //"androidx.compose.material.ExperimentalMaterialApi"
+    ).forEach {
+      languageSettings.useExperimentalAnnotation(it)
+    }
+  }
 }
 
 tasks.withType<Test> {
@@ -74,6 +86,9 @@ dependencies {
   implementation(Kotlin.stdlib.jdk8)
   implementation(KotlinX.coroutines.android)
   implementation("androidx.core:core-ktx:_")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:_")
+  //implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:_")
+  //implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:_")
 
   implementation(AndroidX.navigation.fragmentKtx)
   implementation(AndroidX.navigation.uiKtx)

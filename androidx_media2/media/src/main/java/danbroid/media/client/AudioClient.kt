@@ -3,6 +3,8 @@ package danbroid.media.client
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
@@ -11,10 +13,12 @@ import androidx.media2.session.MediaBrowser
 import androidx.media2.session.MediaController
 import androidx.media2.session.MediaSessionManager
 import androidx.media2.session.SessionCommandGroup
+import androidx.versionedparcelable.ParcelUtils
 import com.google.common.util.concurrent.ListenableFuture
 import danbroid.media.service.AudioService
 import danbroid.media.service.buffState
 import danbroid.media.service.playerState
+import danbroid.media.service.toDebugString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -28,7 +32,6 @@ open class AudioClient(context: Context) {
   enum class BufferingState {
     UNKNOWN, BUFFERING_AND_PLAYABLE, BUFFERING_AND_STARVED, BUFFERING_COMPLETE;
   }
-
 
   data class QueueState(val hasPrevious: Boolean, val hasNext: Boolean, val playState: PlayerState)
 
@@ -70,6 +73,7 @@ open class AudioClient(context: Context) {
 
     log.derror("serviceToken: $serviceToken.")
 
+
     MediaBrowser.Builder(context)
         .setControllerCallback(mainExecutor, controllerCallback)
         .setSessionToken(serviceToken)
@@ -79,7 +83,6 @@ open class AudioClient(context: Context) {
 
   fun playUri(uri: String) {
     log.info("playUri() $uri")
-
 
     mediaController.playlist?.indexOfFirst {
       it.metadata?.mediaId == uri
@@ -99,6 +102,7 @@ open class AudioClient(context: Context) {
     }
 
     log.dinfo("adding to playlist")
+
 
     mediaController.addPlaylistItem(Integer.MAX_VALUE, uri).then {
       log.ddebug("result: $it code: ${it.resultCode} item:${it.mediaItem}")
@@ -130,6 +134,29 @@ open class AudioClient(context: Context) {
       addListener({
         job.invoke(get())
       }, mainExecutor)
+
+
+  fun test(item: MediaMetadata) {
+    log.dinfo("test()")
+    val metadata = mediaController.playlistMetadata
+    log.trace("metadata: ${metadata.toDebugString()}")
+    val playlist = mediaController.playlist ?: mutableListOf()
+    playlist.forEach {
+      log.debug("playlist item: $it")
+    }
+
+    mediaController.setMediaUri(item.mediaId!!.toUri(), bundleOf().also {
+      ParcelUtils.putVersionedParcelable(it, "item", item)
+    }).then {
+      log.debug("finished setting media uri")
+    }
+
+
+    /*  mediaController.sendCustomCommand(SessionCommand("test", bundleOf("id" to "thang")), bundleOf("count" to 3)).then {
+        log.debug("cmd sent")
+      }*/
+  }
+
 
   protected inner class ControllerCallback : MediaBrowser.BrowserCallback() {
 
@@ -241,7 +268,7 @@ open class AudioClient(context: Context) {
 
   fun close() {
     log.info("close()")
-    //  mediaController.close()
+    mediaController.close()
   }
 }
 

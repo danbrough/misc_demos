@@ -9,6 +9,7 @@ import danbroid.demo.media2.R
 import danbroid.demo.media2.model.AudioClientModel
 import danbroid.media.client.AudioClient
 import danbroid.media.service.testTracks
+import danbroid.util.format.uriEncode
 import danbroid.util.menu.MenuItemBuilder
 import danbroid.util.menu.MenuItemClickContext
 import danbroid.util.menu.menu
@@ -20,8 +21,8 @@ const val URI_CONTENT_ROOT = "demo://content"
 
 private val MenuItemClickContext.audioClient: AudioClient
   get() = fragment.activityViewModels<AudioClientModel>() {
-    object: ViewModelProvider.NewInstanceFactory(){
-      override fun <T : ViewModel?> create(modelClass: Class<T>)= AudioClientModel(fragment.requireContext()) as T
+    object : ViewModelProvider.NewInstanceFactory() {
+      override fun <T : ViewModel?> create(modelClass: Class<T>) = AudioClientModel(fragment.requireContext()) as T
     }
   }.value.client
 
@@ -48,7 +49,32 @@ fun rootContent(context: Context) = context.rootMenu<MenuItemBuilder> {
     }
   }
 
+
+  menu {
+    title = "Soma FM"
+    isBrowsable = true
+    onClick = {
+      log.dinfo("Test1")
+      this@menu.children?.clear()
+      context.somaFM.channels().forEach {
+        log.debug("channel: ${it.id}: ${it.description}")
+        menu {
+
+          id = "somafm://${it.id.uriEncode()}"
+          title = it.title
+          subtitle = it.description
+          imageURI = it.image
+          onClick = {
+            log.info("SHOULD PLAY: $id")
+            audioClient.playUri(id)
+          }
+        }
+      }
+      proceed()
+    }
+  }
 }
+
 
 private val log = danbroid.logging.getLog("danbroid.demo.media2.content")
 

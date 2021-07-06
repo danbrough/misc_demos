@@ -1,8 +1,47 @@
 package danbroid.media.service
 
+import android.content.Context
 import androidx.media2.common.SessionPlayer
 import com.google.android.exoplayer2.Player
+import danbroid.media.service.util.httpSupport
+import okhttp3.CacheControl
+import java.util.concurrent.TimeUnit
 
+
+suspend fun parsePlaylistURL(context: Context, url: String): String? =
+    context.httpSupport.requestString(url, CacheControl.Builder().maxStale(1, TimeUnit.DAYS).build()).let {
+      it.lines().firstNotNullOfOrNull { line ->
+        val i = line.indexOf('=');
+        if (line.startsWith("File") && i > 0) {
+          line.substring(i + 1).trim()
+        } else if (line.startsWith("http")) {
+          line.trimEnd()
+        } else null
+      }
+    }
+
+/*@Throws(IOException::class)
+private fun processPlaylistURL(
+    url: String,
+    maxStale: Int = 60 * 60 * 12
+): String? {
+  // log.trace("processUrl() $url")
+
+  context.httpSupport.cacheRequest(
+      url,
+      CacheControl.Builder().maxStale(1, TimeUnit.DAYS).build()
+  ).use {
+    it.body?.string()?.lines()?.forEach { line ->
+      val i = line.indexOf('=');
+      if (line.startsWith("File") && i > 0) {
+        return line.substring(i + 1).trim()
+      } else if (line.startsWith("http")) {
+        return line.trimEnd()
+      }
+    }
+  }
+  throw IOException("Failed to parse playlist url: $url")
+}*/
 
 @SessionPlayer.PlayerState
 val Int.playerState: String

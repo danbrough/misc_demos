@@ -43,7 +43,7 @@ android {
     targetCompatibility = ProjectVersions.JAVA_VERSION
   }
   kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = ProjectVersions.KOTLIN_VERSION
   }
 
 
@@ -131,6 +131,7 @@ dependencies {
     implementation("com.github.danbrough.exoplayer:extension-opus:_")
     implementation("com.github.danbrough.exoplayer:extension-flac:_")
   }
+  implementation(Square.okHttp3.okHttp)
 
 
   //implementation("com.github.danbrough.exoplayer:extension-media2:2.12.0-dan02")

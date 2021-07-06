@@ -8,25 +8,29 @@ import com.google.android.exoplayer2.metadata.icy.IcyHeaders
 import com.google.android.exoplayer2.metadata.icy.IcyInfo
 
 data class TrackMetadata(
-  var id: String,
-  var title: String = "Untitled",
-  var subtitle: String = "",
-  var imageURI: String? = null,
-  var bitrate: Int = -1
+    var id: String,
+    var title: String = "Untitled",
+    var subtitle: String = "",
+    var imageURI: String? = null,
+    var bitrate: Int = -1
 ) {
   companion object {
     const val MEDIA_METADATA_KEY_BITRATE =
-      "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_BITRATE"
+        "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_BITRATE"
     const val MEDIA_METADATA_KEY_CACHED_ICON =
-      "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON"
+        "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON"
     const val MEDIA_METADATA_KEY_LIGHT_COLOR =
         "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR"
     const val MEDIA_METADATA_KEY_DARK_COLOR =
         "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR"
+    const val MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR =
+        "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR"
+    const val MEDIA_METADATA_KEY_DARK_MUTED_COLOR =
+        "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR"
   }
 
   constructor(md: MediaMetadata) : this(
-    md.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)!!
+      md.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)!!
   ) {
     title = md.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)?.toString() ?: "Untitled"
     subtitle = md.getText(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)?.toString() ?: ""
@@ -35,40 +39,30 @@ data class TrackMetadata(
   }
 }
 
-/*
-          MediaMetadata.Builder()
-            .putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1)
-            .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, mediaId)
-            .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, trackMetadata.title)
-            .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, trackMetadata.subtitle)
-            .putString(MediaMetadata.METADATA_KEY_ARTIST, trackMetadata.subtitle)
-            .putString(MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI, trackMetadata.imageURI)
 
-            .putString(MediaMetadata.METADATA_KEY_MEDIA_URI, mediaId)
-            .build()
- */
 fun TrackMetadata.toMediaMetadata(): MediaMetadata.Builder = MediaMetadata.Builder()
-  .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, id)
-  .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title)
-  .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, subtitle)
-  .putString(MediaMetadata.METADATA_KEY_ARTIST, subtitle)
-  .setExtras(bundleOf())
+    .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, id)
+    .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title)
+    .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, subtitle)
+    .putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1)
+    .putString(MediaMetadata.METADATA_KEY_ARTIST, subtitle)
+    .setExtras(bundleOf())
 
-  .also { builder ->
+    .also { builder ->
 
-    if (imageURI != null) builder.putString(MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI, imageURI)
+      if (imageURI != null) builder.putString(MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI, imageURI)
 
-    var _bundle: Bundle? = null
-    val bundle: () -> Bundle = {
-      _bundle ?: Bundle().also {
-        _bundle = it
-        builder.setExtras(it)
+      var _bundle: Bundle? = null
+      val bundle: () -> Bundle = {
+        _bundle ?: Bundle().also {
+          _bundle = it
+          builder.setExtras(it)
+        }
       }
-    }
-    if (bitrate != -1)
-      bundle().putInt(TrackMetadata.MEDIA_METADATA_KEY_BITRATE, bitrate)
+      if (bitrate != -1)
+        bundle().putInt(TrackMetadata.MEDIA_METADATA_KEY_BITRATE, bitrate)
 
-  }
+    }
 
 
 private fun Metadata.parseMetadata(trackMD: TrackMetadata): TrackMetadata {
@@ -96,5 +90,4 @@ private fun Metadata.parseMetadata(trackMD: TrackMetadata): TrackMetadata {
   return trackMD
 }
 
-fun Metadata.toTrackMetadata(id: String) = parseMetadata(TrackMetadata(id))
 fun Metadata.toTrackMetadata(md: MediaMetadata) = parseMetadata(TrackMetadata(md))

@@ -5,7 +5,6 @@ buildscript {
     //classpath("com.android.tools.build:gradle:4.2.0-alpha09")
     classpath("com.android.tools.build:gradle:_")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
-    classpath(AndroidX.navigation.safeArgsGradlePlugin)
 
 
   }
