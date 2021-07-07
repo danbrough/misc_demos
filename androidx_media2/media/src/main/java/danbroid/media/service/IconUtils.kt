@@ -37,11 +37,6 @@ class IconUtils(
       return defaultIcon
     }
 
-    metadata.extras?.getParcelable<Bitmap>(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)?.also {
-      //log.trace("found cached bitmap")
-      return it
-    }
-
     metadata.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)?.also {
       log.trace("found existing display icon bitmap")
       return it

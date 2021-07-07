@@ -2,15 +2,21 @@ package danbroid.demo.media2
 
 import android.app.ActivityManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.media2.common.MediaMetadata
 import androidx.navigation.NavController
+import com.google.android.material.snackbar.Snackbar
 import danbroid.demo.media2.content.URI_CONTENT_ROOT
 import danbroid.demo.media2.content.rootContent
+import danbroid.demo.media2.model.AudioClientModel
+import danbroid.media.client.AudioClient
 import danbroid.media.service.AudioService
 import danbroid.util.menu.MenuActivity
 import danbroid.util.menu.createMenuNavGraph
+import kotlinx.coroutines.flow.collect
 
 
 class MainActivity : MenuActivity() {
@@ -20,6 +26,8 @@ class MainActivity : MenuActivity() {
     rootContent(this)
   }
 
+  val audioClientModel: AudioClientModel by viewModels()
+
   override fun getRootMenu() = rootContent
 
   override fun createNavGraph(navController: NavController) =
@@ -27,7 +35,15 @@ class MainActivity : MenuActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    startService(Intent(applicationContext, AudioService::class.java))
+
+    lifecycleScope.launchWhenResumed {
+      audioClientModel.client.playState.collect {
+        log.trace("playerState: $it")
+        if (it == AudioClient.PlayerState.ERROR) {
+          Snackbar.make(findViewById(R.id.bottom_controls_fragment), "Error playing ${audioClientModel.client.currentItem.value?.metadata?.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)}", Snackbar.LENGTH_SHORT).show()
+        }
+      }
+    }
   }
 
 /*
@@ -68,6 +84,11 @@ class MainActivity : MenuActivity() {
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
     // Inflate the menu; this adds items to the action bar if it is present.
     menuInflater.inflate(R.menu.menu_main, menu)
+
+    menu.add("Clear Playlist").setOnMenuItemClickListener {
+      audioClientModel.client.clearPlaylist()
+      true
+    }
 
     if (BuildConfig.DEBUG) {
       menu.add("Check Services").setOnMenuItemClickListener {

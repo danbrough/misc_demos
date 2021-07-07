@@ -24,7 +24,7 @@ apply("project.gradle.kts")
 subprojects {
 
   repositories {
-    mavenLocal()
+    //mavenLocal()
     google()
    // jcenter()
     mavenCentral()

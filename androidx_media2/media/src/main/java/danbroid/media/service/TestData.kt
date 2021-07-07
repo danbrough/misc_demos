@@ -9,7 +9,7 @@ const val ipfs_gateway = "https://cloudflare-ipfs.com"
 val testTracks = testData {
 
   item {
-    id = "http://sohoradioculture.doughunt.co.uk:8000/320mAp3"
+    id = "http://sohoradioculture.doughunt.co.uk:8000/320mp3"
     title = "Soho NYC"
     subtitle = "Soho radio from NYC"
     imageURI = "${ipfs_gateway}/ipns/k51qzi5uqu5dkfj7jtuefs73phqahshpa4nl7whcjntlq8v1yqi06fv6zjy3d3/media/soho_nyc.png"
@@ -55,7 +55,7 @@ val testTracks = testData {
     title = "The Rock"
     id = "http://livestream.mediaworks.nz/radio_origin/rock_128kbps/playlist.m3u8"
     subtitle = "the rock"
-    imageURI = "${ipfs_gateway}ipns/k51qzi5uqu5dkfj7jtuefs73phqahshpa4nl7whcjntlq8v1yqi06fv6zjy3d3/media/The%20Rock.png"
+    imageURI = "${ipfs_gateway}/ipns/audienz.danbrough.org/media/the_rock.png"
   }
 
   item {

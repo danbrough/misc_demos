@@ -17,8 +17,6 @@ data class TrackMetadata(
   companion object {
     const val MEDIA_METADATA_KEY_BITRATE =
         "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_BITRATE"
-    const val MEDIA_METADATA_KEY_CACHED_ICON =
-        "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON"
     const val MEDIA_METADATA_KEY_LIGHT_COLOR =
         "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR"
     const val MEDIA_METADATA_KEY_DARK_COLOR =
@@ -29,6 +27,8 @@ data class TrackMetadata(
         "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR"
     const val MEDIA_METADATA_KEY_DOMINANT_COLOR =
         "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR"
+    const val MEDIA_METADATA_KEY_VIBRANT_COLOR =
+        "danbroid.media.service.TrackMetadata.MEDIA_METADATA_KEY_VIBRANT_COLOR"
   }
 
   constructor(md: MediaMetadata) : this(

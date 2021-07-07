@@ -14,7 +14,15 @@ class DemoApplication : Application() {
 
   val log = LogConfig.let {
     val log = AndroidLog("DEMO")
-    it.GET_LOG = { log }
+    val clientLog = AndroidLog("AUDIO_CLIENT")
+    val serviceLog = AndroidLog("AUDIO_SERVICE")
+    it.GET_LOG = {
+      when {
+        it.startsWith("danbroid.media.client") -> clientLog
+        it.startsWith("danbroid.media.service") -> serviceLog
+        else -> log
+      }
+    }
     it.COLOURED = true
     it.DEBUG = BuildConfig.DEBUG
     it.DETAILED = true

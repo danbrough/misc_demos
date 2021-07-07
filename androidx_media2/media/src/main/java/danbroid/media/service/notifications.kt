@@ -201,32 +201,24 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
     fun updateMetadata(bitmap: Bitmap) {
       val extras = currentItem?.extras ?: return
 
-      if (bitmap != defaultIcon && !extras.containsKey(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON)) {
+      if (bitmap != defaultIcon && currentItem.let { it != null && !it.containsKey(MediaMetadata.METADATA_KEY_DISPLAY_ICON)}) {
         log.dwarn("generating palette............................................")
 
         val palette = Palette.from(bitmap).generate()
 
-        val darkColor = palette.getDarkVibrantColor(Color.BLACK).also {
-          log.info("DARK VIBRANT: ${"%x".format(it)}")
-        }
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, palette.getLightVibrantColor(Color.TRANSPARENT))
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, palette.getDarkVibrantColor(Color.TRANSPARENT))
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.TRANSPARENT))
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.TRANSPARENT))
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, palette.getDominantColor(Color.TRANSPARENT))
+        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_VIBRANT_COLOR, palette.getVibrantColor(Color.TRANSPARENT))
 
-        val lightColor = palette.getLightVibrantColor(Color.WHITE).also {
-          log.info("LIGHT VIBRANT: ${"%x".format(it)}")
-        }
-
-
-
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, lightColor)
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, darkColor)
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.WHITE))
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.BLACK))
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, palette.getDominantColor(Color.GREEN))
-
-
-        extras.putParcelable(TrackMetadata.MEDIA_METADATA_KEY_CACHED_ICON, bitmap)
+        val newMetadata = MediaMetadata.Builder(currentItem!!)
+            .putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, bitmap)
+            .build()
 
         log.dtrace("updatePlaylistMetadata with MEDIA_METADATA_KEY_CACHED_ICON")
-        service.player.updatePlaylistMetadata(currentItem)
+        service.player.updatePlaylistMetadata(newMetadata)
       }
     }
 

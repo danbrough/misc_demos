@@ -9,12 +9,10 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.media.AudioAttributesCompat
+import androidx.media2.common.*
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
-import androidx.media2.common.SessionPlayer
-import androidx.media2.common.UriMediaItem
 import androidx.media2.session.*
 import androidx.versionedparcelable.ParcelUtils
 import com.google.android.exoplayer2.*
@@ -38,7 +36,7 @@ class AudioService : MediaSessionService() {
 
   companion object {
     const val PACKAGE = "danbroid.media.service"
-    const val COMMAND_PLAY_ITEM = "$PACKAGE.PLAY_ITEM"
+    //const val COMMAND_CLEAR_PLAYLIST = "$PACKAGE.CLEAR_PLAYLIST"
   }
 
   val sessionCallback = SessionCallback()
@@ -130,7 +128,7 @@ class AudioService : MediaSessionService() {
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     log.dwarn("onStartCommand() hashCode:${hashCode()}")
     super.onStartCommand(intent, flags, startId)
-    return START_STICKY
+    return START_NOT_STICKY
   }
 
   override fun onDestroy() {
@@ -349,21 +347,26 @@ class AudioService : MediaSessionService() {
       val metadata = extras?.let { ParcelUtils.getVersionedParcelable<MediaMetadata?>(it, "item") }
       log.ddebug("metadata: ${metadata.toDebugString()}")
 
-      if (metadata != null) {
-        player.setMediaItem(UriMediaItem.Builder(metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_URI)!!.toUri())
-            .setStartPosition(0L).setEndPosition(-1L)
-            .setMetadata(metadata)
-            .build()).then {
-          log.debug("result: $it")
-          if (it.resultCode == SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-            log.debug("calling play")
-            session.player.play()
-          } else {
-            log.error("failed: ${it.resultCode} item: ${it.mediaItem}")
-          }
-        }
+      runCatching {
 
-        return SessionResult.RESULT_SUCCESS
+        if (metadata != null) {
+          player.setMediaItem(UriMediaItem.Builder(metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_URI)!!.toUri())
+              .setStartPosition(0L).setEndPosition(-1L)
+              .setMetadata(metadata)
+              .build()).then {
+            log.debug("result: $it")
+            if (it.resultCode == SessionPlayer.PlayerResult.RESULT_SUCCESS) {
+              log.debug("calling play")
+              session.player.play()
+            } else {
+              log.error("failed: ${it.resultCode} item: ${it.mediaItem}")
+            }
+          }
+
+          return SessionResult.RESULT_SUCCESS
+        }
+      }.exceptionOrNull()?.also {
+        log.error("Failed to set media item: ${it.message}", it)
       }
 
       return super.onSetMediaUri(session, controller, uri, extras)
@@ -382,14 +385,18 @@ class AudioService : MediaSessionService() {
 
     override fun onCommandRequest(session: MediaSession, controller: MediaSession.ControllerInfo, command: SessionCommand): Int {
       log.debug("onCommandRequest() ${command.commandCode}:${command.customAction}:extras:${command.customExtras}")
+      if (session.player.playerState == SessionPlayer.PLAYER_STATE_ERROR) {
+        log.info("in the error state suppresion reason: ${exoPlayer.playbackSuppressionReason} error: ${exoPlayer.playerError}")
+        exoPlayer.prepare()
+      }
       return super.onCommandRequest(session, controller, command)
     }
+
 
     override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): SessionCommandGroup = SessionCommandGroup.Builder().let { builder ->
       super.onConnect(session, controller)?.commands?.forEach {
         builder.addCommand(it)
       }
-      builder.addCommand(SessionCommand("test", bundleOf("age" to 12)))
       builder.build()
     }
 
@@ -402,7 +409,9 @@ class AudioService : MediaSessionService() {
     override fun onCustomCommand(session: MediaSession, controller: MediaSession.ControllerInfo, customCommand: SessionCommand, args: Bundle?): SessionResult {
       log.debug("onCustomCommand(): ${customCommand.commandCode}:${customCommand.customAction}:extras:${customCommand.customExtras.toDebugString()} args: ${args.toDebugString()}")
 
-      return SessionResult(SessionResult.RESULT_SUCCESS, null)
+
+      return SessionResult(BaseResult.RESULT_ERROR_NOT_SUPPORTED, null)
+      //     return SessionResult(SessionResult.RESULT_SUCCESS, null)
     }
   }
 

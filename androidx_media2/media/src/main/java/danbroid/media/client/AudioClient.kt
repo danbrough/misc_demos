@@ -9,10 +9,7 @@ import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
 import androidx.media2.common.SubtitleData
-import androidx.media2.session.MediaBrowser
-import androidx.media2.session.MediaController
-import androidx.media2.session.MediaSessionManager
-import androidx.media2.session.SessionCommandGroup
+import androidx.media2.session.*
 import androidx.versionedparcelable.ParcelUtils
 import com.google.common.util.concurrent.ListenableFuture
 import danbroid.media.service.AudioService
@@ -33,9 +30,9 @@ open class AudioClient(context: Context) {
     UNKNOWN, BUFFERING_AND_PLAYABLE, BUFFERING_AND_STARVED, BUFFERING_COMPLETE;
   }
 
-  data class QueueState(val hasPrevious: Boolean, val hasNext: Boolean, val playState: PlayerState)
+  data class QueueState(val hasPrevious: Boolean, val hasNext: Boolean, val playState: PlayerState, val size: Int)
 
-  private val _queueState = MutableStateFlow(QueueState(false, false, PlayerState.IDLE))
+  private val _queueState = MutableStateFlow(QueueState(false, false, PlayerState.IDLE, 0))
   val queueState: StateFlow<QueueState> = _queueState
 
   private val _bufferingState = MutableStateFlow(BufferingState.UNKNOWN)
@@ -46,7 +43,6 @@ open class AudioClient(context: Context) {
 
   private val _connected = MutableStateFlow(false)
   val connected: StateFlow<Boolean> = _connected
-
 
   private val _currentItem = MutableStateFlow<MediaItem?>(null)
   val currentItem: StateFlow<MediaItem?> = _currentItem
@@ -92,7 +88,12 @@ open class AudioClient(context: Context) {
           log.dtrace("skipping to existing item $it")
 
           mediaController.skipToPlaylistItem(it).then {
-            mediaController.play()
+            if (it.resultCode == SessionResult.RESULT_SUCCESS) {
+              log.trace("calling play")
+              mediaController.play()
+            } else {
+              log.error("failed to skip to existing playlist item: ${it.customCommandResult}")
+            }
           }
         } else {
           mediaController.play()
@@ -172,9 +173,7 @@ open class AudioClient(context: Context) {
     }
 
     override fun onPlaylistMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
-      log.debug("onPlaylistMetadataChanged()")
-      log.ddebug("keys: ${metadata?.keySet()?.joinToString(",")}")
-      log.dinfo("extra keys: ${metadata?.extras?.keySet()?.joinToString(",")}")
+      log.debug("onPlaylistMetadataChanged() metadata: ${metadata.toDebugString()}")
       _metadata.value = metadata
     }
 
@@ -184,10 +183,12 @@ open class AudioClient(context: Context) {
         metadata: MediaMetadata?
     ) {
       val state = controller.playerState
-      log.info("onPlaylistChanged() size:${list?.size} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex} $metadata")
+      log.info("onPlaylistChanged() size:${list?.size ?: "null"} state:${state.playerState} prev:${controller.previousMediaItemIndex} next:${controller.nextMediaItemIndex}")
+      log.info("metadata: ${metadata.toDebugString()}")
       _queueState.value = _queueState.value.copy(
           hasPrevious = controller.previousMediaItemIndex != -1,
-          hasNext = controller.nextMediaItemIndex != -1
+          hasNext = controller.nextMediaItemIndex != -1,
+          size = list?.size ?: 0
       )
     }
 
@@ -269,6 +270,15 @@ open class AudioClient(context: Context) {
   fun close() {
     log.info("close()")
     mediaController.close()
+  }
+
+  fun clearPlaylist() {
+    log.trace("clearPlaylist()")
+    if (!mediaController.playlist.isNullOrEmpty()) {
+      mediaController.removePlaylistItem(0).then {
+        clearPlaylist()
+      }
+    }
   }
 }
 
