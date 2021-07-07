@@ -3,39 +3,43 @@ package danbroid.media.service
 import android.app.Notification
 import android.content.ComponentName
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.media.AudioAttributesCompat
 import androidx.media2.common.*
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.session.*
+import androidx.palette.graphics.Palette
 import androidx.versionedparcelable.ParcelUtils
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
 import com.google.android.exoplayer2.metadata.Metadata
 import com.google.android.exoplayer2.metadata.flac.VorbisComment
+import com.google.android.exoplayer2.metadata.icy.IcyInfo
 import com.google.android.exoplayer2.metadata.id3.TextInformationFrame
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.NotificationListener
 import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.common.util.concurrent.ListenableFuture
 import danbroid.media.BuildConfig
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.util.concurrent.Executor
 
 class AudioService : MediaSessionService() {
 
   companion object {
     const val PACKAGE = "danbroid.media.service"
+    const val METADATA_EXTRAS_KEY_CACHED_ICON = "$PACKAGE.METADATA_EXTRAS_KEY_CACHED_ICON"
     //const val COMMAND_CLEAR_PLAYLIST = "$PACKAGE.CLEAR_PLAYLIST"
   }
 
@@ -43,19 +47,26 @@ class AudioService : MediaSessionService() {
 
   lateinit var player: SessionPlayerConnector
   lateinit var exoPlayer: SimpleExoPlayer
-
   lateinit var session: MediaSession
 
   private lateinit var callbackExecutor: Executor
   private lateinit var notificationManager: PlayerNotificationManager
+  internal val iconUtils = IconUtils(this)
+
+  val defaultIcon: Bitmap by lazy {
+    iconUtils.drawableToBitmapIcon(Config.Notifications.defaultNotificationIcon)
+  }
+  private val lifecycleScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
   override fun onCreate() {
     log.derror("onCreate() hashCode:${hashCode()}")
     super.onCreate()
 
+
     log.info("ExoPlayerLibraryInfo.VERSION_SLASHY = ${ExoPlayerLibraryInfo.VERSION_SLASHY}")
 
     callbackExecutor = ContextCompat.getMainExecutor(this)
+
 
     /**
      * SessionPlayerConnector​(Player player)
@@ -134,6 +145,7 @@ class AudioService : MediaSessionService() {
   override fun onDestroy() {
     super.onDestroy()
     log.info("onDestroy() hashCode:${hashCode()}")
+    lifecycleScope.cancel("Service destroyed")
   }
 
   fun createExternalExoPlayer(): ExoPlayer {
@@ -287,59 +299,6 @@ class AudioService : MediaSessionService() {
 
 
   inner class SessionCallback : MediaSession.SessionCallback() {
-/*
-
-    override fun onGetLibraryRoot(
-        session: MediaLibrarySession,
-        controller: MediaSession.ControllerInfo,
-        params: LibraryParams?
-    ): LibraryResult {
-      log.dinfo("onGetLibraryRoot()  params: ${params}")
-      val root = super.onGetLibraryRoot(session, controller, params)
-      log.dtrace("returning $root")
-      return root
-    }
-
-    override fun onSubscribe(
-        session: MediaLibrarySession,
-        controller: MediaSession.ControllerInfo,
-        parentId: String,
-        params: LibraryParams?
-    ): Int {
-      log.info("onSubscribe() $parentId")
-      return BaseResult.RESULT_SUCCESS
-    }
-*/
-
-
-/*    override fun onCreateMediaItem(
-        session: MediaSession,
-        controller: MediaSession.ControllerInfo,
-        mediaId: String
-    ): MediaItem? {
-      log.debug("onCreateMediaItem() $mediaId")
-
-      val trackMetadata = loadTestData(mediaId)
-      trackMetadata ?: return null
-
-
-      return UriMediaItem.Builder(mediaId.toUri())
-          .setStartPosition(0L).setEndPosition(-1L)
-          .setMetadata(
-              trackMetadata.toMediaMetadata().putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1).build()
-          )
-          .build()
-    }
-
-    override fun onGetItem(
-        session: MediaLibrarySession,
-        controller: MediaSession.ControllerInfo,
-        mediaId: String
-    ): LibraryResult {
-      log.dtrace("onGetItem() id: $mediaId")
-      return super.onGetItem(session, controller, mediaId)
-    }*/
-
 
     override fun onSetMediaUri(session: MediaSession, controller: MediaSession.ControllerInfo, uri: Uri, extras: Bundle?): Int {
       log.ddebug("onSetMediaUri() $uri")
@@ -377,9 +336,47 @@ class AudioService : MediaSessionService() {
 
       return runBlocking {
         audioServiceConfig.library.loadItem(mediaId)
-            ?: super.onCreateMediaItem(session, controller, mediaId)
-      }
+      }?.also { loadIcon(it) } ?: super.onCreateMediaItem(session, controller, mediaId)
+    }
 
+
+    fun loadIcon(mediaItem: MediaItem) {
+      log.error("loadIcon() $mediaItem")
+
+      lifecycleScope.launch {
+        fun updateMetadata(bitmap: Bitmap) {
+          log.dwarn("updateMetadata()")
+
+          val builder = MediaMetadata.Builder(mediaItem.metadata!!)
+
+          val extras = mediaItem.metadata?.extras ?: bundleOf().also {
+            builder.setExtras(it)
+          }
+
+          if (bitmap != defaultIcon && !extras.containsKey(METADATA_EXTRAS_KEY_CACHED_ICON)) {
+            log.dwarn("generating palette............................................")
+
+            val palette = Palette.from(bitmap).generate()
+
+            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, palette.getLightVibrantColor(Color.TRANSPARENT))
+            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, palette.getDarkVibrantColor(Color.TRANSPARENT))
+            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.TRANSPARENT))
+            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.TRANSPARENT))
+            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, palette.getDominantColor(Color.TRANSPARENT))
+            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_VIBRANT_COLOR, palette.getVibrantColor(Color.TRANSPARENT))
+          }
+
+          extras.putParcelable(METADATA_EXTRAS_KEY_CACHED_ICON, bitmap)
+          builder.putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, bitmap)
+          mediaItem.metadata = builder.build()
+        }
+
+        iconUtils.loadIcon(mediaItem.metadata, defaultIcon) {
+          updateMetadata(it)
+        }?.also {
+          updateMetadata(it)
+        }
+      }
     }
 
 
@@ -429,36 +426,48 @@ class AudioService : MediaSessionService() {
 
     override fun onMetadata(eventTime: AnalyticsListener.EventTime, metadata: Metadata) {
       log.derror("ANALYTICS: metadata $metadata")
-      val currentMetadata = player.currentMediaItem!!.metadata!!
-      val oldMetadata = TrackMetadata(currentMetadata)
-      val newMetadata = metadata.toTrackMetadata(currentMetadata)
-      if (oldMetadata != newMetadata) {
-        log.dtrace("ANALYTICS: UPDATING currentItems metadata with: $newMetadata")
-        newMetadata.toMediaMetadata().build().also {
-          player.currentMediaItem?.metadata = it
-          player.updatePlaylistMetadata(it)
-          notificationManager.invalidate()
-          /*          player.updatePlaylistMetadata(it).addListener({
-                      log.warn("UPDATED PLAYLIST METADATA")
-                      log.trace("playlistMetadata_title: ${player.playlistMetadata?.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)}")
-                      log.trace(
-                        "playlist.currentItem.metadata.title: ${
-        player.currentMediaItem?.metadata?.getText(
-            MediaMetadata.METADATA_KEY_DISPLAY_TITLE
-        )
-      }"
-                      )
+      var title: String? = null
+      var album: String? = null
+//      val currentMetadata = player.currentMediaItem!!.metadata!!
+      val mdBuilder = exoPlayer.mediaMetadata.buildUpon()
 
-                      this@AudioService.onUpdateNotification(session)
-                    }, ContextCompat.getMainExecutor(this@AudioService))*/
+      (0 until metadata.length()).forEach {
+        val entry = metadata.get(it)
+        entry.populateMediaMetadata(mdBuilder)
+
+        when (entry) {
+          is VorbisComment -> {
+            log.dtrace("ANALYTICS:VORBIS COMMENT: ${entry.key}:=<${entry.value}>")
+            when (entry.key) {
+              "Title" -> {
+                title = entry.value
+              }
+            }
+          }
+          is TextInformationFrame -> {
+            log.dtrace("ANALYTICS: ID3 COMMENT: ${entry.id}:=<${entry.value}>")
+            when (entry.id) {
+              "TIT2" -> {
+                title = entry.value
+              }
+              "TALB" -> {
+                album = entry.value
+                log.dtrace("album: $album")
+              }
+            }
+          }
+          is IcyInfo -> {
+            log.trace("ANALYTICS: IcyInfo title:${entry.title} ${entry.url}")
+            title = entry.title
+          }
         }
-
-      } else {
-        log.derror("NO CHANGE IN METADATA")
       }
+
+      val newMD = mdBuilder.build()
+
     }
 
-    override fun onTracksChanged(
+/*    override fun onTracksChanged(
         eventTime: AnalyticsListener.EventTime,
         trackGroups: TrackGroupArray,
         trackSelections: TrackSelectionArray
@@ -510,17 +519,21 @@ class AudioService : MediaSessionService() {
                   val newMetadata = MediaMetadata.Builder(currentMetadata).also {
                     it.putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title)
                   }.build()
-                  log.dtrace("ANALYTICS: updating currentMediaItem metadata with title:$title")
+                  log.derror("ANALYTICS: updating currentMediaItem metadata with title:$title")
 
-                  player.currentMediaItem?.metadata = newMetadata
+                //  player.currentMediaItem?.metadata = newMetadata
                   player.updatePlaylistMetadata(newMetadata)
                 }
               }
             }
           }
         }
+
       }
+
     }
+    */
+
   }
 
   private fun <T> ListenableFuture<T>.then(job: (T) -> Unit) =

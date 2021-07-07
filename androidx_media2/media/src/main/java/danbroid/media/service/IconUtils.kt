@@ -24,18 +24,26 @@ class IconUtils(
     var BITMAP_CONFIG = Bitmap.Config.ARGB_8888
   }
 
+  val callbacks = mutableMapOf<MediaMetadata, (Bitmap) -> Unit>()
 
   fun loadIcon(
       metadata: MediaMetadata?,
       defaultIcon: Bitmap? = null,
       callback: (Bitmap) -> Unit
   ): Bitmap? {
-    //log.trace("loadIcon() $metadata")
+    log.dtrace("loadIcon() $metadata")
 
     metadata ?: let {
       log.error("metadata is null")
       return defaultIcon
     }
+
+    if (callbacks.containsKey(metadata)) {
+      log.derror("CALLBACK ALREADY SET")
+      return null
+    }
+
+    callbacks[metadata] = callback
 
     metadata.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)?.also {
       log.trace("found existing display icon bitmap")
@@ -64,7 +72,9 @@ class IconUtils(
           override fun onLoadCleared(placeholder: Drawable?) = Unit
 
           override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-            callback.invoke(resource)
+            log.error("ON RESOURCE READY")
+            callbacks.remove(metadata)!!.invoke(resource)
+
           }
         })
 

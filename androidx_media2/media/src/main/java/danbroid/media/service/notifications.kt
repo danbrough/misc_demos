@@ -2,17 +2,14 @@ package danbroid.media.service
 
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.media2.common.MediaMetadata
-import androidx.palette.graphics.Palette
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.util.NotificationUtil
@@ -157,14 +154,13 @@ fun createNotificationManager(
 }
 
 
-private val log = danbroid.logging.getLog(NotificationManager::class)
+private val log = danbroid.logging.getLog(NotificationListener::class)
 
 private class PlayerDescriptionAdapter(val service: AudioService) :
     PlayerNotificationManager.MediaDescriptionAdapter {
 
   val context: Context = service
 
-  val iconUtils = IconUtils(context)
 
   val currentItem: MediaMetadata?
     get() = service.player.currentMediaItem?.metadata
@@ -178,58 +174,41 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
     return service.player.currentMediaItem?.metadata?.let {
       it.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
           ?: it.getText(MediaMetadata.METADATA_KEY_TITLE)
-    } ?: "Untitled"
+    } ?: context.getString(R.string.untitled)
   }
 
   override fun getCurrentContentText(player: Player): CharSequence? {
-    return service.player.currentMediaItem?.metadata?.getText(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
+    return service.player.currentMediaItem?.metadata?.let {
+      it.getText(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
+          ?: it.getText(MediaMetadata.METADATA_KEY_DISPLAY_DESCRIPTION)
+    }
   }
 /*
   override fun getCurrentSubText(player: Player): CharSequence? {
     return super.getCurrentSubText(player)
   }*/
 
-  val defaultIcon: Bitmap by lazy {
-    iconUtils.drawableToBitmapIcon(Config.Notifications.defaultNotificationIcon)
-  }
 
   override fun getCurrentLargeIcon(
       player: Player,
       callback: PlayerNotificationManager.BitmapCallback
   ): Bitmap? {
 
-    fun updateMetadata(bitmap: Bitmap) {
-      val extras = currentItem?.extras ?: return
+    log.dwarn("getCurrentLargeIcon(): $currentItem")
 
-      if (bitmap != defaultIcon && currentItem.let { it != null && !it.containsKey(MediaMetadata.METADATA_KEY_DISPLAY_ICON)}) {
-        log.dwarn("generating palette............................................")
-
-        val palette = Palette.from(bitmap).generate()
-
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, palette.getLightVibrantColor(Color.TRANSPARENT))
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, palette.getDarkVibrantColor(Color.TRANSPARENT))
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.TRANSPARENT))
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.TRANSPARENT))
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, palette.getDominantColor(Color.TRANSPARENT))
-        extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_VIBRANT_COLOR, palette.getVibrantColor(Color.TRANSPARENT))
-
-        val newMetadata = MediaMetadata.Builder(currentItem!!)
-            .putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, bitmap)
-            .build()
-
-        log.dtrace("updatePlaylistMetadata with MEDIA_METADATA_KEY_CACHED_ICON")
-        service.player.updatePlaylistMetadata(newMetadata)
-      }
+    currentItem?.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)?.also {
+      log.derror("FOUND EXISTING DISPLAY ICON")
+      return it
     }
 
-    val icon = iconUtils.loadIcon(currentItem, defaultIcon) {
-      updateMetadata(it)
-      callback.onBitmap(it)
+
+    currentItem?.extras?.getParcelable<Bitmap>(AudioService.METADATA_EXTRAS_KEY_CACHED_ICON)?.also {
+      log.derror("FOUND EXISTING CACHED ICON")
+      return it
     }
 
-    if (icon != null) updateMetadata(icon)
-
-    return icon
+    log.derror("returning null for large icon")
+    return null
   }
 
 

@@ -3,4 +3,5 @@
   <string name="notification_channel_id">AudioServiceID</string>
   <string name="notification_channel_name">AudioService</string>
   <string name="notification_description">Audio Service</string>
+  <string name="untitled">Untitled</string>
 </resources>
