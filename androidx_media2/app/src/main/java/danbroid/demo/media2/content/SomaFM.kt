@@ -127,7 +127,7 @@ val SomaChannel.mediaMetadata: MediaMetadata.Builder
       .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, description)
       .putString(MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI, image)
       .putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1)
-      .putString(MediaMetadata.METADATA_KEY_MEDIA_URI, playlists.first({ it.format == SomaChannel.Playlist.Format.AACP }).url)
+      .putString(MediaMetadata.METADATA_KEY_MEDIA_URI, playlists.first({ it.format == SomaChannel.Playlist.Format.AAC }).url)
 
 
 private val log = danbroid.logging.getLog(SomaFM::class)

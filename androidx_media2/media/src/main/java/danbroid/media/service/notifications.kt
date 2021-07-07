@@ -161,9 +161,8 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
 
   val context: Context = service
 
-
-  val currentItem: MediaMetadata?
-    get() = service.player.currentMediaItem?.metadata
+  val currentMetadata: MediaMetadata?
+    get() = service.session.player.currentMediaItem?.metadata
 
   override fun createCurrentContentIntent(player: Player) =
       service.packageManager?.getLaunchIntentForPackage(service.packageName)?.let { sessionIntent ->
@@ -171,16 +170,18 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
       }
 
   override fun getCurrentContentTitle(player: Player): CharSequence {
-    return service.player.currentMediaItem?.metadata?.let {
+    return currentMetadata?.let {
       it.getText(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
           ?: it.getText(MediaMetadata.METADATA_KEY_TITLE)
     } ?: context.getString(R.string.untitled)
   }
 
   override fun getCurrentContentText(player: Player): CharSequence? {
-    return service.player.currentMediaItem?.metadata?.let {
+    return currentMetadata?.let {
       it.getText(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
           ?: it.getText(MediaMetadata.METADATA_KEY_DISPLAY_DESCRIPTION)
+    }.also {
+      log.derror("RETURNING CONTENT TEXT: $it")
     }
   }
 /*
@@ -194,15 +195,15 @@ private class PlayerDescriptionAdapter(val service: AudioService) :
       callback: PlayerNotificationManager.BitmapCallback
   ): Bitmap? {
 
-    log.dwarn("getCurrentLargeIcon(): $currentItem")
+    log.dwarn("getCurrentLargeIcon(): $currentMetadata")
 
-    currentItem?.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)?.also {
+    currentMetadata?.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)?.also {
       log.derror("FOUND EXISTING DISPLAY ICON")
       return it
     }
 
 
-    currentItem?.extras?.getParcelable<Bitmap>(AudioService.METADATA_EXTRAS_KEY_CACHED_ICON)?.also {
+    currentMetadata?.extras?.getParcelable<Bitmap>(AudioService.METADATA_EXTRAS_KEY_CACHED_ICON)?.also {
       log.derror("FOUND EXISTING CACHED ICON")
       return it
     }

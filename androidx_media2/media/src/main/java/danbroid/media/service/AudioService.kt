@@ -10,16 +10,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media.AudioAttributesCompat
-import androidx.media2.common.*
+import androidx.media2.common.BaseResult
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
+import androidx.media2.common.SessionPlayer
 import androidx.media2.session.*
 import androidx.palette.graphics.Palette
-import androidx.versionedparcelable.ParcelUtils
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.ExoPlayerLibraryInfo
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
 import com.google.android.exoplayer2.metadata.Metadata
@@ -45,7 +47,7 @@ class AudioService : MediaSessionService() {
 
   val sessionCallback = SessionCallback()
 
-  lateinit var player: SessionPlayerConnector
+  //lateinit var player: SessionPlayerConnector
   lateinit var exoPlayer: SimpleExoPlayer
   lateinit var session: MediaSession
 
@@ -76,11 +78,19 @@ class AudioService : MediaSessionService() {
 
 
     createExternalExoPlayer()
-    log.ddebug("created player: $player")
+    log.ddebug("created player: $exoPlayer")
 
+
+    val sessionPlayer = SessionPlayerConnector(exoPlayer)
+    sessionPlayer.setAudioAttributes(
+        AudioAttributesCompat.Builder()
+            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+            .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
+            .build()
+    )
 
     session =
-        MediaSession.Builder(this, player)
+        MediaSession.Builder(this, sessionPlayer)
             .setSessionCallback(callbackExecutor, sessionCallback)
             // .setId("danbroid.media.session")
             .build()
@@ -89,17 +99,7 @@ class AudioService : MediaSessionService() {
 //    addSession(session)
 
 
-    player.setAudioAttributes(
-        AudioAttributesCompat.Builder()
-            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-            .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
-            .build()
-    )
-
-
-
-
-    player.registerPlayerCallback(callbackExecutor, object : SessionPlayer.PlayerCallback() {
+    sessionPlayer.registerPlayerCallback(callbackExecutor, object : SessionPlayer.PlayerCallback() {
 
 
 /*      override fun onCurrentMediaItemChanged(player: SessionPlayer, item: MediaItem) {
@@ -192,7 +192,7 @@ class AudioService : MediaSessionService() {
         .setBandwidthMeter(bwMeter)
         .build()
 
-    player = SessionPlayerConnector(exoPlayer)
+
     var foreground = false
 
     notificationManager =
@@ -244,37 +244,34 @@ class AudioService : MediaSessionService() {
     exoPlayer.addAnalyticsListener(ExoAnalyticsListener())
 
 
-    exoPlayer.addListener(
-        object : Player.Listener {
-          val listenerDebug = false
+    /* exoPlayer.addListener(
+         object : Player.Listener {
+           val listenerDebug = false
 
-          override fun onMetadata(metadata: Metadata) {
-            if (listenerDebug) log.debug("Listener.onMetadata() $metadata")
-          }
+           override fun onMetadata(metadata: Metadata) {
+             if (listenerDebug) log.debug("Listener.onMetadata() $metadata")
+           }
 
-          override fun onPlayWhenReadyChanged(
-              playWhenReady: Boolean, @Player.PlayWhenReadyChangeReason
-              reason: Int
-          ) {
-            if (listenerDebug) log.debug("Listener.onPlayWhenReadyChanged(): ready:$playWhenReady} reason:$reason : ${reason.playWhenReadyChangeReason}")
-          }
+           override fun onPlayWhenReadyChanged(
+               playWhenReady: Boolean, @Player.PlayWhenReadyChangeReason
+               reason: Int
+           ) {
+             if (listenerDebug) log.debug("Listener.onPlayWhenReadyChanged(): ready:$playWhenReady} reason:$reason : ${reason.playWhenReadyChangeReason}")
+           }
 
-          override fun onPlaybackStateChanged(@Player.State state: Int) {
-            if (listenerDebug) log.debug("Listener.onPlaybackStateChanged(): state:$state = ${state.exoPlayerState}")
-          }
+           override fun onPlaybackStateChanged(@Player.State state: Int) {
+             if (listenerDebug) log.debug("Listener.onPlaybackStateChanged(): state:$state = ${state.exoPlayerState}")
+           }
 
-          override fun onIsLoadingChanged(isLoading: Boolean) {
-            if (listenerDebug) log.debug("Listener.onIsLoadingChanged() $isLoading")
-          }
-        })
+           override fun onIsLoadingChanged(isLoading: Boolean) {
+             if (listenerDebug) log.debug("Listener.onIsLoadingChanged() $isLoading")
+           }
+         })
+         )
+ */
 
 
-    player.setAudioAttributes(
-        AudioAttributesCompat.Builder()
-            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-            .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
-            .build()
-    )
+
 
     return exoPlayer
   }
@@ -303,13 +300,14 @@ class AudioService : MediaSessionService() {
     override fun onSetMediaUri(session: MediaSession, controller: MediaSession.ControllerInfo, uri: Uri, extras: Bundle?): Int {
       log.ddebug("onSetMediaUri() $uri")
 
+/*
       val metadata = extras?.let { ParcelUtils.getVersionedParcelable<MediaMetadata?>(it, "item") }
       log.ddebug("metadata: ${metadata.toDebugString()}")
 
       runCatching {
 
         if (metadata != null) {
-          player.setMediaItem(UriMediaItem.Builder(metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_URI)!!.toUri())
+          session.player.setMediaItem(UriMediaItem.Builder(metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_URI)!!.toUri())
               .setStartPosition(0L).setEndPosition(-1L)
               .setMetadata(metadata)
               .build()).then {
@@ -327,6 +325,7 @@ class AudioService : MediaSessionService() {
       }.exceptionOrNull()?.also {
         log.error("Failed to set media item: ${it.message}", it)
       }
+*/
 
       return super.onSetMediaUri(session, controller, uri, extras)
     }
@@ -384,7 +383,8 @@ class AudioService : MediaSessionService() {
       log.debug("onCommandRequest() ${command.commandCode}:${command.customAction}:extras:${command.customExtras}")
       if (session.player.playerState == SessionPlayer.PLAYER_STATE_ERROR) {
         log.info("in the error state suppresion reason: ${exoPlayer.playbackSuppressionReason} error: ${exoPlayer.playerError}")
-        exoPlayer.prepare()
+        session.player.prepare()
+        //exoPlayer.prepare()
       }
       return super.onCommandRequest(session, controller, command)
     }
@@ -414,6 +414,7 @@ class AudioService : MediaSessionService() {
 
 
   inner class ExoAnalyticsListener : AnalyticsListener {
+
     override fun onBandwidthEstimate(
         eventTime: AnalyticsListener.EventTime,
         totalLoadTimeMs: Int,
@@ -423,17 +424,14 @@ class AudioService : MediaSessionService() {
       log.error("ANALYTICS: loadTime: $totalLoadTimeMs totalBytesLoaded:$totalBytesLoaded bitrateEstimate:$bitrateEstimate")
     }
 
-
     override fun onMetadata(eventTime: AnalyticsListener.EventTime, metadata: Metadata) {
       log.derror("ANALYTICS: metadata $metadata")
       var title: String? = null
       var album: String? = null
 //      val currentMetadata = player.currentMediaItem!!.metadata!!
-      val mdBuilder = exoPlayer.mediaMetadata.buildUpon()
 
       (0 until metadata.length()).forEach {
         val entry = metadata.get(it)
-        entry.populateMediaMetadata(mdBuilder)
 
         when (entry) {
           is VorbisComment -> {
@@ -463,7 +461,33 @@ class AudioService : MediaSessionService() {
         }
       }
 
-      val newMD = mdBuilder.build()
+
+      log.dtrace("playlistMetadata: ${session.player.playlistMetadata}")
+      log.dtrace("currentItem.metadata: ${session.player.currentMediaItem?.metadata}")
+      log.dtrace("title: $title")
+
+      MediaMetadata.Builder(session.player.currentMediaItem!!.metadata!!)
+          .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, title)
+          .build().also {
+            session.player.currentMediaItem!!.metadata = it
+          }
+
+
+      /*  val oldMetadata = session.player.playlistMetadata?.also {
+          log.dtrace("using playlistMetadata")
+        } ?: session.player.currentMediaItem?.metadata?.also {
+          log.dtrace("using currentMediaItem metadata")
+        }!!
+
+        val oldTitle = oldMetadata.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
+        if (oldTitle != title && title != null) {
+          MediaMetadata.Builder(oldMetadata)
+              .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, title)
+              .build().also {
+                log.dtrace("updating metadata with new title: $title")
+                session.player.updatePlaylistMetadata(it)
+              }
+        }*/
 
     }
 
