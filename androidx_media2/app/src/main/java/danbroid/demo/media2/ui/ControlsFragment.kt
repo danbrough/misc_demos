@@ -14,7 +14,7 @@ import danbroid.demo.media2.R
 import danbroid.demo.media2.databinding.FragmentBottomControlsBinding
 import danbroid.demo.media2.model.audioClientModel
 import danbroid.media.client.AudioClient
-import danbroid.media.service.TrackMetadata
+import danbroid.media.service.AudioService
 import kotlinx.coroutines.flow.collect
 
 class ControlsFragment : BottomSheetDialogFragment() {
@@ -106,13 +106,13 @@ class ControlsFragment : BottomSheetDialogFragment() {
         it?.also {
           it.extras?.also {
 
-            if (it.containsKey(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR)) {
-              binding.color1.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, 0))
-              binding.color2.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, 0))
-              binding.color3.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, 0))
-              binding.color4.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, 0))
-              binding.color5.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_VIBRANT_COLOR, 0))
-              binding.color6.setBackgroundColor(it.getInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, 0))
+            if (it.containsKey(AudioService.MEDIA_METADATA_KEY_DARK_COLOR)) {
+              binding.color1.setBackgroundColor(it.getInt(AudioService.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, 0))
+              binding.color2.setBackgroundColor(it.getInt(AudioService.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, 0))
+              binding.color3.setBackgroundColor(it.getInt(AudioService.MEDIA_METADATA_KEY_LIGHT_COLOR, 0))
+              binding.color4.setBackgroundColor(it.getInt(AudioService.MEDIA_METADATA_KEY_DARK_COLOR, 0))
+              binding.color5.setBackgroundColor(it.getInt(AudioService.MEDIA_METADATA_KEY_VIBRANT_COLOR, 0))
+              binding.color6.setBackgroundColor(it.getInt(AudioService.MEDIA_METADATA_KEY_DOMINANT_COLOR, 0))
 
             }
           }

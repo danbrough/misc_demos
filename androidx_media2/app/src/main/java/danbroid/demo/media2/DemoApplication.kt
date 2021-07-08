@@ -2,10 +2,10 @@ package danbroid.demo.media2
 
 import android.app.Application
 import danbroid.demo.media2.content.SomaFM
+import danbroid.demo.media2.content.TestDataLibrary
 import danbroid.logging.AndroidLog
 import danbroid.logging.LogConfig
 import danbroid.media.service.Config
-import danbroid.media.service.TestDataLibrary
 import danbroid.media.service.audioServiceConfig
 import danbroid.util.resource.toResourceColour
 

@@ -43,6 +43,21 @@ class AudioService : MediaSessionService() {
     const val PACKAGE = "danbroid.media.service"
     const val METADATA_EXTRAS_KEY_CACHED_ICON = "$PACKAGE.METADATA_EXTRAS_KEY_CACHED_ICON"
     //const val COMMAND_CLEAR_PLAYLIST = "$PACKAGE.CLEAR_PLAYLIST"
+
+    const val MEDIA_METADATA_KEY_BITRATE =
+        "danbroid.media.service.AudioService.MEDIA_METADATA_KEY_BITRATE"
+    const val MEDIA_METADATA_KEY_LIGHT_COLOR =
+        "danbroid.media.service.AudioService.MEDIA_METADATA_KEY_LIGHT_COLOR"
+    const val MEDIA_METADATA_KEY_DARK_COLOR =
+        "danbroid.media.service.AudioService.MEDIA_METADATA_KEY_DARK_COLOR"
+    const val MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR =
+        "danbroid.media.service.AudioService.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR"
+    const val MEDIA_METADATA_KEY_DARK_MUTED_COLOR =
+        "danbroid.media.service.AudioService.MEDIA_METADATA_KEY_DARK_MUTED_COLOR"
+    const val MEDIA_METADATA_KEY_DOMINANT_COLOR =
+        "danbroid.media.service.AudioService.MEDIA_METADATA_KEY_DOMINANT_COLOR"
+    const val MEDIA_METADATA_KEY_VIBRANT_COLOR =
+        "danbroid.media.service.AudioService.MEDIA_METADATA_KEY_VIBRANT_COLOR"
   }
 
   val sessionCallback = SessionCallback()
@@ -357,12 +372,12 @@ class AudioService : MediaSessionService() {
 
             val palette = Palette.from(bitmap).generate()
 
-            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_COLOR, palette.getLightVibrantColor(Color.TRANSPARENT))
-            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_COLOR, palette.getDarkVibrantColor(Color.TRANSPARENT))
-            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.TRANSPARENT))
-            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.TRANSPARENT))
-            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_DOMINANT_COLOR, palette.getDominantColor(Color.TRANSPARENT))
-            extras.putInt(TrackMetadata.MEDIA_METADATA_KEY_VIBRANT_COLOR, palette.getVibrantColor(Color.TRANSPARENT))
+            extras.putInt(MEDIA_METADATA_KEY_LIGHT_COLOR, palette.getLightVibrantColor(Color.TRANSPARENT))
+            extras.putInt(MEDIA_METADATA_KEY_DARK_COLOR, palette.getDarkVibrantColor(Color.TRANSPARENT))
+            extras.putInt(MEDIA_METADATA_KEY_LIGHT_MUTED_COLOR, palette.getLightMutedColor(Color.TRANSPARENT))
+            extras.putInt(MEDIA_METADATA_KEY_DARK_MUTED_COLOR, palette.getDarkMutedColor(Color.TRANSPARENT))
+            extras.putInt(MEDIA_METADATA_KEY_DOMINANT_COLOR, palette.getDominantColor(Color.TRANSPARENT))
+            extras.putInt(MEDIA_METADATA_KEY_VIBRANT_COLOR, palette.getVibrantColor(Color.TRANSPARENT))
           }
 
           extras.putParcelable(METADATA_EXTRAS_KEY_CACHED_ICON, bitmap)

@@ -5,7 +5,7 @@ import androidx.core.net.toUri
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.UriMediaItem
-import danbroid.media.service.AudioLibrary
+import danbroid.media.service.MediaLibrary
 import danbroid.media.service.parsePlaylistURL
 import danbroid.media.service.util.httpSupport
 import danbroid.util.format.uriDecode
@@ -75,7 +75,7 @@ data class SomaChannel(
 data class SomaChannels(val channels: List<SomaChannel>)
 
 
-class SomaFM(val context: Context) : AudioLibrary {
+class SomaFM(val context: Context) : MediaLibrary {
 
   companion object : SingletonHolder<SomaFM, Context>(::SomaFM)
 

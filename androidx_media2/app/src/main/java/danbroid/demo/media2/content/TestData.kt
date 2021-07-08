@@ -1,14 +1,16 @@
-package danbroid.media.service
+package danbroid.demo.media2.content
 
 import androidx.core.net.toUri
 import androidx.media2.common.MediaItem
 import androidx.media2.common.UriMediaItem
+import danbroid.media.service.MediaLibrary
 
 const val ipfs_gateway = "https://cloudflare-ipfs.com"
 
 val testTracks = testData {
 
   item {
+
     id = "http://sohoradioculture.doughunt.co.uk:8000/320mp3"
     title = "Soho NYC"
     subtitle = "Soho radio from NYC"
@@ -102,7 +104,7 @@ annotation class TestDataDSL
 
 @TestDataDSL
 class TestData {
-  val testData = mutableListOf<TrackMetadata>()
+  val testData = mutableListOf<AudioTrack>()
 }
 
 @TestDataDSL
@@ -111,15 +113,13 @@ fun testData(block: TestData.() -> Unit) = TestData().apply {
 }
 
 @TestDataDSL
-fun TestData.item(block: TrackMetadata.() -> Unit) = TrackMetadata("").also {
+fun TestData.item(block: AudioTrack.() -> Unit) = AudioTrack("").also {
   it.block()
   testData.add(it)
 }
 
-fun loadTestData(id: String) = testTracks.testData.firstOrNull { it.id == id }
 
-
-class TestDataLibrary : AudioLibrary {
+class TestDataLibrary : MediaLibrary {
   override suspend fun loadItem(mediaID: String): MediaItem? =
       testTracks.testData.firstOrNull {
         it.id == mediaID

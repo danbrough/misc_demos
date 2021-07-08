@@ -7,7 +7,7 @@ import danbroid.util.misc.SingletonHolder
 class AudioServiceConfig(context: Context) {
   var HTTP_CACHE_SIZE = 10 * 1024 * 1024L
 
-  var library: GenericAudioLibrary = GenericAudioLibrary()
+  var library: GenericMediaLibrary = GenericMediaLibrary()
 
   companion object : SingletonHolder<AudioServiceConfig, Context>(::AudioServiceConfig)
 }

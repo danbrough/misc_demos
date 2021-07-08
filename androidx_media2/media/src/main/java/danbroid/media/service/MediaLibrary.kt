@@ -2,18 +2,18 @@ package danbroid.media.service
 
 import androidx.media2.common.MediaItem
 
-interface AudioLibrary {
+interface MediaLibrary {
   suspend fun loadItem(mediaID: String): MediaItem?
 }
 
-private val log = danbroid.logging.getLog(AudioLibrary::class)
+private val log = danbroid.logging.getLog(MediaLibrary::class)
 
 
-open class GenericAudioLibrary() : AudioLibrary {
+open class GenericMediaLibrary() : MediaLibrary {
 
-  private val libraries = mutableListOf<AudioLibrary>()
+  private val libraries = mutableListOf<MediaLibrary>()
 
-  fun register(vararg libs: AudioLibrary) {
+  fun register(vararg libs: MediaLibrary) {
     libraries.addAll(libs)
   }
 
