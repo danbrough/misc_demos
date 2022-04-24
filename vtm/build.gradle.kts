@@ -1,5 +1,5 @@
 plugins {
-  id("org.jetbrains.dokka")
+//  id("org.jetbrains.dokka")
 }
 
 buildscript {
@@ -8,8 +8,8 @@ buildscript {
     classpath("com.android.tools.build:gradle:_")
     // classpath("com.android.tools.build:gradle:4.1.0")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
-    classpath("org.jetbrains.dokka:dokka-gradle-plugin:_")
-    classpath(Google.dagger.hilt.android.gradlePlugin)
+//    classpath("org.jetbrains.dokka:dokka-gradle-plugin:_")
+//    classpath(Google.dagger.hilt.android.gradlePlugin)
     //classpath(AndroidX.navigation.safeArgsGradlePlugin)
   }
 
@@ -26,20 +26,19 @@ apply("project.gradle.kts")
 
 allprojects {
   repositories {
+    mavenCentral()
     maven("https://dl.bintray.com/maplibre/maplibre-gl-native")
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev")
     google()
-    jcenter()
-    maven("https://jitpack.io")
   }
 
-  tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
+/*  tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     dokkaSourceSets {
       configureEach {
         includes.from(file("README.md"))
       }
     }
   }
+*/
 
   configurations.all {
     if (name.contains("Test")) {
@@ -51,17 +50,18 @@ allprojects {
   }
 }
 
-tasks.dokkaGfmMultiModule {
+/*tasks.dokkaGfmMultiModule {
   outputDirectory.set(file("docs"))
 }
+*/
 
 subprojects {
   afterEvaluate {
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
       kotlinOptions {
-        jvmTarget = "1.8"
-        languageVersion = "1.4"
+        jvmTarget = "11"
+        //languageVersion = "1.4"
         // freeCompilerArgs = listOf("-Xjvm-default=enable")
         freeCompilerArgs += listOf(
             //  "-Xopt-in=kotlinx.serialization.InternalSerializationApi",

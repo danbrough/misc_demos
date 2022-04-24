@@ -1,7 +1,7 @@
 plugins {
   id("com.android.application")
   kotlin("android")
-  kotlin("kapt")
+//  kotlin("kapt")
 }
 
 
@@ -16,12 +16,8 @@ android {
     versionName = ProjectVersions.VERSION_NAME
     multiDexEnabled = true
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    consumerProguardFiles("consumer-rules.pro")
+   // consumerProguardFiles("consumer-rules.pro")
     buildConfigField("String", "URI_SCHEME", "\"${Danbroid.URI_SCHEME}\"")
-  }
-
-  kapt {
-    correctErrorTypes = true
   }
 
   compileOptions {
@@ -36,7 +32,7 @@ android {
   }
 
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
     //freeCompilerArgs = listOf("-Xjsr305=strict")
     freeCompilerArgs = mutableListOf("-Xopt-in=kotlin.ExperimentalStdlibApi",
         "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi").also {
@@ -167,8 +163,8 @@ implementation("org.mapsforge:vtm-gdx:0.15.0")
   testImplementation("androidx.core:core:_")
   // TODO(bcorso): This multidex dep shouldn't be required -- it's a dep for the generated code.
   testImplementation("androidx.multidex:multidex:_")
-  testImplementation("com.google.dagger:hilt-android-testing:_")
-  kaptTest("com.google.dagger:hilt-android-compiler:_")
+//  testImplementation("com.google.dagger:hilt-android-testing:_")
+//  kaptTest("com.google.dagger:hilt-android-compiler:_")
 }
 
 
