@@ -33,10 +33,6 @@ android {
   buildFeatures {
     viewBinding = true
   }
-
-  androidResources{
-    noCompress("map")
-  }
 }
 
 dependencies {
