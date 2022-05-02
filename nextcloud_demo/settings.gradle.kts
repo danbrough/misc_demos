@@ -12,5 +12,5 @@ plugins {
 }
 
 
-rootProject.name = "Basic Android"
+rootProject.name = "NextCloud Android"
 include(":app")
