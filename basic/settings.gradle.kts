@@ -12,5 +12,5 @@ plugins {
 }
 
 
-rootProject.name = "Basic"
+rootProject.name = "Basic Android"
 include(":app")

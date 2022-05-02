@@ -10,6 +10,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import danbroid.demo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -17,8 +19,13 @@ class MainActivity : AppCompatActivity() {
   private lateinit var appBarConfiguration: AppBarConfiguration
   private lateinit var binding: ActivityMainBinding
 
+  private fun getNavHost(): NavHostFragment =
+    supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+
+
   override fun onCreate(savedInstanceState: Bundle?) {
-    WindowCompat.setDecorFitsSystemWindows(window, false)
+    log.info("onCreate()")
+    //WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
 
     binding = ActivityMainBinding.inflate(layoutInflater)
@@ -26,7 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     setSupportActionBar(binding.toolbar)
 
-    val navController = findNavController(R.id.nav_host_fragment_content_main)
+    val navController = getNavHost().navController
+    navController.graph = navController.createBasicNavGraph(applicationContext)
     appBarConfiguration = AppBarConfiguration(navController.graph)
     setupActionBarWithNavController(navController, appBarConfiguration)
 
@@ -54,8 +62,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   override fun onSupportNavigateUp(): Boolean {
-    val navController = findNavController(R.id.nav_host_fragment_content_main)
-    return navController.navigateUp(appBarConfiguration)
+    return getNavHost().navController.navigateUp(appBarConfiguration)
         || super.onSupportNavigateUp()
   }
 }

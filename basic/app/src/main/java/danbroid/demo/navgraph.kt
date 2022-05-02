@@ -1,4 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
+package danbroid.demo
+
+import android.content.Context
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph
+import androidx.navigation.createGraph
+import androidx.navigation.fragment.fragment
+
+object NavGraphConstants {
+  object Routes {
+    const val FirstFragment = "first"
+    const val SecondFragment = "second"
+  }
+}
+
+fun NavController.createBasicNavGraph(context: Context): NavGraph =
+  createGraph(startDestination = NavGraphConstants.Routes.FirstFragment) {
+
+    fragment<FirstFragment>(NavGraphConstants.Routes.FirstFragment){
+      label = context.getString(R.string.first_fragment_label)
+    }
+
+    fragment<SecondFragment>(NavGraphConstants.Routes.SecondFragment){
+      label = context.getString(R.string.second_fragment_label)
+    }
+  }
+
+/*
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -26,3 +53,4 @@
             app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>
+ */

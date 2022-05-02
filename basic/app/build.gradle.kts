@@ -11,7 +11,7 @@ android {
   defaultConfig {
     //applicationId "danbroid.demo"
     minSdk = ProjectVersions.MIN_SDK_VERSION
-    targetSdk =  ProjectVersions.SDK_VERSION
+    targetSdk = ProjectVersions.SDK_VERSION
     versionCode = ProjectVersions.BUILD_VERSION
     versionName = ProjectVersions.VERSION_NAME
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -43,6 +43,7 @@ dependencies {
   implementation(AndroidX.constraintLayout)
   implementation(AndroidX.navigation.fragmentKtx)
   implementation(AndroidX.navigation.uiKtx)
+  implementation("com.github.danbrough.androidutils:logging:_")
   testImplementation(Testing.junit4)
   androidTestImplementation(AndroidX.test.ext.junit)
   androidTestImplementation(AndroidX.test.espresso.core)
