@@ -25,6 +25,7 @@ apply("project.gradle.kts")
 allprojects {
 
   repositories {
+    maven("https://jitpack.io")
     maven(ProjectVersions.MAVEN_REPO)
     maven("https://h1.danbrough.org/maven")
     mavenCentral()

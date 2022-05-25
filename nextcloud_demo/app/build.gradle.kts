@@ -23,19 +23,29 @@ android {
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
+
   compileOptions {
     sourceCompatibility = ProjectVersions.JAVA_VERSION
     targetCompatibility = ProjectVersions.JAVA_VERSION
   }
+
   kotlinOptions {
     jvmTarget = ProjectVersions.KOTLIN_JVM_VERSION
   }
+
   buildFeatures {
     viewBinding = true
   }
 }
 
 dependencies {
+  implementation("com.github.nextcloud:android-library:_")
+// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+  //implementation("org.apache.httpcomponents:httpclient:_")
+// https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient
+  implementation("commons-httpclient:commons-httpclient:_"){
+    exclude("commons-logging","commons-logging")
+  }
 
   implementation(AndroidX.core.ktx)
   implementation(AndroidX.appCompat)

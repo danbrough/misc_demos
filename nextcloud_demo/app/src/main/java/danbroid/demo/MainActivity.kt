@@ -10,14 +10,19 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import danbroid.demo.databinding.ActivityMainBinding
+import danbroid.demo.model.AppModel
 
 class MainActivity : AppCompatActivity() {
 
   private lateinit var appBarConfiguration: AppBarConfiguration
   private lateinit var binding: ActivityMainBinding
+
+  private val appModel: AppModel by viewModels()
 
   private fun getNavHost(): NavHostFragment =
     supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -32,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     setContentView(binding.root)
 
     setSupportActionBar(binding.toolbar)
+
+    log.debug("appMode: $appModel")
 
     val navController = getNavHost().navController
     navController.graph = navController.createBasicNavGraph(applicationContext)

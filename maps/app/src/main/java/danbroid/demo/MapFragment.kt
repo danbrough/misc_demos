@@ -141,7 +141,7 @@ class MapFragment : Fragment() {
          findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
        }*/
 
-    val zoomControls = binding.zoomControls
+    //val zoomControls = binding.zoomControls
     val btnZoomIn = binding.btnZoomIn
     val btnZoomOut = binding.btnZoomOut
 
