@@ -48,12 +48,12 @@ allprojects {
   }
 
 
-  tasks.withType<KotlinCompile>().all {
+  /*tasks.withType<KotlinJvmCompile>().all {
     kotlinOptions {
       jvmTarget = ProjectVersions.KOTLIN_JVM_VERSION
     }
   }
-
+*/
 }
 
 

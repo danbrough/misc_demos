@@ -15,6 +15,9 @@ plugins {
 
 rootProject.name = "kotlin_native_demo"
 
+include(":lib")
+include(":golib")
+
 /*include(":api")
 include(":golib")*/
 //include(":demos:ktor")
