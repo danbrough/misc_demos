@@ -45,6 +45,8 @@ fun buildGoLib(platform: String) = tasks.register<Exec>("golib${platform.capital
   }
 
   val scriptFile = rootProject.file("scripts/buildgo.sh")
+  val outputDir = project.buildDir.resolve("lib/$platform")
+  val outputFiles = listOf("libgodemo.so","libgodemo.h").map{ outputDir.resolve(it)}
 
   commandLine(scriptFile)
 
@@ -54,10 +56,7 @@ fun buildGoLib(platform: String) = tasks.register<Exec>("golib${platform.capital
     include("**/*.h")
   } + scriptFile)
 
-  outputs.files(
-    project.buildDir.resolve("lib/$platform/libgodemo.so"),
-    project.buildDir.resolve("lib/$platform/libgodemo.h"),
-  )
+  outputs.files(outputFiles)
 
   doLast {
     logger.info("finished building golib for $platform")
