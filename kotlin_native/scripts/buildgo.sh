@@ -2,10 +2,12 @@
 
 cd $(dirname $0) && cd ..
 
-LIBDIR=build/lib
+PLATFORM=linuxAmd64
+
+LIBDIR=golib/build/lib/$PLATFORM
 [ ! -d $LIBDIR ] && mkdir -p $LIBDIR
 LIBDIR=$(realpath $LIBDIR)
-LIBFILE=$LIBDIR/libgo.a
+LIBFILE=$LIBDIR/libgodemo.a
 
 cd golib/src/go || exit
 

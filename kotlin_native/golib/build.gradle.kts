@@ -35,3 +35,34 @@ kotlin {
   }
 
 }
+
+
+fun buildGoLib(platform: String) = tasks.register<Exec>("golib${platform.capitalize()}") {
+  //environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
+  environment("PLATFORM", platform)
+  doLast {
+    logger.warn("golib build finished for $platform")
+  }
+
+  val scriptFile = rootProject.file("scripts/buildgo.sh")
+
+  commandLine(scriptFile)
+
+  inputs.files(project.fileTree("src/go") {
+    include("**/*.go")
+    include("**/*.c")
+    include("**/*.h")
+  } + scriptFile)
+
+  outputs.files(
+    project.buildDir.resolve("lib/$platform/libgodemo.so"),
+    project.buildDir.resolve("lib/$platform/libgodemo.h"),
+  )
+
+  doLast {
+    logger.info("finished building golib for $platform")
+  }
+
+}
+
+buildGoLib(ProjectVersions.PLATFORM_LINUX_AMD64)
