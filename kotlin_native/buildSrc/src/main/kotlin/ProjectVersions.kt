@@ -15,7 +15,6 @@ object ProjectVersions {
   var IDE_MODE = false
 
 
-
   lateinit var KEYSTORE_PASSWORD: String
   val COMPOSE_VERSION = "1.1.1"
   val JITPACK_BUILD = System.getenv().containsKey("JITPACK")
@@ -68,6 +67,8 @@ PRESET: watchosX86
   const val PLATFORM_LINUX_AMD64 = "linuxAmd64"
   const val PLATFORM_LINUX_ARM64 = "linuxArm64"
   const val PLATFORM_LINUX_ARM32 = "linuxArm"
+  const val PLATFORM_ANDROID_ARM = "androidArm"
+
 
 
   const val TARGET_HOST = "linuxAmd64"
@@ -83,10 +84,12 @@ PRESET: watchosX86
 
 
   val properties = mutableMapOf<String, Any?>()
+  fun getProperty(name: String): String =
+    properties[name]?.toString()?.trim() ?: throw Error("property $name not specified")
 
-  internal fun getProperty(name: String, default: String? = null): String? =
+  fun getProperty(name: String, default: String): String =
     if (properties.containsKey(name))
-      properties[name]?.toString()?.trim() else default
+      properties[name]!!.toString().trim() else default
 
   fun init(_project: Project) {
     val project = _project.rootProject
@@ -111,11 +114,11 @@ PRESET: watchosX86
     }
 
 
-    IDE_MODE = getProperty("ideMode", "true")!!.toBoolean()
-    BUILD_VERSION = getProperty("buildVersion", "1")!!.toInt()
-    VERSION_OFFSET = getProperty("versionOffset", "1")!!.toInt()
-    VERSION_FORMAT = getProperty("versionFormat", "0.0.%d")!!.trim()
-    KEYSTORE_PASSWORD = getProperty("KEYSTORE_PASSWORD", "")!!
+    IDE_MODE = getProperty("ideMode", "true").toBoolean()
+    BUILD_VERSION = getProperty("buildVersion", "1").toInt()
+    VERSION_OFFSET = getProperty("versionOffset", "1").toInt()
+    VERSION_FORMAT = getProperty("versionFormat", "0.0.%d")
+    KEYSTORE_PASSWORD = getProperty("KEYSTORE_PASSWORD", "")
 
     MAVEN_REPO = URI.create(
       project.findProperty("LOCAL_MAVEN_REPO")?.toString()?.trim()

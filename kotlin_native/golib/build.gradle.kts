@@ -2,6 +2,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import java.nio.file.Paths
 
 plugins {
   kotlin("multiplatform")
@@ -16,6 +17,9 @@ version = ProjectVersions.VERSION_NAME
 
 kotlin {
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
+  linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
+  linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
+  androidNativeArm32(ProjectVersions.PLATFORM_ANDROID_ARM)
 
   sourceSets {
 
@@ -98,7 +102,7 @@ BuildEnvironment.platforms.forEach {
 
 tasks.register("styleTest") {
   doLast {
-    val out = project.serviceOf<StyledTextOutputFactory>().create("an-output")
+    val out = project.serviceOf<StyledTextOutputFactory>().create("testOutput")
     StyledTextOutput.Style.values().forEach {
       out.style(it).println("This line has the style $it")
       out.style(it)

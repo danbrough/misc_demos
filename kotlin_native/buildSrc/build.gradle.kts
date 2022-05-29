@@ -23,10 +23,13 @@ kotlin {
   }
 
   sourceSets.all {
-    listOf("kotlin.ExperimentalStdlibApi").forEach {
+    listOf(
+      "kotlin.RequiresOptIn",
+      "kotlin.ExperimentalStdlibApi",
+      "kotlin.io.path.ExperimentalPathApi",
+    ).forEach {
       languageSettings.optIn(it)
     }
-    languageSettings.optIn("kotlin.RequiresOptIn")
   }
 }
 
