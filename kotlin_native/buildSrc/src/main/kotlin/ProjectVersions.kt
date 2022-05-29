@@ -68,6 +68,7 @@ PRESET: watchosX86
   const val PLATFORM_LINUX_ARM64 = "linuxArm64"
   const val PLATFORM_LINUX_ARM32 = "linuxArm"
   const val PLATFORM_ANDROID_ARM = "androidArm"
+  const val PLATFORM_ANDROID_386 = "androidX86"
 
 
 

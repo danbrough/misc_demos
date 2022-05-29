@@ -21,7 +21,9 @@ object BuildEnvironment {
   export GOARCH=386
   export ANDROID_LIB_NAME=x86
   */
-  val platforms by lazy { listOf(Platform.linuxArm, Platform.linuxArm64, Platform.linuxAmd64, Platform.androidArm) }
+  val platforms by lazy {
+    Platform.values()
+  }
 
   enum class Platform(
     val host: String,
@@ -35,7 +37,7 @@ object BuildEnvironment {
     linuxArm("arm-unknown-linux-gnueabihf", GOOS.linux, GOARCH.arm),
     windowsAmd64("x86_64-w64-mingw32", GOOS.windows, GOARCH.amd64),
     androidArm("armv7a-linux-androideabi", GOOS.android, GOARCH.arm, androidLibDir = "armeabi-v7a"),
-    androidArm64("aarch64-linux-android", GOOS.android, GOARCH.arm64, goArm = 8, androidLibDir = "arm64-v8a"),
+    androidArm64("aarch64-linux-android", GOOS.android, GOARCH.arm64, goArm = 7, androidLibDir = "arm64-v8a"),
     android386("i686-linux-android", GOOS.android, GOARCH.x86, androidLibDir = "x86"),
     androidAmd64("x86_64-linux-android", GOOS.android, GOARCH.amd64, androidLibDir = "x86_64");
 
@@ -57,22 +59,7 @@ object BuildEnvironment {
     ).apply {
 
 
-      /*
-        export TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
-  #export SYSROOT=$TOOLCHAIN/sysroot
-  export GOOS=android
-  [  -z "$ANDROID_API" ] && export ANDROID_API=$DEFAULT_ANDROID_API
-
-  export PATH=$(dir_path bin $TOOLCHAIN):$PATH
-  export TARGET=$HOST
-  export CC=$TARGET$ANDROID_API-clang
-  export CXX=$TARGET$ANDROID_API-clang++
-  export AR=$TOOLCHAIN/bin/llvm-ar
-  export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
-       */
-
-      var path = if (isAndroid) buildPath else buildPath
-
+      val path = buildPath.toMutableList()
 
       when (this@Platform) {
         linuxArm -> {
@@ -92,7 +79,7 @@ object BuildEnvironment {
         }
 
         linuxAmd64 -> {
-  //        this["CC"] = "gcc"
+          //        this["CC"] = "gcc"
 //          this["CXX"] = "g++"
 
           val clangArgs = "--target=$host " +
@@ -101,8 +88,31 @@ object BuildEnvironment {
           this["CC"] = "$clangBinDir/clang $clangArgs"
           this["CXX"] = "$clangBinDir/clang++ $clangArgs"
         }
+        windowsAmd64 -> {
 
-        else -> {
+        }
+
+        androidArm, android386, androidArm64, androidAmd64 -> {
+          path.add(0, androidToolchainDir.resolve("bin").absolutePath)
+          this["CC"] = "${host}${androidNdkApi}-clang"
+          this["CXX"] = "${host}${androidNdkApi}-clang++"
+          this["AR"] = "llvm-ar"
+          this["RANLIB"] = "llvm-ranlib"
+
+
+          /*
+            export TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
+      #export SYSROOT=$TOOLCHAIN/sysroot
+      export GOOS=android
+      [  -z "$ANDROID_API" ] && export ANDROID_API=$DEFAULT_ANDROID_API
+
+      export PATH=$(dir_path bin $TOOLCHAIN):$PATH
+      export TARGET=$HOST
+      export CC=$TARGET$ANDROID_API-clang
+      export CXX=$TARGET$ANDROID_API-clang++
+      export AR=$TOOLCHAIN/bin/llvm-ar
+      export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
+           */
         }
       }
 
@@ -136,7 +146,6 @@ object BuildEnvironment {
   fun configure() {
     goBinary = ProjectVersions.getProperty("go.binary", "/usr/bin/go")
     buildCacheDir = File(ProjectVersions.getProperty("build.cache"))
-
     konanDir = File(ProjectVersions.getProperty("konan.dir", "${System.getProperty("user.home")}/.konan"))
     androidNdkDir = File(ProjectVersions.getProperty("android.ndk"))
     buildPath = ProjectVersions.getProperty("build.path").split("[\\s]+".toRegex())

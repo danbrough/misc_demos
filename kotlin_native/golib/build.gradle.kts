@@ -20,6 +20,7 @@ kotlin {
   linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
   linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
   androidNativeArm32(ProjectVersions.PLATFORM_ANDROID_ARM)
+  androidNativeX86(ProjectVersions.PLATFORM_ANDROID_386)
 
   sourceSets {
 
@@ -29,6 +30,8 @@ kotlin {
 
     targets.withType(KotlinNativeTarget::class).all {
 
+      println("TARGET: ${this.konanTarget.family}")
+
       val main by compilations.getting {
         defaultSourceSet {
           dependsOn(nativeMain)
@@ -36,7 +39,11 @@ kotlin {
       }
 
       binaries {
-        executable("demo") { }
+        executable("demo") {
+          if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID) {
+            binaryOptions["androidProgramType"] = "nativeActivity"
+          }
+        }
       }
     }
 
@@ -77,8 +84,8 @@ fun buildGoLib(platform: BuildEnvironment.Platform) = tasks.register<Exec>("goli
   val command = listOf(
     BuildEnvironment.goBinary,
     "build", "-v",//"-x",
-    "-ldflags", "-linkmode 'external' -extldflags='-static'",
-    "-buildmode=c-archive",
+    "-ldflags", "-linkmode 'external'",
+    "-buildmode=c-shared",
     "-o", outputFiles[0]
   )
 
