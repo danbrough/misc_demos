@@ -14,6 +14,8 @@ object ProjectVersions {
 
   var IDE_MODE = false
 
+
+
   lateinit var KEYSTORE_PASSWORD: String
   val COMPOSE_VERSION = "1.1.1"
   val JITPACK_BUILD = System.getenv().containsKey("JITPACK")
@@ -82,7 +84,7 @@ PRESET: watchosX86
 
   val properties = mutableMapOf<String, Any?>()
 
-  private fun getProperty(name: String, default: String?): String? =
+  internal fun getProperty(name: String, default: String? = null): String? =
     if (properties.containsKey(name))
       properties[name]?.toString()?.trim() else default
 
@@ -114,10 +116,13 @@ PRESET: watchosX86
     VERSION_OFFSET = getProperty("versionOffset", "1")!!.toInt()
     VERSION_FORMAT = getProperty("versionFormat", "0.0.%d")!!.trim()
     KEYSTORE_PASSWORD = getProperty("KEYSTORE_PASSWORD", "")!!
+
     MAVEN_REPO = URI.create(
       project.findProperty("LOCAL_MAVEN_REPO")?.toString()?.trim()
         ?: project.rootProject.buildDir.resolve(".m2").absolutePath
     )
+
+    BuildEnvironment.configure()
   }
 
   fun getIncrementedVersionName() = getVersionName(BUILD_VERSION + 1)

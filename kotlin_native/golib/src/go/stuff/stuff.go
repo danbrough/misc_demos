@@ -9,5 +9,5 @@ import (
 
 //export GetMessage
 func GetMessage() string {
-	return fmt.Sprintf("Local time: %s", time.Now().Local().String())
+	return fmt.Sprintf("Local Time: %s", time.Now().Local().String())
 }
