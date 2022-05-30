@@ -6,42 +6,9 @@ import BuildEnvironment.konanDir
 import java.io.File
 
 
-/*
-PRESET: android
-PRESET: androidNativeArm32
-PRESET: androidNativeArm64
-PRESET: androidNativeX64
-PRESET: androidNativeX86
-PRESET: iosArm32
-PRESET: iosArm64
-PRESET: iosSimulatorArm64
-PRESET: iosX64
-PRESET: js
-PRESET: jsBoth
-PRESET: jsIr
-PRESET: jvm
-PRESET: jvmWithJava
-PRESET: linuxArm32Hfp
-PRESET: linuxArm64
-PRESET: linuxMips32
-PRESET: linuxMipsel32
-PRESET: linuxX64
-PRESET: macosArm64
-PRESET: macosX64
-PRESET: mingwX64
-PRESET: mingwX86
-PRESET: tvosArm64
-PRESET: tvosSimulatorArm64
-PRESET: tvosX64
-PRESET: wasm
-PRESET: wasm32
-PRESET: watchosArm32
-PRESET: watchosArm64
-PRESET: watchosSimulatorArm64
-PRESET: watchosX64
-PRESET: watchosX86
-*/
-
+enum class PlatformName {
+  android, androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm32, iosArm64, iosSimulatorArm64, iosX64, js, jsBoth, jsIr, jvm, jvmWithJava, linuxArm32Hfp, linuxArm64, linuxMips32, linuxMipsel32, linuxX64, macosArm64, macosX64, mingwX64, mingwX86, tvosArm64, tvosSimulatorArm64, tvosX64, wasm, wasm32, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64, watchosX86
+}
 
 
 enum class GOOS {
@@ -92,27 +59,67 @@ object BuildEnvironment {
 
 }
 
-enum class Platform(
+sealed class Platform(
+  val name: PlatformName,
   val host: String,
   val goOS: GOOS,
   val goArch: GOARCH,
-  val goArm: Int = 7,
-  val androidLibDir: String? = null
+  val goArm: Int = 7
 ) {
 
-  linuxAmd64("x86_64-unknown-linux-gnu", GOOS.linux, GOARCH.amd64),
-  linuxArm64("aarch64-unknown-linux-gnu", GOOS.linux, GOARCH.arm64),
-  linuxArm("arm-unknown-linux-gnueabihf", GOOS.linux, GOARCH.arm),
-  windowsAmd64("x86_64-w64-mingw32", GOOS.windows, GOARCH.amd64),
-  androidArm("armv7a-linux-androideabi", GOOS.android, GOARCH.arm, androidLibDir = "armeabi-v7a"),
-  androidArm64("aarch64-linux-android", GOOS.android, GOARCH.arm64, goArm = 7, androidLibDir = "arm64-v8a"),
-  android386("i686-linux-android", GOOS.android, GOARCH.x86, androidLibDir = "x86"),
-  androidAmd64("x86_64-linux-android", GOOS.android, GOARCH.amd64, androidLibDir = "x86_64");
+
+  object linuxAmd64 : Platform(PlatformName.linuxX64, "x86_64-unknown-linux-gnu", GOOS.linux, GOARCH.amd64)
+
+  object linuxArm64 : Platform(PlatformName.linuxArm64, "aarch64-unknown-linux-gnu", GOOS.linux, GOARCH.arm64)
+  object linuxArm : Platform(PlatformName.linuxArm32Hfp, "arm-unknown-linux-gnueabihf", GOOS.linux, GOARCH.arm)
+  object windowsAmd64 : Platform(PlatformName.mingwX64, "x86_64-w64-mingw32", GOOS.windows, GOARCH.amd64)
+
+  open class PlatformAndroid(
+    name: PlatformName,
+    host: String,
+    goOS: GOOS,
+    goArch: GOARCH,
+    goArm: Int = 7,
+    val androidLibDir: String
+  ) : Platform(name, host, goOS, goArch, goArm)
+
+  object androidArm :
+    PlatformAndroid(
+      PlatformName.androidNativeArm32,
+      "armv7a-linux-androideabi",
+      GOOS.android,
+      GOARCH.arm,
+      androidLibDir = "armeabi-v7a"
+    )
+
+  object androidArm64 :
+    PlatformAndroid(
+      PlatformName.androidNativeArm64,
+      "aarch64-linux-android",
+      GOOS.android,
+      GOARCH.arm64,
+      androidLibDir = "arm64-v8a"
+    )
+
+  object android386 :
+    PlatformAndroid(
+      PlatformName.androidNativeX86,
+      "i686-linux-android",
+      GOOS.android,
+      GOARCH.x86,
+      androidLibDir = "x86"
+    )
+
+  object androidAmd64 :
+    PlatformAndroid(
+      PlatformName.androidNativeX64,
+      "x86_64-linux-android",
+      GOOS.android,
+      GOARCH.amd64,
+      androidLibDir = "x86_64"
+    )
 
   val goCacheDir: File = BuildEnvironment.buildCacheDir.resolve("go")
-  val isAndroid: Boolean = androidLibDir != null
-
-
 }
 
 fun Platform.environment(): Map<String, Any> = mutableMapOf(
@@ -124,7 +131,7 @@ fun Platform.environment(): Map<String, Any> = mutableMapOf(
   "GOCACHE" to goCacheDir.resolve("$name/gobuild"),
   "GOCACHEDIR" to goCacheDir,
   "GOMODCACHE" to goCacheDir.resolve("mod"),
-  "GOPATH" to goCacheDir.resolve(name),
+  "GOPATH" to goCacheDir.resolve(name.toString()),
   "KONAN_DATA_DIR" to goCacheDir.resolve("konan"),
   "CGO_CFLAGS" to "-O3",
 ).apply {

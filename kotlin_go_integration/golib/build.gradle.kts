@@ -2,6 +2,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 plugins {
   kotlin("multiplatform")
@@ -15,7 +16,8 @@ version = ProjectVersions.VERSION_NAME
 //project.logging.captureStandardOutput(org.gradle.api.logging.LogLevel.INFO)
 
 kotlin {
-  linuxX64(Platform.linuxAmd64.name)
+  linuxX64(Platform.linuxAmd64.name.toString())
+
 
   sourceSets {
 
@@ -54,7 +56,7 @@ kotlin {
 }
 
 
-fun buildGoDemoLib(platform: Platform) = tasks.register<Exec>("golib${platform.name.capitalize()}") {
+fun buildGoDemoLib(platform: Platform) = tasks.register<Exec>("golib${platform.name.toString().capitalize()}") {
   //environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
   environment("PLATFORM", platform)
   doLast {
