@@ -13,6 +13,6 @@ fun main() {
     s
   }
 
-  println("The time is $time")
+  println("The time is: $time")
 
 }
