@@ -13,7 +13,7 @@ plugins {
 }
 
 
-rootProject.name = "kotlin_native_demo"
+rootProject.name = "kotlin_go_integration"
 
 //include(":lib")
 include(":golib")

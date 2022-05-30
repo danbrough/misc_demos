@@ -2,7 +2,6 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import java.nio.file.Paths
 
 plugins {
   kotlin("multiplatform")
@@ -17,10 +16,12 @@ version = ProjectVersions.VERSION_NAME
 
 kotlin {
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
+/*
   linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
   linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
   androidNativeArm32(ProjectVersions.PLATFORM_ANDROID_ARM)
   androidNativeX86(ProjectVersions.PLATFORM_ANDROID_386)
+*/
 
   sourceSets {
 
@@ -33,10 +34,22 @@ kotlin {
       println("TARGET: ${this.konanTarget.family}")
 
       val main by compilations.getting {
+        cinterops.create("libgodemo") {
+          packageName("stuff")
+          defFile = project.file("src/interop/godemo.def")
+          extraOpts(
+            "-verbose",
+            "-libraryPath",
+            project.buildDir.resolve("lib/linuxAmd64"),
+            "-compiler-option",
+            "-I${project.buildDir.resolve("lib/linuxAmd64")}"
+          )
+        }
         defaultSourceSet {
           dependsOn(nativeMain)
         }
       }
+
 
       binaries {
         executable("demo") {
@@ -52,7 +65,7 @@ kotlin {
 }
 
 
-fun buildGoLib(platform: BuildEnvironment.Platform) = tasks.register<Exec>("golib${platform.name.capitalize()}") {
+fun buildGoDemoLib(platform: BuildEnvironment.Platform) = tasks.register<Exec>("golib${platform.name.capitalize()}") {
   //environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
   environment("PLATFORM", platform)
   doLast {
@@ -86,7 +99,8 @@ fun buildGoLib(platform: BuildEnvironment.Platform) = tasks.register<Exec>("goli
     "build", "-v",//"-x",
     "-ldflags", "-linkmode 'external'",
     "-buildmode=c-shared",
-    "-o", outputFiles[0]
+    "-o", outputFiles[0],
+    "."
   )
 
 //CGO_ENABLED=1 go build  -tags=shell,node \
@@ -97,14 +111,14 @@ fun buildGoLib(platform: BuildEnvironment.Platform) = tasks.register<Exec>("goli
 
   doLast {
     val out = project.serviceOf<StyledTextOutputFactory>().create("an-output")
-    if (this.didWork)
+    if (didWork)
       out.style(StyledTextOutput.Style.Success).println("Finished building golib for $platform")
   }
 
 }
 
 BuildEnvironment.platforms.forEach {
-  buildGoLib(it)
+  buildGoDemoLib(it)
 }
 
 tasks.register("styleTest") {
