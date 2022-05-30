@@ -71,7 +71,7 @@ object ProjectVersions {
         ?: project.rootProject.buildDir.resolve(".m2").absolutePath
     )
 
-    BuildEnvironment.configure()
+    build.configure()
   }
 
   fun getIncrementedVersionName() = getVersionName(BUILD_VERSION + 1)
