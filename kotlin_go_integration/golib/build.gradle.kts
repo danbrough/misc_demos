@@ -16,18 +16,10 @@ version = ProjectVersions.VERSION_NAME
 
 kotlin {
   linuxX64(Platform.linuxAmd64.name)
-/*
-  linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
-  linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
-  androidNativeArm32(ProjectVersions.PLATFORM_ANDROID_ARM)
-  androidNativeX86(ProjectVersions.PLATFORM_ANDROID_386)
-*/
 
   sourceSets {
 
-    val nativeMain by creating {
-
-    }
+    val nativeMain by creating
 
     targets.withType(KotlinNativeTarget::class).all {
 
@@ -50,7 +42,6 @@ kotlin {
         }
       }
 
-
       binaries {
         executable("demo") {
           if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID) {
@@ -59,9 +50,7 @@ kotlin {
         }
       }
     }
-
   }
-
 }
 
 
@@ -117,9 +106,8 @@ fun buildGoDemoLib(platform: Platform) = tasks.register<Exec>("golib${platform.n
 
 }
 
-BuildEnvironment.platforms.forEach {
-  buildGoDemoLib(it)
-}
+buildGoDemoLib(Platform.linuxAmd64)
+
 
 tasks.register("styleTest") {
   doLast {

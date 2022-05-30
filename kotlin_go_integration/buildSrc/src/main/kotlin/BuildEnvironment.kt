@@ -57,9 +57,6 @@ enum class GOARCH(val altName: String? = null) {
 
 object BuildEnvironment {
 
-  val platforms by lazy {
-    Platform.values()
-  }
 
   lateinit var goBinary: String
   lateinit var buildCacheDir: File
