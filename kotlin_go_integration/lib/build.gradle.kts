@@ -6,12 +6,12 @@ plugins {
   //id("com.android.library")
 }
 
-group = ProjectVersions.GROUP_ID
-version = ProjectVersions.VERSION_NAME
+group = ProjectProperties.GROUP_ID
+version = ProjectProperties.VERSION_NAME
 
 
 kotlin {
-  linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
+  linuxX64(ProjectProperties.PLATFORM_LINUX_AMD64)
 
   sourceSets {
 

@@ -4,7 +4,7 @@ import org.gradle.api.Project
 import java.io.FileInputStream
 import java.net.URI
 
-object ProjectVersions {
+object ProjectProperties {
   const val SDK_VERSION = 31
   const val MIN_SDK_VERSION = 23
   const val BUILD_TOOLS_VERSION = "31.0.0"

@@ -1,7 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
-import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 
 plugins {
@@ -25,7 +23,7 @@ apply("project.gradle.kts")
 allprojects {
 
   repositories {
-    maven(ProjectVersions.MAVEN_REPO)
+    maven(ProjectProperties.MAVEN_REPO)
     maven("https://h1.danbrough.org/maven")
     mavenCentral()
     google()

@@ -3,6 +3,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import  org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
@@ -11,8 +12,8 @@ plugins {
 }
 
 
-group = ProjectVersions.GROUP_ID
-version = ProjectVersions.VERSION_NAME
+group = ProjectProperties.GROUP_ID
+version = ProjectProperties.VERSION_NAME
 //project.logging.captureStandardOutput(org.gradle.api.logging.LogLevel.INFO)
 
 kotlin {
@@ -46,7 +47,7 @@ kotlin {
 
       binaries {
         executable("demo") {
-          if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID) {
+          if (konanTarget.family == Family.ANDROID) {
             binaryOptions["androidProgramType"] = "nativeActivity"
           }
         }
@@ -74,6 +75,7 @@ fun buildGoDemoLib(platform: build.PlatformNative) =
       include("**/*.h")
       include("**/*.mod")
     }
+
     val outputFiles = listOf("libgodemo.a", "libgodemo.h").map { outputDir.resolve(it) }
     inputs.files(goSrcFiles)
     outputs.files(outputFiles)

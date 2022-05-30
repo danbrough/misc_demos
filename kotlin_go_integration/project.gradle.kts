@@ -13,13 +13,13 @@ class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
 
     project.task("versionName") {
       doLast {
-        println(ProjectVersions.getVersionName())
+        println(ProjectProperties.getVersionName())
       }
     }
 
     project.task("versionNameNext") {
       doLast {
-        println(ProjectVersions.getIncrementedVersionName())
+        println(ProjectProperties.getIncrementedVersionName())
       }
     }
 
@@ -45,5 +45,5 @@ class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
 apply<ProjectPlugin>()
 
 configure<ProjectInitExtension> {
-  ProjectVersions.init(project)
+  ProjectProperties.init(project)
 }
