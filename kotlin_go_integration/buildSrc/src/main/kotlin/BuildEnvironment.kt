@@ -24,7 +24,6 @@ enum class GOARCH(val altName: String? = null) {
 
 object BuildEnvironment {
 
-
   lateinit var goBinary: String
   lateinit var buildCacheDir: File
   lateinit var konanDir: File
@@ -61,68 +60,74 @@ object BuildEnvironment {
 
 sealed class Platform(
   val name: PlatformName,
+) {
+
+
+}
+
+open class Native(
+  name: PlatformName,
   val host: String,
   val goOS: GOOS,
   val goArch: GOARCH,
   val goArm: Int = 7
-) {
-
-
-  object linuxAmd64 : Platform(PlatformName.linuxX64, "x86_64-unknown-linux-gnu", GOOS.linux, GOARCH.amd64)
-
-  object linuxArm64 : Platform(PlatformName.linuxArm64, "aarch64-unknown-linux-gnu", GOOS.linux, GOARCH.arm64)
-  object linuxArm : Platform(PlatformName.linuxArm32Hfp, "arm-unknown-linux-gnueabihf", GOOS.linux, GOARCH.arm)
-  object windowsAmd64 : Platform(PlatformName.mingwX64, "x86_64-w64-mingw32", GOOS.windows, GOARCH.amd64)
-
-  open class PlatformAndroid(
-    name: PlatformName,
-    host: String,
-    goOS: GOOS,
-    goArch: GOARCH,
-    goArm: Int = 7,
-    val androidLibDir: String
-  ) : Platform(name, host, goOS, goArch, goArm)
-
-  object androidArm :
-    PlatformAndroid(
-      PlatformName.androidNativeArm32,
-      "armv7a-linux-androideabi",
-      GOOS.android,
-      GOARCH.arm,
-      androidLibDir = "armeabi-v7a"
-    )
-
-  object androidArm64 :
-    PlatformAndroid(
-      PlatformName.androidNativeArm64,
-      "aarch64-linux-android",
-      GOOS.android,
-      GOARCH.arm64,
-      androidLibDir = "arm64-v8a"
-    )
-
-  object android386 :
-    PlatformAndroid(
-      PlatformName.androidNativeX86,
-      "i686-linux-android",
-      GOOS.android,
-      GOARCH.x86,
-      androidLibDir = "x86"
-    )
-
-  object androidAmd64 :
-    PlatformAndroid(
-      PlatformName.androidNativeX64,
-      "x86_64-linux-android",
-      GOOS.android,
-      GOARCH.amd64,
-      androidLibDir = "x86_64"
-    )
-
+) : Platform(name) {
   val goCacheDir: File = BuildEnvironment.buildCacheDir.resolve("go")
 }
 
-fun Platform.environment(): Map<String, Any> = mutableMapOf(
+object linuxAmd64 : Native(PlatformName.linuxX64, "x86_64-unknown-linux-gnu", GOOS.linux, GOARCH.amd64)
+
+object linuxArm64 : Native(PlatformName.linuxArm64, "aarch64-unknown-linux-gnu", GOOS.linux, GOARCH.arm64)
+object linuxArm : Native(PlatformName.linuxArm32Hfp, "arm-unknown-linux-gnueabihf", GOOS.linux, GOARCH.arm)
+object windowsAmd64 : Native(PlatformName.mingwX64, "x86_64-w64-mingw32", GOOS.windows, GOARCH.amd64)
+
+open class PlatformAndroid(
+  name: PlatformName,
+  host: String,
+  goOS: GOOS,
+  goArch: GOARCH,
+  goArm: Int = 7,
+  val androidLibDir: String
+) : Native(name, host, goOS, goArch, goArm)
+
+object androidArm :
+  PlatformAndroid(
+    PlatformName.androidNativeArm32,
+    "armv7a-linux-androideabi",
+    GOOS.android,
+    GOARCH.arm,
+    androidLibDir = "armeabi-v7a"
+  )
+
+object androidArm64 :
+  PlatformAndroid(
+    PlatformName.androidNativeArm64,
+    "aarch64-linux-android",
+    GOOS.android,
+    GOARCH.arm64,
+    androidLibDir = "arm64-v8a"
+  )
+
+object android386 :
+  PlatformAndroid(
+    PlatformName.androidNativeX86,
+    "i686-linux-android",
+    GOOS.android,
+    GOARCH.x86,
+    androidLibDir = "x86"
+  )
+
+object androidAmd64 :
+  PlatformAndroid(
+    PlatformName.androidNativeX64,
+    "x86_64-linux-android",
+    GOOS.android,
+    GOARCH.amd64,
+    androidLibDir = "x86_64"
+  )
+
+
+fun Native.environment(): Map<String, Any> = mutableMapOf(
   "CGO_ENABLED" to 1,
   "GOOS" to goOS,
   "GOARM" to goArm,
@@ -140,7 +145,7 @@ fun Platform.environment(): Map<String, Any> = mutableMapOf(
   val path = buildPath.toMutableList()
 
   when (this@environment) {
-    Platform.linuxArm -> {
+    linuxArm -> {
       val clangArgs = "--target=$host " +
           "--gcc-toolchain=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2 " +
           "--sysroot=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2/arm-unknown-linux-gnueabihf/sysroot "
@@ -148,7 +153,7 @@ fun Platform.environment(): Map<String, Any> = mutableMapOf(
       this["CXX"] = "$clangBinDir/clang++ $clangArgs"
     }
 
-    Platform.linuxArm64 -> {
+    linuxArm64 -> {
       val clangArgs = "--target=$host " +
           "--gcc-toolchain=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2 " +
           "--sysroot=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot"
@@ -156,7 +161,7 @@ fun Platform.environment(): Map<String, Any> = mutableMapOf(
       this["CXX"] = "$clangBinDir/clang++ $clangArgs"
     }
 
-    Platform.linuxAmd64 -> {
+    linuxAmd64 -> {
       //        this["CC"] = "gcc"
 //          this["CXX"] = "g++"
 
@@ -166,11 +171,11 @@ fun Platform.environment(): Map<String, Any> = mutableMapOf(
       this["CC"] = "$clangBinDir/clang $clangArgs"
       this["CXX"] = "$clangBinDir/clang++ $clangArgs"
     }
-    Platform.windowsAmd64 -> {
+    windowsAmd64 -> {
 
     }
 
-    Platform.androidArm, Platform.android386, Platform.androidArm64, Platform.androidAmd64 -> {
+    androidArm, android386, androidArm64, androidAmd64 -> {
       path.add(0, androidToolchainDir.resolve("bin").absolutePath)
       this["CC"] = "${host}${androidNdkApiVersion}-clang"
       this["CXX"] = "${host}${androidNdkApiVersion}-clang++"

@@ -16,7 +16,7 @@ version = ProjectVersions.VERSION_NAME
 //project.logging.captureStandardOutput(org.gradle.api.logging.LogLevel.INFO)
 
 kotlin {
-  linuxX64(Platform.linuxAmd64.name.toString())
+  linuxX64(linuxAmd64.name.toString())
 
 
   sourceSets {
@@ -56,7 +56,7 @@ kotlin {
 }
 
 
-fun buildGoDemoLib(platform: Platform) = tasks.register<Exec>("golib${platform.name.toString().capitalize()}") {
+fun buildGoDemoLib(platform: Native) = tasks.register<Exec>("golib${platform.name.toString().capitalize()}") {
   //environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
   environment("PLATFORM", platform)
   doLast {
@@ -108,7 +108,7 @@ fun buildGoDemoLib(platform: Platform) = tasks.register<Exec>("golib${platform.n
 
 }
 
-buildGoDemoLib(Platform.linuxAmd64)
+buildGoDemoLib(linuxAmd64)
 
 
 tasks.register("styleTest") {
