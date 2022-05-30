@@ -1,4 +1,3 @@
-import build.environment
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
@@ -17,7 +16,7 @@ version = ProjectProperties.VERSION_NAME
 //project.logging.captureStandardOutput(org.gradle.api.logging.LogLevel.INFO)
 
 kotlin {
-  linuxX64(build.linuxAmd64.name.toString())
+  linuxX64(linuxAmd64.name.toString())
 
 
   sourceSets {
@@ -57,7 +56,7 @@ kotlin {
 }
 
 
-fun buildGoDemoLib(platform: build.PlatformNative) =
+fun buildGoDemoLib(platform: PlatformNative) =
   tasks.register<Exec>("golib${platform.name.toString().capitalize()}") {
     //environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
     environment("PLATFORM", platform)
@@ -89,7 +88,7 @@ fun buildGoDemoLib(platform: build.PlatformNative) =
     group = BasePlugin.BUILD_GROUP
 
     val command = listOf(
-      build.goBinary,
+      goBinary,
       "build", "-v",//"-x",
       "-ldflags", "-linkmode 'external'",
       "-buildmode=c-shared",
@@ -111,7 +110,7 @@ fun buildGoDemoLib(platform: build.PlatformNative) =
 
   }
 
-buildGoDemoLib(build.linuxAmd64)
+buildGoDemoLib(linuxAmd64)
 
 
 tasks.register("styleTest") {

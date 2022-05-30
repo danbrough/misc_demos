@@ -1,7 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-
 plugins {
   kotlin("multiplatform") apply false
   kotlin("plugin.serialization") apply false
@@ -21,6 +20,7 @@ buildscript {
 apply("project.gradle.kts")
 
 allprojects {
+
 
   repositories {
     maven(ProjectProperties.MAVEN_REPO)

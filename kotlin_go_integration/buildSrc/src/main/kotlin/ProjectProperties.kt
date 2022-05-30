@@ -1,3 +1,4 @@
+
 import java.util.*
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -70,8 +71,6 @@ object ProjectProperties {
       project.findProperty("LOCAL_MAVEN_REPO")?.toString()?.trim()
         ?: project.rootProject.buildDir.resolve(".m2").absolutePath
     )
-
-    build.configure()
   }
 
   fun getIncrementedVersionName() = getVersionName(BUILD_VERSION + 1)

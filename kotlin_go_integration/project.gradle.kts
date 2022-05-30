@@ -1,7 +1,7 @@
 import java.io.FileInputStream
 
-
 interface ProjectInitExtension
+
 
 class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
 
