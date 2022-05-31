@@ -47,3 +47,5 @@ apply<ProjectPlugin>()
 configure<ProjectInitExtension> {
   ProjectProperties.init(project)
 }
+
+

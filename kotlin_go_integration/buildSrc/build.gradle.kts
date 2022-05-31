@@ -6,33 +6,56 @@ plugins {
 
 repositories {
   mavenCentral()
+  //google()
 }
 
 kotlinDslPluginOptions {
-  jvmTarget.set(provider { java.targetCompatibility.toString() })
+  //jvmTarget.set(provider { java.targetCompatibility.toString() })
+  println("COMPAT: ${java.targetCompatibility.toString()}")
+  jvmTarget.set("11")
 }
 
 dependencies {
   compileOnly(kotlin("gradle-plugin"))
+//// https://mvnrepository.com/artifact/org.jetbrains.kotlin.multiplatform/org.jetbrains.kotlin.multiplatform.gradle.plugin
+  //compileOnly("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.7.0-RC")
+// https://mvnrepository.com/artifact/org.gradle/gradle-kotlin-dsl
+  //implementation("org.gradle:gradle-kotlin-dsl:6.1.1")
+
 }
 
 kotlin {
+/*
   jvmToolchain {
     check(this is JavaToolchainSpec)
-    languageVersion.set(JavaLanguageVersion.of(11))
+    languageVersion.set(JavaLanguageVersion.of(8))
+
   }
+*/
 
   sourceSets.all {
-    listOf(
-      "kotlin.RequiresOptIn",
-      "kotlin.ExperimentalStdlibApi",
-      "kotlin.io.path.ExperimentalPathApi",
-    ).forEach {
-      languageSettings.optIn(it)
+    languageSettings {
+      listOf(
+        "kotlin.RequiresOptIn",
+        "kotlin.ExperimentalStdlibApi",
+        "kotlin.io.path.ExperimentalPathApi",
+      ).forEach {
+        optIn(it)
+      }
     }
   }
+
+
 }
 
+
+
+tasks.withType(KotlinCompile::class) {
+  this.kotlinOptions {
+    this.jvmTarget = "11"
+
+  }
+}
 
 /*
 tasks.withType(KotlinCompile::class) {

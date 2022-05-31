@@ -1,6 +1,7 @@
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import  org.jetbrains.kotlin.konan.target.Family
 
@@ -15,8 +16,13 @@ group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 //project.logging.captureStandardOutput(org.gradle.api.logging.LogLevel.INFO)
 
+
 kotlin {
-  linuxX64(linuxAmd64.name.toString())
+
+
+  //linuxX64()
+
+  linuxAmd64.configure(this)
 
 
   sourceSets {
@@ -34,9 +40,9 @@ kotlin {
           extraOpts(
             "-verbose",
             "-libraryPath",
-            project.buildDir.resolve("lib/linuxAmd64"),
+            project.buildDir.resolve("lib/linuxX64"),
             "-compiler-option",
-            "-I${project.buildDir.resolve("lib/linuxAmd64")}"
+            "-I${project.buildDir.resolve("lib/linuxX64")}"
           )
         }
         defaultSourceSet {
@@ -56,7 +62,7 @@ kotlin {
 }
 
 
-fun buildGoDemoLib(platform: PlatformNative) =
+fun buildGoDemoLib(platform: PlatformNative<*>) =
   tasks.register<Exec>("golib${platform.name.toString().capitalize()}") {
     //environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
     environment("PLATFORM", platform)
@@ -122,3 +128,4 @@ tasks.register("styleTest") {
     }
   }
 }
+
