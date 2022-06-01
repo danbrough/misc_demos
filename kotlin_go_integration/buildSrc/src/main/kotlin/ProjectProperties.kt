@@ -38,7 +38,12 @@ object ProjectProperties {
     if (properties.containsKey(name))
       properties[name]!!.toString().trim() else default
 
+  private var isInitialized = false
   fun init(_project: Project) {
+    if (isInitialized){
+      return
+    }
+    isInitialized = true
     val project = _project.rootProject
     properties.putAll(project.properties)
 

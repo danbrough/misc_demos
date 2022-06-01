@@ -17,7 +17,8 @@ buildscript {
 }
 
 
-apply("project.gradle.kts")
+ProjectProperties.init(project)
+apply<Project_gradle.ProjectPlugin>()
 
 allprojects {
 
@@ -44,8 +45,6 @@ allprojects {
       false
     }
   }
-
-
 
 
 }

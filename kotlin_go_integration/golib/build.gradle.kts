@@ -1,7 +1,6 @@
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import  org.jetbrains.kotlin.konan.target.Family
 
@@ -15,60 +14,66 @@ plugins {
 group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 //project.logging.captureStandardOutput(org.gradle.api.logging.LogLevel.INFO)
+//apply("ProjectPlugin.gradle.kts")
 
 
 kotlin {
+  val nativeMain by sourceSets.creating
+
+  listOf(linuxAmd64).forEach {
+    val golibBuildTask = registerGolibBuildTask(linuxAmd64)
+
+    val presetName = it.name.toString()
+    targetFromPreset(presets[presetName], presetName) {
+      if (this is KotlinNativeTarget) {
+        println("TARGET: ${this.konanTarget.family}")
+
+        compilations["main"].apply {
 
 
-  //linuxX64()
+          cinterops.create("libgodemo") {
 
-  linuxAmd64.configure(this)
+            tasks.getAt(interopProcessingTaskName).apply {
+              inputs.files(golibBuildTask.get().outputs)
+              dependsOn(golibBuildTask.name)
+            }
 
 
-  sourceSets {
-
-    val nativeMain by creating
-
-    targets.withType(KotlinNativeTarget::class).all {
-
-      println("TARGET: ${this.konanTarget.family}")
-
-      val main by compilations.getting {
-        cinterops.create("libgodemo") {
-          packageName("stuff")
-          defFile = project.file("src/interop/godemo.def")
-          extraOpts(
-            "-verbose",
-            "-libraryPath",
-            project.buildDir.resolve("lib/linuxX64"),
-            "-compiler-option",
-            "-I${project.buildDir.resolve("lib/linuxX64")}"
-          )
+            packageName("stuff")
+            defFile = project.file("src/interop/godemo.def")
+            extraOpts(
+              "-verbose",
+              "-libraryPath",
+              project.buildDir.resolve("lib/linuxX64"),
+              "-compiler-option",
+              "-I${project.buildDir.resolve("lib/linuxX64")}"
+            )
+          }
+          defaultSourceSet {
+            dependsOn(nativeMain)
+          }
         }
-        defaultSourceSet {
-          dependsOn(nativeMain)
-        }
-      }
 
-      binaries {
-        executable("demo") {
-          if (konanTarget.family == Family.ANDROID) {
-            binaryOptions["androidProgramType"] = "nativeActivity"
+
+        binaries {
+          executable("demo") {
+            if (konanTarget.family == Family.ANDROID) {
+              binaryOptions["androidProgramType"] = "nativeActivity"
+            }
           }
         }
       }
     }
   }
+
+
 }
 
 
-fun buildGoDemoLib(platform: PlatformNative<*>) =
+fun registerGolibBuildTask(platform: PlatformNative<*>) =
   tasks.register<Exec>("golib${platform.name.toString().capitalize()}") {
     //environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
     environment("PLATFORM", platform)
-    doLast {
-      logger.warn("golib build finished for $platform")
-    }
 
     val outputDir = project.buildDir.resolve("lib/$platform")
     val goModule = project.file("src/go")
@@ -87,9 +92,8 @@ fun buildGoDemoLib(platform: PlatformNative<*>) =
 
     workingDir(goModule)
 
-    environment(platform.environment().also {
-      println("environment: $it")
-    })
+    val commandEnvironment = platform.environment()
+    environment(commandEnvironment)
 
     group = BasePlugin.BUILD_GROUP
 
@@ -106,17 +110,20 @@ fun buildGoDemoLib(platform: PlatformNative<*>) =
 //-ldflags '-linkmode external -extldflags "-static"'  -buildmode=c-archive -o $LIBFILE
 
     commandLine(command)
+    val out = project.serviceOf<StyledTextOutputFactory>().create("golibOutput")
 
-
+    doFirst {
+      out.style(StyledTextOutput.Style.Info).println("Building golib for $platform")
+      out.style(StyledTextOutput.Style.ProgressStatus).println("environment: $commandEnvironment")
+    }
     doLast {
-      val out = project.serviceOf<StyledTextOutputFactory>().create("an-output")
       if (didWork)
         out.style(StyledTextOutput.Style.Success).println("Finished building golib for $platform")
     }
 
   }
 
-buildGoDemoLib(linuxAmd64)
+
 
 
 tasks.register("styleTest") {

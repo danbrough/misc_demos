@@ -55,7 +55,7 @@ val clangBinDir by lazy {
 
 sealed class Platform(
   val name: PlatformName,
-){
+) {
   override fun toString() = name.toString()
 }
 
@@ -64,46 +64,37 @@ open class PlatformNative<T : KotlinNativeTarget>(
   val host: String,
   val goOS: GOOS,
   val goArch: GOARCH,
-  val goArm: Int = 7,
-  val configure: (String, KotlinMultiplatformExtension, T.() -> Unit) -> T
+  val goArm: Int = 7
 ) : Platform(name) {
   val goCacheDir: File = buildCacheDir.resolve("go")
+
+
 }
 
 
-object linuxAmd64 : PlatformNative<KotlinNativeTargetWithHostTests>(PlatformName.linuxX64,
+object linuxAmd64 : PlatformNative<KotlinNativeTargetWithHostTests>(
+  PlatformName.linuxX64,
   "x86_64-unknown-linux-gnu",
   GOOS.linux,
-  GOARCH.amd64,
-  configure = { name, extension, conf ->
-    extension.linuxX64(name, conf)
-  })
+  GOARCH.amd64
+)
 
 
 object linuxArm64 : PlatformNative<KotlinNativeTarget>(
   PlatformName.linuxArm64,
   "aarch64-unknown-linux-gnu",
   GOOS.linux,
-  GOARCH.arm64,
-  configure = { name, extension, conf ->
-    extension.linuxArm64(name, conf)
-  }
+  GOARCH.arm64
 )
 
 object linuxArm :
-  PlatformNative<KotlinNativeTarget>(PlatformName.linuxArm32Hfp, "arm-unknown-linux-gnueabihf", GOOS.linux, GOARCH.arm,
-    configure = { name, extension, conf ->
-      extension.linuxArm32Hfp(name, conf)
-    })
+  PlatformNative<KotlinNativeTarget>(PlatformName.linuxArm32Hfp, "arm-unknown-linux-gnueabihf", GOOS.linux, GOARCH.arm)
 
 object windowsAmd64 : PlatformNative<KotlinNativeTargetWithHostTests>(
   PlatformName.mingwX64,
   "x86_64-w64-mingw32",
   GOOS.windows,
-  GOARCH.amd64,
-  configure = { name, extension, conf ->
-    extension.mingwX64(name, conf)
-  }
+  GOARCH.amd64
 )
 
 open class PlatformAndroid<T : KotlinNativeTarget>(
@@ -112,9 +103,8 @@ open class PlatformAndroid<T : KotlinNativeTarget>(
   goOS: GOOS,
   goArch: GOARCH,
   goArm: Int = 7,
-  val androidLibDir: String,
-  configure: (String, KotlinMultiplatformExtension, T.() -> Unit) -> T
-) : PlatformNative<T>(name, host, goOS, goArch, goArm, configure)
+  val androidLibDir: String
+) : PlatformNative<T>(name, host, goOS, goArch, goArm)
 
 object androidArm :
   PlatformAndroid<KotlinNativeTarget>(
@@ -122,10 +112,7 @@ object androidArm :
     "armv7a-linux-androideabi",
     GOOS.android,
     GOARCH.arm,
-    androidLibDir = "armeabi-v7a",
-    configure = { name, extension, conf ->
-      extension.androidNativeArm32(name, conf)
-    }
+    androidLibDir = "armeabi-v7a"
   )
 
 object androidArm64 :
@@ -135,9 +122,6 @@ object androidArm64 :
     GOOS.android,
     GOARCH.arm64,
     androidLibDir = "arm64-v8a",
-    configure = { name, extension, conf ->
-      extension.androidNativeArm64(name, conf)
-    }
   )
 
 object android386 :
@@ -147,9 +131,6 @@ object android386 :
     GOOS.android,
     GOARCH.x86,
     androidLibDir = "x86",
-    configure = { name, extension, conf ->
-      extension.androidNativeX86(name, conf)
-    }
   )
 
 object androidAmd64 : PlatformAndroid<KotlinNativeTarget>(
@@ -158,16 +139,8 @@ object androidAmd64 : PlatformAndroid<KotlinNativeTarget>(
   GOOS.android,
   GOARCH.amd64,
   androidLibDir = "x86_64",
-  configure = { name, extension, conf ->
-    extension.androidNativeX64(name, conf)
-  }
 )
 
-inline fun <reified T : KotlinNativeTarget> PlatformNative<T>.configure(
-  extension: KotlinMultiplatformExtension,
-  altName: String? = null,
-  noinline conf: T.() -> Unit = {}
-): T = configure(altName ?: name.toString(), extension, conf)
 
 fun PlatformNative<*>.environment(): Map<String, Any> = mutableMapOf(
   "CGO_ENABLED" to 1,
