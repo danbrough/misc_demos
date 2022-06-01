@@ -26,10 +26,9 @@ kotlin {
     val presetName = it.name.toString()
     targetFromPreset(presets[presetName], presetName) {
       if (this is KotlinNativeTarget) {
-        println("TARGET: ${this.konanTarget.family}")
+        println("TARGET: ${this.konanTarget.family} PRESET_NAME: $presetName")
 
         compilations["main"].apply {
-
 
           cinterops.create("libgodemo") {
 
@@ -38,15 +37,21 @@ kotlin {
               dependsOn(golibBuildTask.name)
             }
 
-
             packageName("stuff")
+
+
+            /*     this.linkerOpts(
+                   listOf(
+                     "-L/home/dan/workspace/demos/kotlin_go_integration/golib/build/lib/linuxX64",
+                     "-lgodemo",
+                   )
+                 )*/
+
             defFile = project.file("src/interop/godemo.def")
             extraOpts(
               "-verbose",
-              "-libraryPath",
-              project.buildDir.resolve("lib/linuxX64"),
               "-compiler-option",
-              "-I${project.buildDir.resolve("lib/linuxX64")}"
+              "-I${project.buildDir.resolve("lib/$presetName")}",
             )
           }
           defaultSourceSet {
@@ -83,7 +88,7 @@ fun registerGolibBuildTask(platform: PlatformNative<*>) =
       include("**/*.mod")
     }
 
-    val outputFiles = listOf("libgodemo.a", "libgodemo.h").map { outputDir.resolve(it) }
+    val outputFiles = listOf("libgodemo.so", "libgodemo.h").map { outputDir.resolve(it) }
     inputs.files(goSrcFiles)
     outputs.files(outputFiles)
 
@@ -97,6 +102,7 @@ fun registerGolibBuildTask(platform: PlatformNative<*>) =
     val command = listOf(
       goBinary,
       "build", "-v",//"-x",
+      "-trimpath",
       "-ldflags", "-linkmode 'external'",
       "-buildmode=c-shared",
       "-o", outputFiles[0],
