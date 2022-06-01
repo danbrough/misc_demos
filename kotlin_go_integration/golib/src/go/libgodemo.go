@@ -9,7 +9,7 @@ import "github.com/danbrough/golibtest/misc"
 
 //export GetTime
 func GetTime() *C.char {
-	return C.CString("LocalTime: " + misc.GetTime())
+	return C.CString("Local time: " + misc.GetTime())
 
 }
 
