@@ -18,10 +18,12 @@ buildscript {
 
 
 apply<Project_gradle.ProjectPlugin>()
+/*
 configure<Project_gradle.ProjectInitExtension> {
   println("2222222222222222222222222222configuring project init extension")
   message.set("Hi")
 }
+*/
 
 
 allprojects {

@@ -11,16 +11,11 @@ repositories {
 
 kotlinDslPluginOptions {
   jvmTarget.set(provider { java.targetCompatibility.toString() })
-  println("COMPAT: ${java.targetCompatibility.toString()}")
+//  println("COMPAT: ${java.targetCompatibility.toString()}")
 }
 
 dependencies {
   compileOnly(kotlin("gradle-plugin"))
-
-//// https://mvnrepository.com/artifact/org.jetbrains.kotlin.multiplatform/org.jetbrains.kotlin.multiplatform.gradle.plugin
-  //compileOnly("org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:1.7.0-RC")
-// https://mvnrepository.com/artifact/org.gradle/gradle-kotlin-dsl
-  //implementation("org.gradle:gradle-kotlin-dsl:6.1.1")
 
 }
 
