@@ -17,7 +17,6 @@ buildscript {
 }
 
 
-ProjectProperties.init(project)
 apply<Project_gradle.ProjectPlugin>()
 
 allprojects {

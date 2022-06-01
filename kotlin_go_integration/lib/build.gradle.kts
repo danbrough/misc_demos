@@ -11,7 +11,7 @@ version = ProjectProperties.VERSION_NAME
 
 
 kotlin {
-  linuxX64(ProjectProperties.PLATFORM_LINUX_AMD64)
+  LinuxX64(ProjectProperties.PLATFORM_LINUX_AMD64)
 
   sourceSets {
 

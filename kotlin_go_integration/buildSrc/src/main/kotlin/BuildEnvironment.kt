@@ -1,16 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTestsPreset
 import java.io.File
-import kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinTarget
-
-
-enum class PlatformName {
-  android, androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm32, iosArm64, iosSimulatorArm64, iosX64, js, jsBoth, jsIr, jvm, jvmWithJava, linuxArm32Hfp, linuxArm64, linuxMips32, linuxMipsel32, linuxX64, macosArm64, macosX64, mingwX64, mingwX86, tvosArm64, tvosSimulatorArm64, tvosX64, wasm, wasm32, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64, watchosX86
-}
 
 
 enum class GOOS {
@@ -56,6 +46,11 @@ val clangBinDir by lazy {
 sealed class Platform(
   val name: PlatformName,
 ) {
+  enum class PlatformName {
+    android, androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm32, iosArm64, iosSimulatorArm64, iosX64, js, jsBoth, jsIr, jvm, jvmWithJava, linuxArm32Hfp, linuxArm64, linuxMips32, linuxMipsel32, linuxX64, macosArm64, macosX64, mingwX64, mingwX86, tvosArm64, tvosSimulatorArm64, tvosX64, wasm, wasm32, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64, watchosX86
+  }
+
+
   override fun toString() = name.toString()
 }
 
@@ -67,18 +62,15 @@ open class PlatformNative<T : KotlinNativeTarget>(
   val goArm: Int = 7
 ) : Platform(name) {
   val goCacheDir: File = buildCacheDir.resolve("go")
-
-
 }
 
 
-object linuxAmd64 : PlatformNative<KotlinNativeTargetWithHostTests>(
+object LinuxX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
   PlatformName.linuxX64,
   "x86_64-unknown-linux-gnu",
   GOOS.linux,
   GOARCH.amd64
 )
-
 
 object linuxArm64 : PlatformNative<KotlinNativeTarget>(
   PlatformName.linuxArm64,
@@ -178,7 +170,7 @@ fun PlatformNative<*>.environment(): Map<String, Any> = mutableMapOf(
       this["CXX"] = "$clangBinDir/clang++ $clangArgs"
     }
 
-    linuxAmd64 -> {
+    LinuxX64 -> {
       val clangArgs = "--target=$host " +
           "--gcc-toolchain=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2 " +
           "--sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"

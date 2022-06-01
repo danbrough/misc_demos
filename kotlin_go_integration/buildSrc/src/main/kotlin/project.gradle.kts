@@ -21,11 +21,9 @@ class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
 
 */
 
-    println("PROJECT APPLY: $this $project")
+    //println("PROJECT APPLY: $this $project")
 
-    project.extensions.create<ProjectInitExtension>("init").also {
-      println("CREATED EXTENSION: ${it.hashCode()}")
-    }
+    project.extensions.create<ProjectInitExtension>("projectProperties")
 
     ProjectProperties.init(project)
     //initProps()
@@ -62,8 +60,12 @@ class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
 }
 
 
+/*
+
 configure<ProjectInitExtension> {
-  println("configuring project init extension")
+  println("2222222222222222222222222222configuring project init extension")
   message.set("Hi")
 }
+
+*/
 

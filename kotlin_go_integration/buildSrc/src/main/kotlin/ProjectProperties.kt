@@ -2,6 +2,7 @@
 import java.util.*
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.FileInputStream
 import java.net.URI
 
@@ -40,10 +41,15 @@ object ProjectProperties {
 
   private var isInitialized = false
   fun init(_project: Project) {
+
+    println("INIT PROJECT PROPERTIES")
     if (isInitialized){
       return
     }
     isInitialized = true
+
+
+
     val project = _project.rootProject
     properties.putAll(project.properties)
 

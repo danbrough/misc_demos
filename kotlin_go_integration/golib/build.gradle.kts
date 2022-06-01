@@ -20,8 +20,8 @@ version = ProjectProperties.VERSION_NAME
 kotlin {
   val nativeMain by sourceSets.creating
 
-  listOf(linuxAmd64).forEach {
-    val golibBuildTask = registerGolibBuildTask(linuxAmd64)
+  listOf(LinuxX64).forEach {
+    val golibBuildTask = registerGolibBuildTask(LinuxX64)
 
     val presetName = it.name.toString()
     targetFromPreset(presets[presetName], presetName) {
@@ -65,10 +65,7 @@ kotlin {
       }
     }
   }
-
-
 }
-
 
 fun registerGolibBuildTask(platform: PlatformNative<*>) =
   tasks.register<Exec>("golib${platform.name.toString().capitalize()}") {
