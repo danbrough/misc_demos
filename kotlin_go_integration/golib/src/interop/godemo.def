@@ -3,3 +3,4 @@ headers = libgodemo.h
 #compilerOpts = -fPIC
 linkerOpts = -lgodemo
 linkerOpts.linux_x64 = -Lgolib/build/lib/linuxX64
+linkerOpts.linux_arm64 = -Lgolib/build/lib/linuxArm64

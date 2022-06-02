@@ -16,6 +16,7 @@ kotlinDslPluginOptions {
 
 dependencies {
   compileOnly(kotlin("gradle-plugin"))
+  compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
 
 }
 

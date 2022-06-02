@@ -1,4 +1,13 @@
 pluginManagement {
+
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == "kotlin-multiplatform") {
+        useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
+      }
+    }
+  }
+
   repositories {
     gradlePluginPortal()
     mavenCentral()

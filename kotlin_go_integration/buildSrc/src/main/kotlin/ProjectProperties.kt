@@ -42,7 +42,7 @@ object ProjectProperties {
   private var isInitialized = false
   fun init(_project: Project) {
 
-    println("INIT PROJECT PROPERTIES")
+   // println("INIT PROJECT PROPERTIES")
     if (isInitialized){
       return
     }
