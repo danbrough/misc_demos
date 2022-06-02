@@ -1,11 +1,6 @@
-import Common_gradle.GoLib.RegisterGreeting
 import Common_gradle.GoLib.registerGoLibBuild
-import org.gradle.internal.logging.text.StyledTextOutput
-import org.gradle.internal.logging.text.StyledTextOutputFactory
-import org.gradle.kotlin.dsl.support.serviceOf
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import  org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
@@ -22,7 +17,7 @@ kotlin {
 
   val goDir = project.file("src/go")
 
-  listOf(LinuxX64).forEach {
+  listOf(LinuxX64,LinuxArm64).forEach {
     val golibBuildTask = registerGoLibBuild(it, goDir).get()
 
     val presetName = it.name.toString()
@@ -70,13 +65,5 @@ kotlin {
     }
   }
 }
-
-
-RegisterGreeting("harry", "Hello Harry")
-
-tasks.register<Common_gradle.GreetingTask>("greeting") {
-  greeting.set("DUDE!")
-}
-
 
 

@@ -6,3 +6,5 @@ Basic demo:
 ```bash 
 ./gradlew  golib:runDemoDebugExecutableLinuxX64
 ```
+
+This is a kotlin native application dependent on a shared library produced by golang.
