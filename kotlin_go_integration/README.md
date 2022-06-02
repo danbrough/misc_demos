@@ -4,5 +4,5 @@ Demo project for integrating golang functionality with kotlin native, android an
 
 Basic demo:
 ```bash 
-/gradlew  golib:runDemoDebugExecutableLinuxX64
+./gradlew  golib:runDemoDebugExecutableLinuxX64
 ```
