@@ -17,7 +17,7 @@ kotlin {
 
   val goDir = project.file("src/go")
 
-  listOf(LinuxX64,LinuxArm64).forEach {
+  listOf(LinuxX64, LinuxArm64).forEach {
     val golibBuildTask = registerGoLibBuild(it, goDir).get()
 
     val presetName = it.name.toString()
@@ -64,6 +64,19 @@ kotlin {
       }
     }
   }
+
+
+  jvm {
+  }
+
+  sourceSets {
+    getByName("jvmTest") {
+      dependencies {
+        implementation(kotlin("test"))
+      }
+    }
+  }
+
 }
 
 
