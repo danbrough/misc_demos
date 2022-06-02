@@ -1,18 +1,16 @@
 import kotlinx.cinterop.toKString
-import platform.linux.free
+import platform.posix.free
 
 fun main() {
-  println("Hello World!")
+  println("running golibdemo ..")
 
 
-  //println("The time is: ${stuff.GetTime()
-
-  val time = stuff.GetTime()?.let {
+  val time = golibdemo.GetTime()?.let {
     val s = it.toKString()
     free(it)
     s
   }
 
-  println("The time is: $time")
+  println(time)
 
 }

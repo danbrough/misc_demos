@@ -10,30 +10,12 @@ import  org.jetbrains.kotlin.konan.target.Family
 plugins {
   kotlin("multiplatform")
   id("common")
-
-
-  //kotlin("plugin.serialization")
-  //id("com.android.library")
 }
 
 
 group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 
-
-//project.logging.captureStandardOutput(org.gradle.api.logging.LogLevel.INFO)
-//apply("ProjectPlugin.gradle.kts")
-
-/*apply {
-  plugin(KotlinMultiplatformPlugin::class)
-  from("common.gradle.kts")
-}*/
-/*
-apply {
-  plugin(Kotlin)
-  from("common.gradle.kts")
-}
-*/
 
 kotlin {
   val nativeMain by sourceSets.creating
@@ -49,7 +31,6 @@ kotlin {
         //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $presetName")
 
         val goLibDir = golibBuildTask.outputs.files.first().parentFile
-        println("GO LIB DIR: $goLibDir")
 
         compilations["main"].apply {
 
@@ -60,15 +41,7 @@ kotlin {
               dependsOn(golibBuildTask.name)
             }
 
-            packageName("stuff")
-
-
-            /*     this.linkerOpts(
-                   listOf(
-                     "-L/home/dan/workspace/demos/kotlin_go_integration/golib/build/lib/linuxX64",
-                     "-lgodemo",
-                   )
-                 )*/
+            packageName("golibdemo")
 
             defFile = project.file("src/interop/godemo.def")
             extraOpts(
@@ -88,6 +61,7 @@ kotlin {
             if (konanTarget.family == Family.ANDROID) {
               binaryOptions["androidProgramType"] = "nativeActivity"
             }
+
 
             runTask?.environment("LD_LIBRARY_PATH", goLibDir)
           }

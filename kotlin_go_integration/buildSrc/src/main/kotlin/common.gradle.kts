@@ -61,7 +61,7 @@ abstract class GolibTask @Inject constructor(
 
   init {
     group = BasePlugin.BUILD_GROUP
-    println("PLATFORM $platform  godir: $goDir: libDir: ${libDir.orNull}")
+   // println("PLATFORM $platform  godir: $goDir: libDir: ${libDir.orNull}")
 
     environment("PLATFORM", platform.name.toString())
 
