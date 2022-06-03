@@ -1,4 +1,6 @@
+import Common_gradle.Common.createTarget
 import Common_gradle.GoLib.registerGoLibBuild
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 
@@ -12,71 +14,61 @@ group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 
 
+
 kotlin {
   val nativeMain by sourceSets.creating
 
+
   val goDir = project.file("src/go")
 
-  listOf(LinuxX64, LinuxArm64).forEach {
-    val golibBuildTask = registerGoLibBuild(it, goDir).get()
+  listOf(LinuxX64, LinuxArm64).forEach { platform ->
 
-    val presetName = it.name.toString()
-    targetFromPreset(presets[presetName], presetName) {
-      if (this is KotlinNativeTarget) {
-        //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $presetName")
+    createTarget(platform) {
 
-        val goLibDir = golibBuildTask.outputs.files.first().parentFile
 
-        compilations["main"].apply {
+      val golibBuildTask = registerGoLibBuild(platform, goDir).get()
 
-          cinterops.create("libgodemo") {
 
-            tasks.getAt(interopProcessingTaskName).apply {
-              inputs.files(golibBuildTask.outputs)
-              dependsOn(golibBuildTask.name)
-            }
+      println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
 
-            packageName("golibdemo")
+      val goLibDir = golibBuildTask.outputs.files.first().parentFile
 
-            defFile = project.file("src/interop/godemo.def")
-            extraOpts(
-              "-verbose",
-              "-compiler-option",
-              "-I$goLibDir",
-            )
+      compilations["main"].apply {
+
+        cinterops.create("libgodemo") {
+
+          tasks.getAt(interopProcessingTaskName).apply {
+            inputs.files(golibBuildTask.outputs)
+            dependsOn(golibBuildTask.name)
           }
-          defaultSourceSet {
-            dependsOn(nativeMain)
-          }
+
+          packageName("golibdemo")
+
+          defFile = project.file("src/interop/godemo.def")
+          extraOpts(
+            "-verbose",
+            "-compiler-option",
+            "-I$goLibDir",
+          )
         }
+        defaultSourceSet {
+          dependsOn(nativeMain)
+        }
+      }
 
 
-        binaries {
-          executable("demo") {
-            if (konanTarget.family == Family.ANDROID) {
-              binaryOptions["androidProgramType"] = "nativeActivity"
-            }
-
-
-            runTask?.environment("LD_LIBRARY_PATH", goLibDir)
+      binaries {
+        executable("demo") {
+          if (konanTarget.family == Family.ANDROID) {
+            binaryOptions["androidProgramType"] = "nativeActivity"
           }
+
+          runTask?.environment("LD_LIBRARY_PATH", goLibDir)
         }
       }
     }
   }
-
 
   jvm {
   }
-
-  sourceSets {
-    getByName("jvmTest") {
-      dependencies {
-        implementation(kotlin("test"))
-      }
-    }
-  }
-
 }
-
-

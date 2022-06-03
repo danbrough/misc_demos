@@ -1,4 +1,5 @@
 import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 import java.io.File
@@ -105,7 +106,7 @@ enum class GoArch(val altName: String? = null) {
   override fun toString() = altName ?: name
 }
 
-sealed class Platform(
+sealed class Platform<T:KotlinTarget>(
   val name: PlatformName,
 ) {
   enum class PlatformName {
@@ -128,7 +129,7 @@ open class PlatformNative<T : KotlinNativeTarget>(
   val goOS: GoOS,
   val goArch: GoArch,
   val goArm: Int = 7
-) : Platform(name) {
+) : Platform<T>(name) {
   val goCacheDir: File = BuildEnvironment.buildCacheDir.resolve("go")
 }
 

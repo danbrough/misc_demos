@@ -3,7 +3,29 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
+object Common {
+
+
+  @Suppress("UNCHECKED_CAST")
+  fun <T : KotlinTarget> Project.createTarget(
+    platform: Platform<T>,
+    targetName: String = platform.name.toString(),
+    conf: T.() -> Unit = {}
+  ): T {
+    println("Creatting target $targetName for platform $platform")
+    val extn = kotlinExtension as KotlinMultiplatformExtension
+    val preset: KotlinTargetPreset<T> =
+      extn.presets.getByName(platform.name.toString()) as KotlinTargetPreset<T>
+    return extn.targetFromPreset(preset, targetName, conf)
+  }
+
+
+}
 
 object GoLib {
 
@@ -61,7 +83,7 @@ abstract class GolibTask @Inject constructor(
 
   init {
     group = BasePlugin.BUILD_GROUP
-   // println("PLATFORM $platform  godir: $goDir: libDir: ${libDir.orNull}")
+    // println("PLATFORM $platform  godir: $goDir: libDir: ${libDir.orNull}")
 
     environment("PLATFORM", platform.name.toString())
 
