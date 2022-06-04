@@ -1,6 +1,7 @@
 headers = libgodemo.h
-#staticLibraries = libgodemo.a
-#compilerOpts = -fPIC
-linkerOpts = -lgodemo
+
+linkerOpts.linux =  -lgodemo
+libraryPaths.linux_x64 = golib/build/lib/linuxX64
+
 linkerOpts.linux_x64 = -Lgolib/build/lib/linuxX64
 linkerOpts.linux_arm64 = -Lgolib/build/lib/linuxArm64

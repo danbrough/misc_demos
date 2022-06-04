@@ -21,7 +21,7 @@ kotlin {
 
   val goDir = project.file("src/go")
 
-  listOf(LinuxX64, LinuxArm64).forEach { platform ->
+  BuildEnvironment.nativeTargets.forEach { platform ->
 
     createTarget(platform) {
 
@@ -32,7 +32,12 @@ kotlin {
       println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
 
       val goLibDir = golibBuildTask.outputs.files.first().parentFile
+      compilations["test"].apply {
+        dependencies {
+          implementation(kotlin("test"))
+        }
 
+      }
       compilations["main"].apply {
 
         cinterops.create("libgodemo") {
@@ -43,13 +48,8 @@ kotlin {
           }
 
           packageName("golibdemo")
-
           defFile = project.file("src/interop/godemo.def")
-          extraOpts(
-            "-verbose",
-            "-compiler-option",
-            "-I$goLibDir",
-          )
+          includeDirs("$goLibDir")
         }
         defaultSourceSet {
           dependsOn(nativeMain)
@@ -58,6 +58,7 @@ kotlin {
 
 
       binaries {
+
         executable("demo") {
           if (konanTarget.family == Family.ANDROID) {
             binaryOptions["androidProgramType"] = "nativeActivity"
@@ -70,5 +71,11 @@ kotlin {
   }
 
   jvm {
+    compilations["test"].apply {
+      dependencies {
+        implementation(kotlin("test"))
+      }
+
+    }
   }
 }

@@ -19,6 +19,8 @@ object BuildEnvironment {
   val buildPath: List<String>
     get() = ProjectProperties.getProperty("build.path").split("[\\s]+".toRegex())
 
+  val nativeTargets = listOf(LinuxX64,LinuxArm64,LinuxArm)
+
   val androidToolchainDir by lazy {
     androidNdkDir.resolve("toolchains/llvm/prebuilt/linux-x86_64").also {
       assert(it.exists()) {
