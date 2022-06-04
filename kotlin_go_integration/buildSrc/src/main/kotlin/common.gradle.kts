@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.targets
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 
 object Common {
@@ -26,6 +27,7 @@ object Common {
   }
 
 
+
 }
 
 object GoLib {
@@ -33,7 +35,7 @@ object GoLib {
   fun Project.registerGoLibBuild(
     platform: PlatformNative<*>,
     goDir: File,
-    outputDir: File = project.buildDir.resolve("golib/${platform.name.toString()}"),
+    outputDir: File,
     name: String = "golibBuild${platform.name.toString().capitalized()}"
   ) = tasks.register<Common_gradle.GolibTask>(name, platform, goDir).also {
     it {

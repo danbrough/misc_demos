@@ -25,32 +25,41 @@ kotlin {
 
     createTarget(platform) {
 
-
-      val golibBuildTask = registerGoLibBuild(platform, goDir).get()
-
+      val goLibDir = project.buildDir.resolve("lib/${platform.name}")
+      val golibBuildTask = registerGoLibBuild(platform, goDir, goLibDir).get()
 
       println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
 
-      val goLibDir = golibBuildTask.outputs.files.first().parentFile
-      compilations["test"].apply {
-        dependencies {
-          implementation(kotlin("test"))
-        }
 
-      }
+
+
       compilations["main"].apply {
 
         cinterops.create("libgodemo") {
+          packageName("golibdemo")
+          defFile = project.file("src/interop/godemo.def")
+          includeDirs(goLibDir, project.file("src/include"))
+          if (platform.goOS == GoOS.linux) {
+            includeDirs(project.file("src/include/linux"))
 
+          }
           tasks.getAt(interopProcessingTaskName).apply {
             inputs.files(golibBuildTask.outputs)
             dependsOn(golibBuildTask.name)
           }
-
-          packageName("golibdemo")
-          defFile = project.file("src/interop/godemo.def")
-          includeDirs("$goLibDir")
         }
+
+        if (platform.goOS != GoOS.android) {
+          cinterops.create("jni") {
+            packageName("platform.android")
+            defFile = project.file("src/interop/jni.def")
+            includeDirs(project.file("src/include"))
+            if (platform.goOS == GoOS.linux) {
+              includeDirs(project.file("src/include/linux"))
+            }
+          }
+        }
+
         defaultSourceSet {
           dependsOn(nativeMain)
         }
@@ -70,12 +79,14 @@ kotlin {
     }
   }
 
-  jvm {
-    compilations["test"].apply {
+  jvm()
+
+  sourceSets {
+    commonTest {
       dependencies {
         implementation(kotlin("test"))
       }
-
     }
   }
 }
+
