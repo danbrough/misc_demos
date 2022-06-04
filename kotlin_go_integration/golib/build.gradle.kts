@@ -54,8 +54,16 @@ kotlin {
             packageName("platform.android")
             defFile = project.file("src/interop/jni.def")
             includeDirs(project.file("src/include"))
-            if (platform.goOS == GoOS.linux) {
-              includeDirs(project.file("src/include/linux"))
+            when (platform.goOS) {
+              GoOS.linux -> {
+                includeDirs(project.file("src/include/linux"))
+              }
+              GoOS.windows -> {
+                includeDirs(project.file("src/include/win32"))
+              }
+              else -> {
+                TODO("add other jni headers")
+              }
             }
           }
         }
