@@ -15,8 +15,9 @@ kotlinDslPluginOptions {
 }
 
 dependencies {
-  //compileOnly(kotlin("gradle-plugin"))
-  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0-RC2")
+  implementation(kotlin("gradle-plugin"))
+  implementation(kotlin("serialization"))
+  //implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
 
 }
 

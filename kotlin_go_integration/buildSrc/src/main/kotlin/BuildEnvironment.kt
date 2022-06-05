@@ -1,4 +1,3 @@
-import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
@@ -6,8 +5,13 @@ import java.io.File
 
 
 object BuildEnvironment {
+
   val goBinary: String
     get() = ProjectProperties.getProperty("go.binary", "/usr/bin/go")
+
+  val javah: String
+    get() = ProjectProperties.getProperty("javah.path")
+
   val buildCacheDir: File
     get() = File(ProjectProperties.getProperty("build.cache"))
   val konanDir: File
@@ -19,7 +23,10 @@ object BuildEnvironment {
   val buildPath: List<String>
     get() = ProjectProperties.getProperty("build.path").split("[\\s]+".toRegex())
 
-  val nativeTargets = listOf(LinuxX64,LinuxArm64,LinuxArm)
+  val hostPlatform = LinuxX64
+
+  val nativeTargets = listOf(LinuxX64)
+  //val nativeTargets = listOf(LinuxX64,LinuxArm64,LinuxArm)
 
   val androidToolchainDir by lazy {
     androidNdkDir.resolve("toolchains/llvm/prebuilt/linux-x86_64").also {
@@ -108,19 +115,23 @@ enum class GoArch(val altName: String? = null) {
   override fun toString() = altName ?: name
 }
 
-sealed class Platform<T:KotlinTarget>(
+sealed class Platform<T : KotlinTarget>(
   val name: PlatformName,
 ) {
   enum class PlatformName {
-    Android, AndroidNativeArm32, AndroidNativeArm64, AndroidNativeX64, AndroidNativeX86, IosArm32,
-    IosArm64, IosSimulatorArm64, IosX64, JS, JsBoth, JsIr, Jvm, JvmWithJava,
-    LinuxArm32Hfp, LinuxArm64, LinuxMips32, LinuxMipsel32, LinuxX64, MacosArm64, MacosX64,
-    MingwX64, MingwX86, TvosArm64, TvosSimulatorArm64, TvosX64, Wasm, Wasm32,
+    Android, AndroidNativeArm32, AndroidNativeArm64, AndroidNativeX64, AndroidNativeX86,
+    IosArm32, IosArm64, IosSimulatorArm64, IosX64,
+    JS, JsBoth, JsIr,
+    Jvm, JvmWithJava,
+    LinuxArm32Hfp, LinuxArm64, LinuxMips32, LinuxMipsel32, LinuxX64,
+    MacosArm64, MacosX64,
+    MingwX64, MingwX86,
+    TvosArm64, TvosSimulatorArm64, TvosX64,
+    Wasm, Wasm32,
     WatchosArm32, WatchosArm64, WatchosSimulatorArm64, WatchosX64, WatchosX86;
 
     override fun toString() = name.toString().decapitalize()
   }
-
 
 
   override fun toString() = name.toString()

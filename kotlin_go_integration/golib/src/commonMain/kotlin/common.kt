@@ -1,18 +1,11 @@
-
-interface GoLib {
-
-  fun getTime(): String
-}
-
-expect fun initGoLib(): GoLib
+import danbroid.godemo.initGoLib
 
 
 fun main() {
-  println("running golibdemo ..")
+  println("running golibdemo test ..")
 
   val golib = initGoLib()
 
 
   println(golib.getTime())
-
 }

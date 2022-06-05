@@ -1,11 +1,8 @@
 import Common_gradle.Common.createTarget
-import Common_gradle.Common.hostPlatform
 import Common_gradle.GoLib.libsDir
 import Common_gradle.GoLib.registerGoLibBuild
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
-import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
@@ -20,6 +17,9 @@ version = ProjectProperties.VERSION_NAME
 
 
 kotlin {
+  jvm {
+
+  }
 
   sourceSets {
     val commonMain by getting
@@ -31,6 +31,10 @@ kotlin {
     }
 
     val nativeMain by creating {
+      dependsOn(commonMain)
+    }
+
+    val jvmMain by getting {
       dependsOn(commonMain)
     }
   }
@@ -45,7 +49,7 @@ kotlin {
       val goLibDir = libsDir(platform)
       val golibBuildTask = registerGoLibBuild(platform, goDir, goLibDir).get()
 
-      println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
+      //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
 
 
       compilations["main"].apply {
@@ -99,12 +103,31 @@ kotlin {
   }
 
 
-  jvm()
 }
 
 tasks.withType(KotlinNativeHostTest::class).all {
-  println("KOTLINT TEST $this type: ${this.javaClass}")
-  environment("LD_LIBRARY_PATH", libsDir(hostPlatform))
+  //println("KOTLINT TEST $this type: ${this.javaClass}")
+  environment("LD_LIBRARY_PATH", libsDir(BuildEnvironment.hostPlatform))
+
+}
+
+tasks.register("jniHeaders", Exec::class) {
+  kotlin.targets.withType(KotlinJvmTarget::class) {
+
+    val classpath = compilations["main"].compileKotlinTask.outputs.files.joinToString(File.pathSeparator)
+    val commandLine = listOf(
+      BuildEnvironment.javah,
+      "-cp", classpath,
+      "-d", project.buildDir.resolve("jni").also {
+        if (!it.exists()) it.mkdirs()
+      },
+      "danbroid.godemo.JNI"
+    )
+
+    println("commandLine: ${commandLine.joinToString(" ")}")
+    commandLine(commandLine)
+
+  }
 
 }
 

@@ -1,3 +1,6 @@
+package danbroid.godemo
+
+import danbroid.godemo.initGoLib
 import kotlin.test.Test
 
 class Tests {

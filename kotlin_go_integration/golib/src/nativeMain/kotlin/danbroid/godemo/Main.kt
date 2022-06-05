@@ -1,3 +1,5 @@
+package danbroid.godemo
+
 import kotlinx.cinterop.toKString
 import platform.posix.free
 

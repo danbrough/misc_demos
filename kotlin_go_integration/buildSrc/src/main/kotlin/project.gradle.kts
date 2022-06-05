@@ -1,7 +1,3 @@
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.provider.Property
-import org.gradle.kotlin.dsl.create
 import java.io.FileInputStream
 
 interface ProjectInitExtension {
@@ -10,7 +6,6 @@ interface ProjectInitExtension {
 }
 
 class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
-
 
 
   override fun apply(project: Project) {

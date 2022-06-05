@@ -7,8 +7,6 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.targets
-import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 
 object Common {
 
@@ -26,24 +24,18 @@ object Common {
     return extn.targetFromPreset(preset, targetName, conf)
   }
 
-  val hostPlatform =  LinuxX64
 
 }
 
 object GoLib {
 
 
-
-  fun Project.registerGoLibBuild(
-    platform: PlatformNative<*>,
+  fun <T : KotlinNativeTarget> Project.registerGoLibBuild(
+    platform: PlatformNative<T>,
     goDir: File,
     outputDir: File,
     name: String = "golibBuild${platform.name.toString().capitalized()}"
-  ) = tasks.register<Common_gradle.GolibTask>(name, platform, goDir).also {
-    it {
-      libDir.set(outputDir)
-    }
-  }
+  ): TaskProvider<GoLibBuildTask<T>> = tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir)
 
   fun Project.RegisterGreeting(name: String, greeting: String) =
     this.tasks.register<GreetingTask>(name) {
@@ -69,7 +61,8 @@ abstract class GreetingTask : DefaultTask() {
 
 
 
-tasks.register("styleTest") {
+tasks.register("styleTest")
+{
   doLast {
     val out = project.serviceOf<StyledTextOutputFactory>().create("testOutput")
     StyledTextOutput.Style.values().forEach {
@@ -82,12 +75,9 @@ tasks.register("styleTest") {
   }
 }
 
-abstract class GolibTask @Inject constructor(
-  private val platform: PlatformNative<*>, private val goDir: File
+abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
+  private val platform: PlatformNative<T>, private val goDir: File, private val outputDir: File
 ) : Exec() {
-
-  @get:Input
-  abstract val libDir: Property<File>
 
   init {
     group = BasePlugin.BUILD_GROUP
@@ -95,8 +85,6 @@ abstract class GolibTask @Inject constructor(
 
     environment("PLATFORM", platform.name.toString())
 
-
-    val outputDir = project.buildDir.resolve("lib/$platform")
     assert(outputDir.mkdirs())
 
 
