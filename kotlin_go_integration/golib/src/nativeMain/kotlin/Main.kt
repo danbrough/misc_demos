@@ -1,16 +1,14 @@
 import kotlinx.cinterop.toKString
 import platform.posix.free
 
-fun main() {
-  println("running golibdemo ..")
-
-
-  val time = golibdemo.GetTime()?.let {
+object GoLibNative : GoLib {
+  override fun getTime(): String = golibdemo.GetTime()!!.let {
     val s = it.toKString()
     free(it)
     s
   }
-
-  println(time)
-
 }
+
+actual fun initGoLib(): GoLib = GoLibNative
+
+

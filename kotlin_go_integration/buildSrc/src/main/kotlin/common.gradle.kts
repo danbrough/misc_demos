@@ -26,11 +26,13 @@ object Common {
     return extn.targetFromPreset(preset, targetName, conf)
   }
 
-
+  val hostPlatform =  LinuxX64
 
 }
 
 object GoLib {
+
+
 
   fun Project.registerGoLibBuild(
     platform: PlatformNative<*>,
@@ -47,6 +49,9 @@ object GoLib {
     this.tasks.register<GreetingTask>(name) {
       this.greeting.set(greeting)
     }
+
+
+  fun Project.libsDir(platform: PlatformNative<*>): File = buildDir.resolve("lib/${platform.name}")
 
 }
 

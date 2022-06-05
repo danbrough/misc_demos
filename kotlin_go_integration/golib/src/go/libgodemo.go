@@ -13,6 +13,4 @@ func GetTime() *C.char {
 
 }
 
-func main() {
-
-}
+func main() {}

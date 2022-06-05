@@ -1,7 +1,11 @@
 import Common_gradle.Common.createTarget
+import Common_gradle.Common.hostPlatform
+import Common_gradle.GoLib.libsDir
 import Common_gradle.GoLib.registerGoLibBuild
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
@@ -16,7 +20,20 @@ version = ProjectProperties.VERSION_NAME
 
 
 kotlin {
-  val nativeMain by sourceSets.creating
+
+  sourceSets {
+    val commonMain by getting
+
+    commonTest {
+      dependencies {
+        implementation(kotlin("test"))
+      }
+    }
+
+    val nativeMain by creating {
+      dependsOn(commonMain)
+    }
+  }
 
 
   val goDir = project.file("src/go")
@@ -25,12 +42,10 @@ kotlin {
 
     createTarget(platform) {
 
-      val goLibDir = project.buildDir.resolve("lib/${platform.name}")
+      val goLibDir = libsDir(platform)
       val golibBuildTask = registerGoLibBuild(platform, goDir, goLibDir).get()
 
       println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
-
-
 
 
       compilations["main"].apply {
@@ -39,10 +54,6 @@ kotlin {
           packageName("golibdemo")
           defFile = project.file("src/interop/godemo.def")
           includeDirs(goLibDir, project.file("src/include"))
-          if (platform.goOS == GoOS.linux) {
-            includeDirs(project.file("src/include/linux"))
-
-          }
           tasks.getAt(interopProcessingTaskName).apply {
             inputs.files(golibBuildTask.outputs)
             dependsOn(golibBuildTask.name)
@@ -69,7 +80,7 @@ kotlin {
         }
 
         defaultSourceSet {
-          dependsOn(nativeMain)
+          dependsOn(sourceSets["nativeMain"])
         }
       }
 
@@ -87,14 +98,13 @@ kotlin {
     }
   }
 
-  jvm()
 
-  sourceSets {
-    commonTest {
-      dependencies {
-        implementation(kotlin("test"))
-      }
-    }
-  }
+  jvm()
+}
+
+tasks.withType(KotlinNativeHostTest::class).all {
+  println("KOTLINT TEST $this type: ${this.javaClass}")
+  environment("LD_LIBRARY_PATH", libsDir(hostPlatform))
+
 }
 
