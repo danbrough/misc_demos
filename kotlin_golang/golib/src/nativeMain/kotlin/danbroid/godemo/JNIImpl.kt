@@ -7,30 +7,21 @@ import kotlinx.cinterop.pointed
 import platform.android.JNIEnvVar
 import platform.android.jclass
 import platform.android.jstring
+import platform.linux.free
 
-object JNIImpl {
-  /*
-JNIEXPORT jstring JNICALL Java_danbroid_godemo_JNI_getTime
-  (JNIEnv *, jclass);
-   */
-
-
-}
 
 @CName("Java_danbroid_godemo_JNI_getTime")
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
 
+    return godemo.GetTime().let { cs ->
+      env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs)!!.let {
+        free(cs)
+        it
+      }
+    }
 
-
-    return env.pointed.pointed!!.NewStringUTF!!.invoke(
-      env, godemo.GetTime()
-
-
-      // KGetMessage()!!.getPointer(this)
-      //"The time is ${Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())}!".cstr.ptr
-    )!!
   }
 }
 

@@ -22,9 +22,9 @@ plugins {
 }
 
 
-rootProject.name = "kotlin_go_integration"
+rootProject.name = "kotlin_golang"
 
-include(":jnilib")
+include(":openssl")
 include(":golib")
 
 /*include(":api")
