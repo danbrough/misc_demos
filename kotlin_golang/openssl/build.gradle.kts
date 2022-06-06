@@ -41,6 +41,7 @@ fun opensslBuildTask(platform: PlatformNative<*>) =
   tasks.register("openssl${platform.name.toString().capitalized()}Build", Exec::class) {
     dependsOn(opensslResetSrc)
     group = BasePlugin.BUILD_GROUP
+    commandLine("/usr/bin/date")
   }
 
 
