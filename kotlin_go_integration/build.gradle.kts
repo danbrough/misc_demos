@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("multiplatform") apply false
@@ -40,9 +41,7 @@ allprojects {
   tasks.withType<AbstractTestTask>() {
     testLogging {
       events = setOf(
-        TestLogEvent.PASSED,
-        TestLogEvent.SKIPPED,
-        TestLogEvent.FAILED
+        TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
       )
       exceptionFormat = TestExceptionFormat.FULL
       showStandardStreams = true
@@ -50,6 +49,12 @@ allprojects {
     }
     outputs.upToDateWhen {
       false
+    }
+  }
+
+  tasks.withType(KotlinCompile::class) {
+    kotlinOptions {
+      jvmTarget = ProjectProperties.KOTLIN_JVM_VERSION
     }
   }
 

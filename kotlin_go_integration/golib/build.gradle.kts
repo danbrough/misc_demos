@@ -1,8 +1,9 @@
 import Common_gradle.Common.createTarget
 import Common_gradle.GoLib.libsDir
 import Common_gradle.GoLib.registerGoLibBuild
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
-import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
@@ -18,11 +19,16 @@ version = ProjectProperties.VERSION_NAME
 
 kotlin {
   jvm {
-
+    withJava()
   }
 
   sourceSets {
-    val commonMain by getting
+    val commonMain by getting {
+      dependencies {
+        implementation(AndroidUtils.logging)
+      }
+    }
+
 
     commonTest {
       dependencies {
@@ -55,7 +61,7 @@ kotlin {
       compilations["main"].apply {
 
         cinterops.create("libgodemo") {
-          packageName("golibdemo")
+          packageName("godemo")
           defFile = project.file("src/interop/godemo.def")
           includeDirs(goLibDir, project.file("src/include"))
           tasks.getAt(interopProcessingTaskName).apply {
@@ -98,30 +104,51 @@ kotlin {
 
           runTask?.environment("LD_LIBRARY_PATH", goLibDir)
         }
+
+        sharedLib("godemojni", setOf(NativeBuildType.DEBUG))
+
       }
+
+
     }
   }
 
 
 }
 
-tasks.withType(KotlinNativeHostTest::class).all {
-  //println("KOTLINT TEST $this type: ${this.javaClass}")
+tasks.withType(KotlinNativeTest::class).all {
   environment("LD_LIBRARY_PATH", libsDir(BuildEnvironment.hostPlatform))
-
 }
 
-tasks.register("jniHeaders", Exec::class) {
-  kotlin.targets.withType(KotlinJvmTarget::class) {
 
-    val classpath = compilations["main"].compileKotlinTask.outputs.files.joinToString(File.pathSeparator)
+tasks.withType(KotlinJvmTest::class) {
+  val linkTask = tasks.getByName("linkGodemojniDebugSharedLinuxX64")
+  dependsOn(linkTask)
+
+  environment(
+    "LD_LIBRARY_PATH",
+    "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+  )
+}
+
+/*tasks.register("jniHeaders", Exec::class) {
+
+
+  kotlin.targets.withType(KotlinJvmTarget::class) {
+    this@register.dependsOn(compilations["main"].compileKotlinTask, compilations["test"].compileKotlinTask)
+
+
+    val className = "danbroid.godemo.JNI"
+    val classpath =
+      (compilations["main"].compileKotlinTask.outputs.files + compilations["test"].compileKotlinTask.outputs.files)
+        .joinToString(File.pathSeparator)
     val commandLine = listOf(
       BuildEnvironment.javah,
       "-cp", classpath,
-      "-d", project.buildDir.resolve("jni").also {
+      "-d", project.file("src/jni").also {
         if (!it.exists()) it.mkdirs()
       },
-      "danbroid.godemo.JNI"
+      className
     )
 
     println("commandLine: ${commandLine.joinToString(" ")}")
@@ -129,5 +156,5 @@ tasks.register("jniHeaders", Exec::class) {
 
   }
 
-}
+}*/
 
