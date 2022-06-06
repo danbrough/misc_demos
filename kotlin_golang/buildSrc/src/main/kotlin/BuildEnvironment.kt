@@ -8,7 +8,8 @@ object BuildEnvironment {
 
   val goBinary: String
     get() = ProjectProperties.getProperty("go.binary", "/usr/bin/go")
-
+  val gitBinary: String
+    get() = ProjectProperties.getProperty("git.binary", "/usr/bin/git")
   val javah: String
     get() = ProjectProperties.getProperty("javah.path")
 

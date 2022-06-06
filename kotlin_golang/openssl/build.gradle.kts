@@ -10,19 +10,39 @@ plugins {
 group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 
-fun opensslBuildTask(platform: PlatformNative<*>): TaskProvider<Task> {
-  val srcDir = rootProject.file("extras/openssl/src")
+val opensslSrcDir = rootProject.file("extras/openssl")
 
-  val cleanTask = tasks.register("opensslCleanSrc", Exec::class) {
-    workingDir(srcDir)
-    commandLine("/usr/bin/git", "clean", "-xdf")
+
+val opensslCheckout = tasks.register("opensslCheckout", Exec::class) {
+  outputs.files(opensslSrcDir)
+
+}
+val opensslCleanSrc = tasks.register("opensslCleanSrc", Exec::class) {
+  workingDir(opensslSrcDir)
+  inputs.files(opensslSrcDir)
+  commandLine(BuildEnvironment.gitBinary, "clean", "-xdf")
+}
+
+val opensslResetSrc = tasks.register("opensslResetSrc", Exec::class) {
+  dependsOn(opensslCleanSrc)
+  workingDir(opensslSrcDir)
+  commandLine(BuildEnvironment.gitBinary, "reset", "--hard")
+}
+
+fun opensslConfigureSrc(platform: PlatformNative<*>) =
+  tasks.register("openssl${platform.name.toString().capitalized()}Configure", Exec::class) {
+    dependsOn(opensslResetSrc)
+    workingDir(opensslSrcDir)
+    environment(BuildEnvironment.environment(platform))
+
   }
 
-  return tasks.register("openssl${platform.name.toString().capitalized()}") {
-    dependsOn(cleanTask)
+fun opensslBuildTask(platform: PlatformNative<*>) =
+  tasks.register("openssl${platform.name.toString().capitalized()}Build", Exec::class) {
+    dependsOn(opensslResetSrc)
     group = BasePlugin.BUILD_GROUP
   }
-}
+
 
 kotlin {
 
