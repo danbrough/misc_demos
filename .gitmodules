@@ -1,3 +1,6 @@
 [submodule "kotlin_native/extras/openssl"]
 	path = kotlin_go_integration/extras/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "kotlin_golang/extras/openssl"]
+	path = kotlin_golang/extras/openssl
+	url = https://github.com/openssl/openssl.git
