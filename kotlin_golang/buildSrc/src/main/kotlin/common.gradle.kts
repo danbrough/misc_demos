@@ -17,7 +17,6 @@ object Common {
     targetName: String = platform.name.toString(),
     conf: T.() -> Unit = {}
   ): T {
-    println("Creatting target $targetName for platform $platform")
     val extn = kotlinExtension as KotlinMultiplatformExtension
     val preset: KotlinTargetPreset<T> =
       extn.presets.getByName(platform.name.toString()) as KotlinTargetPreset<T>

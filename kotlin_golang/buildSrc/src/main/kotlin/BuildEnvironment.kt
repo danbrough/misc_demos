@@ -57,6 +57,7 @@ object BuildEnvironment {
     "GOPATH" to platform.goCacheDir.resolve(platform.name.toString()),
     "KONAN_DATA_DIR" to platform.goCacheDir.resolve("konan"),
     "CGO_CFLAGS" to "-O3",
+    "MAKE" to "make -j4",
   ).apply {
 
     val path = buildPath.toMutableList()
@@ -85,6 +86,8 @@ object BuildEnvironment {
             "--sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
+/*        this["RANLIB"] =
+          "$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/bin/ranlib"*/
       }
 
       MingwX64 -> {
