@@ -6,11 +6,18 @@ plugins {
   id("common")
 }
 
+val opensslTag = "OpenSSL_1_1_1o"
+
 val PlatformNative<*>.opensslPlatform
   get() = when (this) {
     LinuxX64 -> "linux-x86_64"
     LinuxArm64 -> "linux-aarch64"
     LinuxArm -> "linux-armv4"
+    AndroidArm -> "android-arm"
+    AndroidArm64 -> "android-arm64"
+    Android386 -> "android-x86"
+    AndroidAmd64 -> "android-x86_64"
+    MingwX64 -> "mingw64"
     else -> TODO("Add support for $this")
   }
 
@@ -21,52 +28,80 @@ group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 
 val opensslSrcDir = rootProject.file("openssl/src")
-val opensslTag = "OpenSSL_1_1_1o"
+
+//fun gitCommand(args:List<String>,)
+
+/*fun gitCommand(vararg args: String, conf: Exec.() -> Unit = {}): TaskProvider<Exec> {
+  val task by tasks.registering(Exec::class) {
+    workingDir(opensslSrcDir)
+    commandLine(BuildEnvironment.gitBinary + args)
+    conf.invoke(this)
+  }
+  return task
+}*/
 
 
-val srcClone by tasks.registering(Exec::class) {
+fun TaskContainer.gitCommand(
+  vararg args: String, action: Exec.() -> Unit
+): RegisteringDomainObjectDelegateProviderWithTypeAndAction<TaskContainer, Exec> =
+  RegisteringDomainObjectDelegateProviderWithTypeAndAction.of(this, Exec::class) {
+    workingDir(opensslSrcDir)
+
+    commandLine(listOf(BuildEnvironment.gitBinary) + args)
+    action()
+  }
+
+val srcClone by tasks.gitCommand(
+  "clone", "https://github.com/openssl/openssl", opensslSrcDir.absolutePath
+) {
   onlyIf {
     !opensslSrcDir.exists()
   }
-  commandLine(BuildEnvironment.gitBinary, "clone", "https://github.com/openssl/openssl", opensslSrcDir)
 }
 
-val srcClean by tasks.registering(Exec::class) {
+
+val srcClean by tasks.gitCommand("clean", "-xdf") {
   dependsOn(srcClone)
-  workingDir(opensslSrcDir)
-  commandLine(BuildEnvironment.gitBinary, "clean", "-xdf")
 }
 
-val srcReset by tasks.registering(Exec::class) {
+val srcReset by tasks.gitCommand("reset", "--hard") {
   dependsOn(srcClean)
-  workingDir(opensslSrcDir)
-  commandLine(BuildEnvironment.gitBinary, "reset", "--hard")
 }
 
-val srcCheckout by tasks.registering(Exec::class) {
+val srcCheckout by tasks.gitCommand("checkout", opensslTag) {
   dependsOn(srcReset)
-  workingDir(opensslSrcDir)
-  commandLine(BuildEnvironment.gitBinary, "checkout", opensslTag)
 }
 
 fun configureTask(platform: PlatformNative<*>) =
   tasks.register("configure${platform.name.toString().capitalized()}", Exec::class) {
-    dependsOn(srcCheckout)
+    doFirst {
+      println("RUNNING CONFIGURE!!! $platform")
+    }
+    dependsOn(srcCheckout.name)
     workingDir(opensslSrcDir)
     environment(BuildEnvironment.environment(platform))
-    commandLine("./Configure", platform.opensslPlatform, "no-shared", "--prefix=${platform.opensslPrefix}")
+    commandLine(
+      "./Configure", platform.opensslPlatform, "no-shared", "--prefix=${platform.opensslPrefix}"
+    )
   }
 
-fun buildTask(platform: PlatformNative<*>) =
+fun buildTask(platform: PlatformNative<*>) {
+  val configureTask = configureTask(platform).get()
+
   tasks.register("build${platform.name.toString().capitalized()}", Exec::class) {
     doFirst {
       platform.opensslPrefix.parentFile.also {
         if (!it.exists()) it.mkdirs()
       }
-      println("OUTPUTS: ${outputs.files.files}")
-
     }
-    dependsOn("configure${platform.name.toString().capitalized()}")
+
+    platform.opensslPrefix.resolve("lib/libssl.a").exists().also {
+      isEnabled = !it
+      configureTask.isEnabled = !it
+    }
+
+    //dependsOn("configure${platform.name.toString().capitalized()}")
+    dependsOn(configureTask)
     workingDir(opensslSrcDir)
     outputs.files(fileTree(platform.opensslPrefix) {
       include("lib/*.a", "lib/*.so", "lib/*.h")
@@ -76,14 +111,23 @@ fun buildTask(platform: PlatformNative<*>) =
     commandLine("make", "install_sw")
 
   }
+}
 
 
 kotlin {
 
 
-  listOf(LinuxX64, LinuxArm64, LinuxArm).forEach { platform ->
+  listOf(
+    LinuxX64,
+    LinuxArm64,
+    LinuxArm,
+    AndroidArm,
+    AndroidArm64,
+    AndroidAmd64,
+    Android386,
+    MingwX64,
+  ).forEach { platform ->
 
-    configureTask(platform)
 
     buildTask(platform)
 
