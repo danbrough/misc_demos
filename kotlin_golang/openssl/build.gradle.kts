@@ -108,11 +108,13 @@ fun buildTask(platform: PlatformNative<*>) {
   val configureTask = configureTask(platform)
 
   tasks.create("build${platform.name.toString().capitalized()}", Exec::class) {
+/*
     doFirst {
       platform.opensslPrefix.parentFile.also {
         if (!it.exists()) it.mkdirs()
       }
     }
+*/
 
 
     platform.opensslPrefix.resolve("lib/libssl.a").exists().also {
