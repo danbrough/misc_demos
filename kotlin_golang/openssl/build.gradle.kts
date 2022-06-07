@@ -1,9 +1,11 @@
 import Common_gradle.Common.createTarget
 import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
   kotlin("multiplatform")
   id("common")
+  `maven-publish`
 }
 
 val opensslTag = "OpenSSL_1_1_1o"
@@ -60,37 +62,24 @@ val srcClone by tasks.registering(Exec::class) {
 
 }
 
-fun srcPrepare(platform: PlatformNative<*>): Exec {
-  val srcDir = platform.opensslSrcDir
-
-
-  return tasks.create("srcPrepare${platform.name.toString().capitalized()}", Exec::class) {
-
-
+fun srcPrepare(platform: PlatformNative<*>): Exec =
+  tasks.create("srcPrepare${platform.name.toString().capitalized()}", Exec::class) {
+    val srcDir = platform.opensslSrcDir
     dependsOn(srcClone)
-
     isEnabled = !srcDir.exists()
-
 
     commandLine(
       BuildEnvironment.gitBinary, "clone", "--branch", opensslTag, opensslGitDir, srcDir
     )
-
   }
-}
+
 
 fun configureTask(platform: PlatformNative<*>): Exec {
 
   val srcPrepare = srcPrepare(platform)
 
   return tasks.create("configure${platform.name.toString().capitalized()}", Exec::class) {
-    doFirst {
-      println("RUNNING CONFIGURE!!! $platform")
-    }
-
-
     dependsOn(srcPrepare)
-
     workingDir(platform.opensslSrcDir)
     environment(BuildEnvironment.environment(platform))
     val args = mutableListOf(
@@ -147,10 +136,27 @@ kotlin {
   BuildEnvironment.nativeTargets.forEach { platform ->
 
     createTarget(platform) {
-
+      compilations["main"].apply {
+        cinterops.create("openssl") {
+          this.defFile = project.file("src/openssl.def")
+        }
+      }
     }
 
     buildTask(platform)
+  }
+}
+
+
+publishing {
+  publications {
+    kotlin.targets.withType(KotlinNativeTarget::class) {
+
+    }
+  }
+
+  repositories {
+    maven(ProjectProperties.MAVEN_REPO)
   }
 }
 
