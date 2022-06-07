@@ -131,30 +131,4 @@ tasks.withType(KotlinJvmTest::class) {
   )
 }
 
-/*tasks.register("jniHeaders", Exec::class) {
-
-
-  kotlin.targets.withType(KotlinJvmTarget::class) {
-    this@register.dependsOn(compilations["main"].compileKotlinTask, compilations["test"].compileKotlinTask)
-
-
-    val className = "danbroid.godemo.JNI"
-    val classpath =
-      (compilations["main"].compileKotlinTask.outputs.files + compilations["test"].compileKotlinTask.outputs.files)
-        .joinToString(File.pathSeparator)
-    val commandLine = listOf(
-      BuildEnvironment.javah,
-      "-cp", classpath,
-      "-d", project.file("src/jni").also {
-        if (!it.exists()) it.mkdirs()
-      },
-      className
-    )
-
-    println("commandLine: ${commandLine.joinToString(" ")}")
-    commandLine(commandLine)
-
-  }
-
-}*/
 

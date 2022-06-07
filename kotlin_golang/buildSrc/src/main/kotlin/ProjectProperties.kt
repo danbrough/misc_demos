@@ -1,10 +1,8 @@
-
-import java.util.*
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.FileInputStream
 import java.net.URI
+import java.util.*
 
 object ProjectProperties {
   const val SDK_VERSION = 31
@@ -14,7 +12,8 @@ object ProjectProperties {
   var VERSION_FORMAT = "0.0.1-%02d"
   const val KOTLIN_JVM_VERSION = "11"
 
-  var IDE_MODE = false
+  val IDEA_ACTIVE: Boolean
+    get() = System.getProperty("idea.active", "false").toBoolean()
 
 
   lateinit var KEYSTORE_PASSWORD: String
@@ -42,12 +41,11 @@ object ProjectProperties {
   private var isInitialized = false
   fun init(_project: Project) {
 
-   // println("INIT PROJECT PROPERTIES")
-    if (isInitialized){
+    // println("INIT PROJECT PROPERTIES")
+    if (isInitialized) {
       return
     }
     isInitialized = true
-
 
 
     val project = _project.rootProject
@@ -72,7 +70,6 @@ object ProjectProperties {
     }
 
 
-    IDE_MODE = getProperty("ideMode", "true").toBoolean()
     BUILD_VERSION = getProperty("buildVersion", "1").toInt()
     VERSION_OFFSET = getProperty("versionOffset", "1").toInt()
     VERSION_FORMAT = getProperty("versionFormat", "0.0.%d")

@@ -22,12 +22,16 @@ val PlatformNative<*>.opensslPlatform
   }
 
 val PlatformNative<*>.opensslPrefix
-  get() = project.file("lib/$name")
+  get() = project.buildDir.resolve("openssl/$name")
+
+
+val PlatformNative<*>.opensslSrcDir: File
+  get() = project.buildDir.resolve("openssl/src/$opensslTag/$name")
 
 group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 
-val opensslSrcDir = rootProject.file("openssl/src")
+val opensslGitDir = project.file("src/openssl.git")
 
 //fun gitCommand(args:List<String>,)
 
@@ -41,68 +45,88 @@ val opensslSrcDir = rootProject.file("openssl/src")
 }*/
 
 
-fun TaskContainer.gitCommand(
-  vararg args: String, action: Exec.() -> Unit
-): RegisteringDomainObjectDelegateProviderWithTypeAndAction<TaskContainer, Exec> =
-  RegisteringDomainObjectDelegateProviderWithTypeAndAction.of(this, Exec::class) {
-    workingDir(opensslSrcDir)
-
-    commandLine(listOf(BuildEnvironment.gitBinary) + args)
-    action()
-  }
-
-val srcClone by tasks.gitCommand(
-  "clone", "https://github.com/openssl/openssl", opensslSrcDir.absolutePath
-) {
+val srcClone by tasks.registering(Exec::class) {
+  commandLine(
+    BuildEnvironment.gitBinary,
+    "clone",
+    "--bare",
+    "https://github.com/openssl/openssl",
+    opensslGitDir
+  )
+  outputs.dir(opensslGitDir)
   onlyIf {
-    !opensslSrcDir.exists()
+    !opensslGitDir.exists()
+  }
+
+}
+
+fun srcPrepare(platform: PlatformNative<*>): Exec {
+  val srcDir = platform.opensslSrcDir
+
+
+  return tasks.create("srcPrepare${platform.name.toString().capitalized()}", Exec::class) {
+
+
+    dependsOn(srcClone)
+
+    isEnabled = !srcDir.exists()
+
+
+    commandLine(
+      BuildEnvironment.gitBinary, "clone", "--branch", opensslTag, opensslGitDir, srcDir
+    )
+
   }
 }
 
+fun configureTask(platform: PlatformNative<*>): Exec {
 
-val srcClean by tasks.gitCommand("clean", "-xdf") {
-  dependsOn(srcClone)
-}
+  val srcPrepare = srcPrepare(platform)
 
-val srcReset by tasks.gitCommand("reset", "--hard") {
-  dependsOn(srcClean)
-}
-
-val srcCheckout by tasks.gitCommand("checkout", opensslTag) {
-  dependsOn(srcReset)
-}
-
-fun configureTask(platform: PlatformNative<*>) =
-  tasks.register("configure${platform.name.toString().capitalized()}", Exec::class) {
+  return tasks.create("configure${platform.name.toString().capitalized()}", Exec::class) {
     doFirst {
       println("RUNNING CONFIGURE!!! $platform")
     }
-    dependsOn(srcCheckout.name)
-    workingDir(opensslSrcDir)
+
+
+    dependsOn(srcPrepare)
+
+    workingDir(platform.opensslSrcDir)
     environment(BuildEnvironment.environment(platform))
-    commandLine(
-      "./Configure", platform.opensslPlatform, "no-shared", "--prefix=${platform.opensslPrefix}"
+    val args = mutableListOf(
+      "./Configure", platform.opensslPlatform,
+      //"no-shared",
+      "no-tests", "--prefix=${platform.opensslPrefix}"
     )
+    if (platform.isAndroid) args += "-D__ANDROID_API__=${BuildEnvironment.androidNdkApiVersion} "
+    else if (platform.isWindows) args += "--cross-compile-prefix=${platform.host}-"
+    commandLine(args)
   }
+}
 
 fun buildTask(platform: PlatformNative<*>) {
-  val configureTask = configureTask(platform).get()
+  val configureTask = configureTask(platform)
 
-  tasks.register("build${platform.name.toString().capitalized()}", Exec::class) {
+  tasks.create("build${platform.name.toString().capitalized()}", Exec::class) {
     doFirst {
       platform.opensslPrefix.parentFile.also {
         if (!it.exists()) it.mkdirs()
       }
     }
 
+
     platform.opensslPrefix.resolve("lib/libssl.a").exists().also {
       isEnabled = !it
       configureTask.isEnabled = !it
+      println("CONFIGURE TASK ENABLED: ${configureTask.name} ${!it}")
     }
+    dependsOn(configureTask.name)
 
     //dependsOn("configure${platform.name.toString().capitalized()}")
-    dependsOn(configureTask)
-    workingDir(opensslSrcDir)
+
+
+    tasks.getAt("buildAll").dependsOn(this)
+    workingDir(platform.opensslSrcDir)
     outputs.files(fileTree(platform.opensslPrefix) {
       include("lib/*.a", "lib/*.so", "lib/*.h")
     })
@@ -116,28 +140,19 @@ fun buildTask(platform: PlatformNative<*>) {
 
 kotlin {
 
+  val buildAll by tasks.registering
 
-  listOf(
-    LinuxX64,
-    LinuxArm64,
-    LinuxArm,
-    AndroidArm,
-    AndroidArm64,
-    AndroidAmd64,
-    Android386,
-    MingwX64,
-  ).forEach { platform ->
-
-
-    buildTask(platform)
+  BuildEnvironment.nativeTargets.forEach { platform ->
 
     createTarget(platform) {
 
     }
+
+    buildTask(platform)
   }
-
-
 }
+
+
 /*
 echo OPENSSL is $OPENSSL
 CRYPTO_LIB=$OPENSSL/lib/libcrypto.a
