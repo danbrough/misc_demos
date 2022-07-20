@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -29,7 +30,8 @@ kotlin {
 
   android()
 
-  linuxX64("posix")
+  linuxX64()
+  macosX64()
 
   sourceSets {
     val commonTest by getting {
@@ -39,31 +41,35 @@ kotlin {
     }
   }
 
+  val posixMain by sourceSets.creating {
+  }
+
+  targets.withType<KotlinNativeTarget>() {
+    compilations["main"].defaultSourceSet.dependsOn(posixMain)
+  }
 
 }
 
-allprojects {
-
-  tasks.withType<AbstractTestTask>() {
-    testLogging {
-      events = setOf(
-        TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
-      )
-      exceptionFormat = TestExceptionFormat.FULL
-      showStandardStreams = true
-      showStackTraces = true
-    }
-    outputs.upToDateWhen {
-      false
-    }
+tasks.withType<AbstractTestTask>() {
+  testLogging {
+    events = setOf(
+      TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
+    )
+    exceptionFormat = TestExceptionFormat.FULL
+    showStandardStreams = true
+    showStackTraces = true
   }
-
-  tasks.withType(KotlinCompile::class) {
-    kotlinOptions {
-      jvmTarget = "11"
-    }
+  outputs.upToDateWhen {
+    false
   }
 }
+
+tasks.withType(KotlinCompile::class) {
+  kotlinOptions {
+    jvmTarget = "11"
+  }
+}
+
 
 tasks.dokkaHtml.configure {
   outputDirectory.set(buildDir.resolve("dokka"))
@@ -76,8 +82,8 @@ val javadocJar by tasks.registering(Jar::class) {
 }
 
 publishing {
-  repositories {
 
+  repositories {
     maven(project.buildDir.resolve("m2").toURI()) {
       name = "m2"
     }
@@ -92,9 +98,9 @@ publishing {
     // because otherwise maven is complaining.
     // It is not sufficient to only have it in the "root" folder.
     it.artifact(javadocJar)
-
   }
 }
+
 android {
 
   compileSdk = 33
@@ -103,7 +109,6 @@ android {
 
   defaultConfig {
     minSdk = 23
-    targetSdk = 33
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
@@ -113,8 +118,8 @@ android {
   }
 
   signingConfigs.register("release") {
-    storeFile = file("/home/dan/.android/keystore")
-    keyAlias = "klog"
+    storeFile = File(System.getProperty("user.home"), ".android/keystore")
+    keyAlias = "keyAlias"
     storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
     keyPassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
   }

@@ -14,6 +14,6 @@ plugins {
 }
 
 
-rootProject.name = "dokka_test"
+rootProject.name = "kotlin_multiplatform_dokka"
 
 
