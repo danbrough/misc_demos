@@ -125,6 +125,11 @@ android {
   }
 
 
+  lint {
+    abortOnError = false
+  }
+
+
   buildTypes {
 
     getByName("debug") {
