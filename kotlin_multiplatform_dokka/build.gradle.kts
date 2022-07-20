@@ -1,0 +1,138 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+  kotlin("multiplatform")
+  id("org.jetbrains.dokka")
+  id("com.android.library")
+  `maven-publish`
+}
+
+group = "dokka.test"
+version = "0.0.1"
+
+buildscript {
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+repositories {
+  mavenCentral()
+  google()
+}
+
+kotlin {
+  jvm()
+
+  android()
+
+  linuxX64("posix")
+
+  sourceSets {
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+      }
+    }
+  }
+
+
+}
+
+allprojects {
+
+  tasks.withType<AbstractTestTask>() {
+    testLogging {
+      events = setOf(
+        TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
+      )
+      exceptionFormat = TestExceptionFormat.FULL
+      showStandardStreams = true
+      showStackTraces = true
+    }
+    outputs.upToDateWhen {
+      false
+    }
+  }
+
+  tasks.withType(KotlinCompile::class) {
+    kotlinOptions {
+      jvmTarget = "11"
+    }
+  }
+}
+
+tasks.dokkaHtml.configure {
+  outputDirectory.set(buildDir.resolve("dokka"))
+}
+
+
+val javadocJar by tasks.registering(Jar::class) {
+  archiveClassifier.set("javadoc")
+  from(tasks.dokkaHtml)
+}
+
+publishing {
+  repositories {
+
+    maven(project.buildDir.resolve("m2").toURI()) {
+      name = "m2"
+    }
+  }
+
+  publications.forEach {
+    if (it !is MavenPublication) {
+      return@forEach
+    }
+
+    // We need to add the javadocJar to every publication
+    // because otherwise maven is complaining.
+    // It is not sufficient to only have it in the "root" folder.
+    it.artifact(javadocJar)
+
+  }
+}
+android {
+
+  compileSdk = 33
+  sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+  namespace = project.group.toString()
+
+  defaultConfig {
+    minSdk = 23
+    targetSdk = 33
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+  }
+
+  signingConfigs.register("release") {
+    storeFile = file("/home/dan/.android/keystore")
+    keyAlias = "klog"
+    storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+    keyPassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+  }
+
+
+  buildTypes {
+
+    getByName("debug") {
+      //debuggable(true)
+    }
+
+    getByName("release") {
+      isMinifyEnabled = true
+      proguardFiles(
+        getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+      )
+      signingConfig = signingConfigs.getByName("release")
+    }
+  }
+
+}
